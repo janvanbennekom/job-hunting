@@ -1,0 +1,1365 @@
+# architecture.md
+
+## 1. Purpose
+
+This document defines the architecture of the Job Hunting AI Agent.
+
+The system is a personal AI-assisted opportunity discovery, assessment,
+ranking, tracking, and application-support platform.
+
+It is designed specifically around the professional profile and evolving
+job-search strategy of Jan van Bennekom-Minnema.
+
+The system searches multiple external sources, collects potential
+opportunities, normalizes and deduplicates them, applies eligibility rules,
+assesses professional relevance and profile fit, ranks opportunities, and
+presents the results for human review.
+
+For selected opportunities, the system can subsequently support application
+tracking and generation of tailored application documents.
+
+The architecture must support an evolving search strategy. The user should be
+able to discuss changing requirements with the system in natural language and,
+after confirmation, persist those changes as structured search strategy.
+
+
+## 2. Architectural Goals
+
+The architecture should support the following goals:
+
+1. Personalised opportunity discovery
+2. High recall during initial discovery
+3. Progressive filtering and ranking
+4. Evidence-based profile matching
+5. Explainable AI assessments
+6. Persistent state across scans
+7. Conversational management of search preferences
+8. Multiple heterogeneous opportunity sources
+9. Scheduled autonomous operation
+10. Human control over important decisions
+11. Traceability and provenance
+12. Incremental development
+13. Replaceable external integrations
+14. Independent cloud deployment
+15. Reasonable operating cost
+
+
+## 3. Architectural Principles
+
+The principles defined in AGENTS.md apply throughout the architecture.
+
+Particularly important architectural principles are:
+
+- separate deterministic processing from AI reasoning;
+- separate source acquisition from opportunity processing;
+- preserve source provenance;
+- persist important state explicitly;
+- treat professional evidence separately from search preferences;
+- use structured AI outputs where application logic depends on AI results;
+- keep AI model/provider integration replaceable;
+- keep source connectors replaceable;
+- maintain human control over persistent preference changes and applications;
+- favour simple components over unnecessary distributed infrastructure.
+
+The initial system should be implemented as a modular monolith.
+
+Do not introduce microservices unless a demonstrated requirement later
+justifies them.
+
+
+## 4. System Context
+
+The system interacts with four main external contexts:
+
+### User
+
+The user:
+
+- maintains professional information;
+- maintains or discusses search preferences;
+- reviews opportunities;
+- provides relevance feedback;
+- selects opportunities to pursue;
+- tracks applications;
+- reviews generated documents.
+
+### Opportunity Sources
+
+External sources provide job, consultancy, procurement, roster, and related
+professional opportunities.
+
+Examples include:
+
+- World Bank;
+- ADB;
+- UNOPS;
+- FAO;
+- UNDP;
+- AfDB;
+- IFAD;
+- UN Careers;
+- UN-Habitat;
+- GIZ;
+- EU/TED;
+- MCC;
+- international consulting firms;
+- discovery/aggregator sites.
+
+Different sources may require different acquisition mechanisms.
+
+### AI Model Provider
+
+AI models provide semantic reasoning and generation for tasks such as:
+
+- opportunity interpretation;
+- professional relevance assessment;
+- profile matching;
+- ranking explanation;
+- conversational strategy management;
+- CV tailoring;
+- cover-letter generation.
+
+### Notification Services
+
+The system may send scheduled opportunity reports and other notifications,
+initially by email.
+
+
+## 5. High-Level Architecture
+
+The logical architecture is:
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        User Interface                      │
+    │                                                            │
+    │ Dashboard │ Opportunity Review │ Chat │ Tracking │ Profile │
+    └────────────────────────────┬───────────────────────────────┘
+                                 │
+                                 ▼
+    ┌────────────────────────────────────────────────────────────┐
+    │                    Application Layer                       │
+    │                                                            │
+    │ Search │ Review │ Strategy │ Tracking │ Personalisation    │
+    └────────────────────────────┬───────────────────────────────┘
+                                 │
+              ┌──────────────────┼──────────────────┐
+              │                  │                  │
+              ▼                  ▼                  ▼
+    ┌─────────────────┐ ┌─────────────────┐ ┌──────────────────┐
+    │ Deterministic   │ │ AI / Reasoning  │ │ Source           │
+    │ Domain Services │ │ Services        │ │ Connectors       │
+    │                 │ │                 │ │                  │
+    │ filtering       │ │ relevance       │ │ API              │
+    │ deduplication   │ │ matching        │ │ HTTP             │
+    │ lifecycle       │ │ explanation     │ │ browser          │
+    │ ranking maths   │ │ conversation    │ │ discovery        │
+    └────────┬────────┘ └────────┬────────┘ └────────┬─────────┘
+             │                   │                   │
+             └───────────────────┼───────────────────┘
+                                 │
+                                 ▼
+    ┌────────────────────────────────────────────────────────────┐
+    │                     Persistence Layer                      │
+    │                                                            │
+    │ PostgreSQL │ Documents │ Raw Source Data │ Audit/History   │
+    └────────────────────────────────────────────────────────────┘
+
+
+## 6. Opportunity Processing Pipeline
+
+A scan should conceptually execute the following pipeline:
+
+    Source
+      │
+      ▼
+    Acquire
+      │
+      ▼
+    Raw Opportunity
+      │
+      ▼
+    Normalize
+      │
+      ▼
+    Identify / Deduplicate
+      │
+      ▼
+    Detect Changes
+      │
+      ▼
+    Deterministic Eligibility Filter
+      │
+      ▼
+    AI Relevance Assessment
+      │
+      ▼
+    AI Profile Match
+      │
+      ▼
+    Ranking
+      │
+      ▼
+    Persist Assessment
+      │
+      ▼
+    Dashboard / Notification
+
+Each stage should have an explicit input and output.
+
+A failure in an AI assessment should not cause acquisition or persistence of
+the opportunity itself to fail.
+
+
+## 7. Core Domain Areas
+
+### 7.1 Sources
+
+Responsible for:
+
+- source configuration;
+- source priority;
+- acquisition method;
+- authentication metadata;
+- active/archive state;
+- scan history;
+- source health.
+
+### 7.2 Search Criteria
+
+Responsible for:
+
+- search themes;
+- primary search criteria;
+- secondary search criteria;
+- keyword groups;
+- source-specific search variations;
+- active/inactive criteria.
+
+### 7.3 Opportunities
+
+Responsible for:
+
+- normalized opportunity representation;
+- source relationships;
+- raw source information;
+- deduplication;
+- change detection;
+- lifecycle;
+- eligibility;
+- assessments;
+- rankings.
+
+### 7.4 Professional Profile
+
+Responsible for authoritative evidence describing what the user can credibly
+claim.
+
+This includes:
+
+- professional positioning;
+- professional services;
+- skills;
+- technologies;
+- domains;
+- standards;
+- languages;
+- countries;
+- organisations/clients;
+- roles;
+- assignments;
+- education;
+- training;
+- source documents.
+
+The CV and Professional Services document are authoritative source documents.
+
+Structured profile data may be extracted from these documents but must retain
+appropriate provenance.
+
+### 7.5 Search Strategy
+
+Responsible for what the user currently wants.
+
+Examples include:
+
+- preferred service areas;
+- assignment types;
+- technical focus;
+- implementation/advisory preference;
+- geography;
+- duration;
+- travel preferences;
+- remote/on-site preference;
+- emerging interests;
+- ranking preferences;
+- exclusions.
+
+Search Strategy is distinct from Professional Profile.
+
+### 7.6 Strategy History
+
+Changes to search strategy must be traceable.
+
+A strategy revision should be capable of storing:
+
+- version/revision;
+- effective date;
+- changed values;
+- previous values where appropriate;
+- reason;
+- source of change;
+- whether explicitly confirmed by the user.
+
+### 7.7 User Feedback
+
+Opportunity feedback is stored independently from AI assessments.
+
+Examples:
+
+- relevant;
+- not relevant;
+- strong match;
+- too advisory;
+- too managerial;
+- too junior;
+- too GIS-generic;
+- too remote-sensing focused;
+- similar opportunities wanted;
+- do not show similar opportunities.
+
+Feedback may later be used to propose changes to Search Strategy.
+
+### 7.8 Applications
+
+Responsible for:
+
+- decision to pursue;
+- application status;
+- application date;
+- response history;
+- follow-up;
+- remarks;
+- generated documents;
+- submitted documents.
+
+
+## 8. Professional Context Model
+
+The architecture separates professional context into two primary categories:
+
+    ┌───────────────────────────┐
+    │   Professional Evidence   │
+    │                           │
+    │ What can Jan credibly     │
+    │ claim?                    │
+    │                           │
+    │ CV                        │
+    │ Professional Services     │
+    │ Assignments               │
+    │ Skills                    │
+    │ Languages                 │
+    │ Experience                │
+    └─────────────┬─────────────┘
+                  │
+                  │ evidence
+                  ▼
+             Profile Matching
+
+
+    ┌───────────────────────────┐
+    │ Current Search Strategy   │
+    │                           │
+    │ What does Jan currently   │
+    │ want?                     │
+    │                           │
+    │ Priorities                │
+    │ Preferences               │
+    │ Constraints               │
+    │ Search themes             │
+    │ Ranking preferences       │
+    └─────────────┬─────────────┘
+                  │
+                  │ preferences
+                  ▼
+              Discovery /
+              Filtering /
+              Ranking
+
+Professional evidence must not be modified simply because search preferences
+change.
+
+
+## 9. Conversational Strategy Management
+
+The system should eventually provide a conversational interface for managing
+search strategy.
+
+Example:
+
+    User:
+    "I am seeing too many generic GIS opportunities. Give more priority
+    to LIS implementation, system integration and Geo-ICT architecture."
+
+The conversational strategy component should:
+
+1. retrieve the current search strategy;
+2. interpret the user's requested change;
+3. translate the request into structured proposed changes;
+4. explain the proposed changes;
+5. request confirmation for material persistent changes;
+6. persist the confirmed strategy revision;
+7. retain the previous strategy in history.
+
+Conceptual flow:
+
+    User
+      │
+      ▼
+    Conversation
+      │
+      ▼
+    Context / Strategy Agent
+      │
+      ▼
+    Proposed Structured Changes
+      │
+      ▼
+    User Confirmation
+      │
+      ▼
+    Persist New Strategy Revision
+
+Conversation history itself is not the authoritative store of search
+preferences.
+
+The persisted Search Strategy is the authoritative operational state.
+
+
+## 10. Source Connector Architecture
+
+Opportunity sources vary significantly.
+
+Each source should therefore be accessed through a connector abstraction.
+
+Conceptually:
+
+    SourceConnector
+
+        discover()
+        fetch()
+        normalize()
+
+Exact interfaces will be refined during implementation.
+
+Possible connector implementations include:
+
+    ApiSourceConnector
+    HttpSourceConnector
+    BrowserSourceConnector
+    FeedSourceConnector
+
+Source-specific implementations may extend one of these approaches.
+
+For example:
+
+    FAOSourceConnector
+    UNOPSSourceConnector
+    WorldBankSourceConnector
+    ADBSourceConnector
+
+The core application must not depend on source-specific page structures.
+
+
+## 11. Acquisition Strategy
+
+For each source, prefer the least complex reliable acquisition mechanism.
+
+Order of preference:
+
+1. official documented API/feed;
+2. official structured public endpoint;
+3. direct HTTP retrieval and parsing;
+4. browser automation.
+
+Browser automation should be introduced only where necessary.
+
+A connector should record enough diagnostic information to determine whether
+a scan succeeded, partially succeeded, or failed.
+
+
+## 12. Raw and Normalized Data
+
+The system should distinguish between retrieved source information and
+normalized application information.
+
+Conceptually:
+
+    Source
+      │
+      ▼
+    RawOpportunity
+      │
+      ▼
+    Normalizer
+      │
+      ▼
+    Opportunity
+
+Raw information should be retained sufficiently to:
+
+- diagnose parsing problems;
+- reprocess information;
+- verify provenance;
+- detect source changes.
+
+The exact raw-data retention strategy should balance traceability and storage
+requirements.
+
+
+## 13. Deduplication
+
+The same opportunity may appear:
+
+- repeatedly on the same source;
+- on multiple source pages;
+- on aggregator sites;
+- on both an organisation's site and a procurement portal.
+
+Deduplication should therefore use multiple signals.
+
+Potential signals include:
+
+1. authoritative source identifier;
+2. canonical URL;
+3. organisation + reference number;
+4. title + organisation + deadline;
+5. normalized textual similarity;
+6. AI-assisted comparison only where deterministic methods remain ambiguous.
+
+The authoritative/original source should be preferred where identifiable.
+
+Duplicate source references should be retained rather than discarded.
+
+
+## 14. Change Detection
+
+Known opportunities should be compared with previous observations.
+
+Material changes may include:
+
+- deadline;
+- Terms of Reference;
+- title;
+- location;
+- eligibility;
+- duration;
+- status.
+
+The system should distinguish at least:
+
+- NEW;
+- UPDATED;
+- STILL OPEN;
+- CLOSED/EXPIRED.
+
+Change history should be retained where useful.
+
+
+## 15. Filtering Architecture
+
+Filtering is performed progressively.
+
+### Stage 1: deterministic eligibility
+
+Examples:
+
+- deadline passed;
+- explicit nationality mismatch;
+- explicit local-only requirement;
+- internship;
+- volunteer assignment;
+- explicitly junior position.
+
+### Stage 2: interpreted eligibility
+
+Used where requirements are ambiguous.
+
+Example:
+
+    "National specialist preferred"
+
+may require contextual interpretation rather than automatic rejection.
+
+### Stage 3: professional relevance
+
+Determine whether the actual nature of the opportunity falls within or near
+the desired professional scope.
+
+### Stage 4: profile matching
+
+Determine how strongly professional evidence supports the requirements.
+
+The system must preserve the reason for exclusion or reduced relevance.
+
+
+## 16. AI Assessment Architecture
+
+AI assessment should return structured results.
+
+A conceptual assessment might contain:
+
+    eligibility:
+        status
+        confidence
+        explanation
+
+    professional_relevance:
+        score
+        matched_service_areas
+        explanation
+
+    profile_match:
+        domain_score
+        technical_score
+        experience_score
+        seniority_score
+        international_experience_score
+        client_donor_score
+        language_score
+
+    evidence:
+        relevant_assignments
+        relevant_skills
+        relevant_clients
+        relevant_countries
+
+    gaps:
+        ...
+
+    uncertainty:
+        ...
+
+Exact fields and scoring scales will be defined during implementation.
+
+AI responses used by application logic must be validated against a structured
+schema.
+
+
+## 17. Ranking Architecture
+
+Ranking is separate from profile matching.
+
+Profile matching asks:
+
+    "How well does Jan's documented professional evidence match this
+    opportunity?"
+
+Ranking asks:
+
+    "Given professional fit AND Jan's current search strategy, how much
+    attention should this opportunity receive?"
+
+Conceptually:
+
+    ranking =
+        profile match
+        + professional service alignment
+        + current strategic priorities
+        + assignment preference
+        + eligibility
+        + other configurable factors
+
+The ranking algorithm should be deterministic where possible after AI-derived
+assessment dimensions have been generated.
+
+Ranking weights must be configurable.
+
+The stored ranking should include an explanation of the important contributing
+factors.
+
+
+## 18. Persistence Architecture
+
+### Primary database
+
+PostgreSQL is the preferred persistent database.
+
+Reasons:
+
+- robust relational model;
+- appropriate for persistent server deployment;
+- strong support for structured and semi-structured data;
+- mature Python integration;
+- full-text search capability;
+- JSON/JSONB support;
+- future vector-search capability if required;
+- already familiar to the user.
+
+SQLite may be used for isolated tests or lightweight local development where
+appropriate, but should not define the production architecture.
+
+### Documents
+
+Documents include:
+
+- CV;
+- Professional Services document;
+- Terms of Reference;
+- generated CVs;
+- generated cover letters;
+- other application documents.
+
+Binary documents should not unnecessarily be stored directly in relational
+database columns.
+
+The initial implementation may use filesystem/object storage abstraction, with
+the exact deployment storage mechanism decided later.
+
+
+## 19. Initial Domain Entities
+
+The initial conceptual domain model includes:
+
+    ProfessionalProfile
+    ProfileDocument
+    ProfessionalService
+    Skill
+    Assignment
+
+    SearchStrategy
+    SearchStrategyRevision
+    SearchTheme
+    SearchCriterion
+    ExclusionCriterion
+
+    JobSource
+    SourceScan
+    RawOpportunity
+
+    Opportunity
+    OpportunitySource
+    OpportunityObservation
+    OpportunityChange
+
+    EligibilityAssessment
+    RelevanceAssessment
+    ProfileMatchAssessment
+    Ranking
+
+    OpportunityFeedback
+
+    Application
+    ApplicationEvent
+    GeneratedDocument
+
+These are conceptual entities.
+
+They do not imply that every entity must immediately become a separate
+database table.
+
+
+## 20. AI Provider Abstraction
+
+Application/domain logic should not directly depend on a specific LLM provider.
+
+Use an application-level AI interface.
+
+Conceptually:
+
+    AIService
+
+        assess_relevance(...)
+        match_profile(...)
+        interpret_strategy_change(...)
+        generate_cover_letter(...)
+        tailor_cv(...)
+
+Provider-specific implementations sit behind this interface.
+
+This allows model choice to evolve independently from the core domain model.
+
+The initial model/provider will be selected during implementation based on:
+
+- structured-output capability;
+- reasoning quality;
+- context capacity;
+- cost;
+- API availability;
+- reliability.
+
+
+## 21. AI Context Construction
+
+Do not send the complete database or all historical information to the AI
+model for every assessment.
+
+Construct task-specific context.
+
+For profile matching, relevant context may include:
+
+- opportunity requirements;
+- professional-service definitions;
+- relevant profile attributes;
+- selected relevant assignments;
+- languages;
+- current search strategy.
+
+Context construction should be explicit and testable.
+
+Future retrieval mechanisms may be introduced if required.
+
+Vector search or a dedicated vector database is not required initially.
+
+
+## 22. Application Backend
+
+The application backend should be implemented in Python.
+
+Reasons include:
+
+- strong AI ecosystem;
+- strong HTTP/parsing/browser automation ecosystem;
+- strong PostgreSQL support;
+- document-processing ecosystem;
+- existing user expertise;
+- suitability for scheduled processing and data analysis.
+
+The exact Python web/application framework should be selected before
+implementation begins.
+
+The initial architecture does not require separate backend services.
+
+
+## 23. User Interface
+
+The initial UI should prioritise functionality over visual complexity.
+
+Required areas eventually include:
+
+- dashboard;
+- opportunity list;
+- opportunity detail;
+- filtering/sorting;
+- source management;
+- search criteria management;
+- professional profile;
+- current search strategy;
+- strategy history;
+- feedback;
+- application tracking;
+- conversational strategy interface.
+
+A lightweight Python UI framework is appropriate for the initial version.
+
+Streamlit is a strong candidate for the Bootcamp implementation because:
+
+- development is rapid;
+- it integrates naturally with Python;
+- it supports tables and dashboards well;
+- it is adequate for a personal single-user application.
+
+The UI architecture should nevertheless avoid placing core business logic
+inside UI components.
+
+
+## 24. Scheduling
+
+The system must eventually run independently of the user's local computer.
+
+Scheduled scans should be possible, for example:
+
+    Monday   08:00 Europe/Amsterdam
+    Thursday 08:00 Europe/Amsterdam
+
+Scheduling must invoke application services rather than UI code.
+
+The scheduler should support:
+
+- scan execution;
+- failure logging;
+- result aggregation;
+- notification triggering.
+
+The exact scheduling mechanism depends on deployment architecture.
+
+
+## 25. Notifications
+
+The first notification channel should be email.
+
+A scan report may contain:
+
+- new high-ranking opportunities;
+- materially updated opportunities;
+- still-open high-priority opportunities;
+- failed source scans;
+- link to the dashboard.
+
+Notification generation must use persisted scan results rather than repeating
+the search independently.
+
+
+## 26. Export
+
+Opportunity lists should support export to XLSX.
+
+Export should operate on normalized persisted opportunity data.
+
+Useful export fields may include:
+
+- title;
+- organisation;
+- country;
+- deadline;
+- source;
+- URL;
+- search theme;
+- eligibility;
+- relevance;
+- profile-match score;
+- ranking;
+- lifecycle status;
+- application status;
+- remarks.
+
+
+## 27. Application Tracking
+
+Application tracking remains user-controlled.
+
+The application domain should support status values such as:
+
+    considering
+    selected
+    preparing
+    applied
+    shortlisted
+    interview
+    rejected
+    withdrawn
+    awarded
+    closed
+
+The exact status model will be refined during implementation.
+
+Application events should allow chronological history to be retained.
+
+
+## 28. Personalisation Architecture
+
+Personalisation is downstream of human opportunity selection.
+
+Conceptually:
+
+    Selected Opportunity
+             +
+    Professional Evidence
+             +
+    Source CV
+             │
+             ▼
+      Personalisation Service
+             │
+       ┌─────┴─────┐
+       ▼           ▼
+    Tailored CV   Cover Letter
+
+Generated content must remain grounded in professional evidence.
+
+The user must review final generated documents before external submission.
+
+
+## 29. Security Architecture
+
+Secrets must be external to source control.
+
+Examples:
+
+- database credentials;
+- AI API keys;
+- SMTP/email credentials;
+- source credentials.
+
+Use environment variables or an appropriate deployment secrets mechanism.
+
+The repository may contain:
+
+    .env.example
+
+but never:
+
+    .env
+
+with actual credentials.
+
+Authenticated external sources should use separate credential configuration
+from ordinary source metadata.
+
+
+## 30. Deployment Architecture
+
+The production system must operate independently of the user's local laptop.
+
+The preferred initial deployment model is a small Linux virtual server
+running containerised application components.
+
+Conceptually:
+
+    Internet
+       |
+       v
+    Reverse Proxy / HTTPS
+       |
+       v
+    +--------------------------------+
+    | Linux VPS                      |
+    |                                |
+    | Docker                         |
+    |                                |
+    | +----------------------------+ |
+    | | JobHunter Web/UI           | |
+    | +----------------------------+ |
+    |                                |
+    | +----------------------------+ |
+    | | JobHunter Worker           | |
+    | | scheduled scans            | |
+    | | source acquisition         | |
+    | | AI processing              | |
+    | +----------------------------+ |
+    |                                |
+    | +----------------------------+ |
+    | | PostgreSQL                 | |
+    | +----------------------------+ |
+    |                                |
+    | Persistent document storage   |
+    +--------------------------------+
+
+The application should be accessible through HTTPS, potentially using a
+dedicated subdomain such as:
+
+    jobhunter.jvbgis.com
+
+Docker is the preferred packaging and deployment mechanism.
+
+Docker Compose is appropriate for the initial single-server deployment.
+
+The architecture should not depend on a specific VPS/cloud provider.
+
+A provider such as Hetzner Cloud is a suitable initial deployment candidate,
+but provider selection remains a deployment decision rather than an
+application architecture dependency.
+
+The architecture should permit later migration to managed database,
+object-storage, application-platform, or cloud services if operational
+requirements justify it.
+
+
+## 31. Development and Deployment Flow
+
+The expected development and deployment flow is:
+
+    C:\DEV\job-hunting
+            |
+            | git push
+            v
+          GitHub
+            |
+            | deploy
+            v
+       Linux VPS / Docker
+       jobhunter.jvbgis.com
+
+Development takes place locally in the repository using Cursor.
+
+The application and PostgreSQL should be capable of running locally using
+Docker Compose where practical.
+
+Continuous integration and continuous deployment are not required for the
+initial vertical slice. They may be introduced later once the application is
+stable enough to benefit from automated testing and deployment.
+
+
+## 32. Repository Structure
+
+Initial target structure:
+
+    job-hunting/
+    │
+    ├── AGENTS.md
+    │
+    ├── README.md
+    │
+    ├── src/
+    │   └── jobhunter/
+    │       ├── domain/
+    │       ├── application/
+    │       ├── infrastructure/
+    │       ├── connectors/
+    │       ├── ai/
+    │       └── ui/
+    │
+    ├── tests/
+    │
+    ├── docs/
+    │   └── architecture.md
+    │   └── implementation-plan.md
+    │
+    ├── data/
+    │   └── fixtures/
+    │
+    ├── scripts/
+    │
+    ├── .env.example
+    ├── .gitignore
+    └── pyproject.toml
+
+Responsibilities:
+
+### domain/
+
+Core domain models and rules.
+
+Must not depend on UI, external websites, or concrete AI providers.
+
+### application/
+
+Use cases and orchestration of domain behaviour.
+
+Examples:
+
+- run scan;
+- process opportunity;
+- assess opportunity;
+- update search strategy;
+- record feedback.
+
+### infrastructure/
+
+Persistence, configuration, document storage, scheduling, email, and other
+technical infrastructure.
+
+### connectors/
+
+External opportunity-source integrations.
+
+### ai/
+
+AI interfaces, prompt construction, structured schemas, and provider adapters.
+
+### ui/
+
+User-interface code.
+
+Business rules must not be implemented exclusively in this layer.
+
+
+## 33. Dependency Direction
+
+Preferred dependency direction:
+
+    UI
+     │
+     ▼
+    Application
+     │
+     ▼
+    Domain
+
+Infrastructure implements interfaces required by the application/domain.
+
+External systems should therefore sit at the edges:
+
+    External Sources
+          │
+       Connector
+          │
+          ▼
+       Application
+          │
+          ▼
+        Domain
+          ▲
+          │
+    Persistence Adapter
+          │
+       PostgreSQL
+
+The core domain should remain testable without live external services.
+
+
+## 34. Error Handling
+
+Failures should be isolated where practical.
+
+For example:
+
+- failure of one source must not prevent other sources from scanning;
+- failure of AI assessment must not lose the acquired opportunity;
+- notification failure must not invalidate scan results;
+- document-generation failure must not change application status.
+
+Errors should be logged with sufficient context for diagnosis.
+
+
+## 35. Testing Architecture
+
+Testing should include:
+
+### Unit tests
+
+For:
+
+- domain rules;
+- filters;
+- normalization;
+- ranking;
+- lifecycle;
+- change detection.
+
+### Connector tests
+
+Use stored representative source responses where practical.
+
+Avoid depending exclusively on live websites.
+
+### Persistence tests
+
+Verify repository/database behaviour.
+
+### AI contract tests
+
+Verify:
+
+- context construction;
+- structured request/response schemas;
+- handling of invalid AI output;
+- provider abstraction.
+
+Tests should not require paid AI calls unless explicitly designated as
+integration tests.
+
+
+## 36. Observability
+
+The system should record operational information for each scan.
+
+Examples:
+
+    scan id
+    start time
+    end time
+    source
+    source status
+    records retrieved
+    new opportunities
+    updated opportunities
+    excluded opportunities
+    assessment failures
+    errors
+
+This information should eventually be visible through the dashboard.
+
+
+## 37. Initial Technology Direction
+
+The initial preferred technology direction is:
+
+| Concern | Initial direction |
+|---|---|
+| Language | Python |
+| Architecture | Modular monolith |
+| Database | PostgreSQL |
+| ORM / persistence | To be selected |
+| UI | Streamlit candidate |
+| AI | Provider abstraction; provider/model TBD |
+| HTTP acquisition | Python HTTP client |
+| HTML parsing | Python parsing library |
+| Browser automation | Playwright candidate, only where required |
+| Scheduling | Deployment-dependent |
+| Documents | Files/object-storage abstraction |
+| XLSX | Python XLSX library |
+| Testing | pytest |
+| Packaging | Docker / Docker Compose |
+| Source control | Git / GitHub |
+| Deployment | Linux VPS; Hetzner Cloud suitable candidate |
+
+Technology candidates are not dependencies until accepted and introduced by
+an implementation phase.
+
+
+## 38. Deferred Decisions
+
+The following decisions are deliberately deferred:
+
+- concrete Python web/backend framework;
+- ORM;
+- exact Streamlit architecture;
+- AI provider and models;
+- embedding model;
+- whether vector search is required;
+- browser automation implementation;
+- scheduler;
+- email provider;
+- object/document storage;
+- production VPS/cloud provider;
+- authentication model;
+- backup strategy;
+- CI/CD mechanism.
+
+These decisions should be made when their implementation phase approaches,
+rather than introducing infrastructure prematurely.
+
+
+## 39. Initial Vertical Slice
+
+The first useful end-to-end implementation should be deliberately small.
+
+Target:
+
+    One Opportunity Source
+              │
+              ▼
+            Fetch
+              │
+              ▼
+           Normalize
+              │
+              ▼
+          PostgreSQL
+              │
+              ▼
+           Filter
+              │
+              ▼
+         AI Assessment
+              │
+              ▼
+            Rank
+              │
+              ▼
+       Minimal Dashboard
+
+The first vertical slice should demonstrate the architectural boundaries before
+additional sources or advanced functionality are introduced.
+
+It should use a source that can be accessed reliably without complicated
+authentication.
+
+
+## 40. Evolution
+
+The architecture is expected to evolve.
+
+Changes should be driven by demonstrated requirements discovered during
+implementation and actual use.
+
+Significant architectural changes should:
+
+1. identify the problem;
+2. describe the proposed change;
+3. explain the trade-off;
+4. update this document;
+5. then be implemented.
+
+Avoid redesigning the architecture merely because another technology or
+framework becomes fashionable.
