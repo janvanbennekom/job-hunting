@@ -249,6 +249,27 @@ Responsible for:
 - assessments;
 - rankings.
 
+#### Opportunity Scope
+
+JobHunter targets professional opportunities that can be undertaken by the
+user as a single consultant.
+
+The contractual arrangement may be:
+
+- directly with the user as an individual consultant; or
+- through JVB GIS Consulting as the user's one-person consulting firm.
+
+The system does not target general consulting-firm procurements requiring
+multi-person teams, consortium arrangements, or organisational delivery
+capacity beyond a single consultant.
+
+A procurement or tender notice may still be a relevant source when the
+underlying assignment is for a single consultant.
+
+This distinction should be considered during opportunity normalization,
+eligibility assessment, and filtering.
+
+
 ### 7.4 Professional Profile
 
 Responsible for authoritative evidence describing what the user can credibly

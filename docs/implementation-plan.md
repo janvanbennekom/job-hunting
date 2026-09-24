@@ -313,7 +313,11 @@ Select and configure:
 
 Implement persistence for the initial Phase 1 entities.
 
-Create local development support using Docker Compose where appropriate.
+Use the existing local PostgreSQL development database where available.
+
+Docker Compose may be introduced later where useful for reproducible
+development or deployment, but is not required for the initial local
+development environment.
 
 ## Required capabilities
 
