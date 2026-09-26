@@ -129,6 +129,16 @@ from jobhunter.infrastructure.logging_config import configure_logging
 configure_logging()
 ```
 
+### Opportunity eligibility (Phase 7)
+
+Evaluate persisted opportunities against the active search strategy revision:
+
+```powershell
+python scripts/evaluate_opportunity_eligibility.py --source-id fao-external-jobs
+```
+
+FAO scans (`--apply`) run Phase 7 automatically after Phase 5 processing.
+
 ### FAO Jobs scan (Phase 6)
 
 Acquire vacancies from [FAO Jobs](https://jobs.fao.org/careersection/fao_external/jobsearch.ftl)

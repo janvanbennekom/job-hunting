@@ -708,6 +708,16 @@ Determine how strongly professional evidence supports the requirements.
 
 The system must preserve the reason for exclusion or reduced relevance.
 
+**Phase 7 (deterministic eligibility):** evaluates normalized opportunities
+against the active `SearchStrategyRevision` (exclusions and `HARD_CONSTRAINT`
+criteria only—not themes or `PREFERENCE` criteria). Rule outcomes use
+TRUE/FALSE/UNKNOWN tri-state semantics where appropriate. Aggregate
+`EligibilityStatus` meanings: `INELIGIBLE` (clear fail or EXPIRED/CLOSED
+lifecycle), `ELIGIBLE` (may continue— not a quality match), `REVIEW_REQUIRED`
+(suggestive but inconclusive evidence), `UNKNOWN` (insufficient information
+without specific concern). `ProfessionalProfile` is not used in Phase 7.
+Interpreted eligibility and profile matching remain Phase 8+.
+
 
 ## 16. AI Assessment Architecture
 

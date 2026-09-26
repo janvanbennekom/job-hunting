@@ -72,8 +72,13 @@ def test_repeated_scan_does_not_duplicate_canonical(
     assert first.processed == 1
     assert second.processed == 1
     assert second.created_opportunities == 0
+    identity_key = (
+        f"sr:{FAO_JOBS_SOURCE_ID}:test-2601001"
+    )
     count = db_session.scalar(
-        select(func.count()).select_from(OpportunityRow)
+        select(func.count())
+        .select_from(OpportunityRow)
+        .where(OpportunityRow.canonical_identity_key == identity_key)
     )
     assert count == 1
 

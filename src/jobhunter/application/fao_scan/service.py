@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
+from jobhunter.application.eligibility import EligibilityFilterService
 from jobhunter.application.opportunity_processing import OpportunityProcessingService
 from jobhunter.connectors.fao.connector import FaoJobsConnector
 from jobhunter.connectors.fao.identity import (
@@ -58,6 +59,7 @@ class FaoScanService:
         self._processor = OpportunityProcessingService(
             session, FaoOpportunityNormalizer()
         )
+        self._eligibility = EligibilityFilterService(session)
 
     def ensure_job_source(self) -> JobSource:
         existing = self._sources.get_by_id(FAO_JOBS_SOURCE_ID)
@@ -112,6 +114,7 @@ class FaoScanService:
             for raw in mapping.raw_opportunities:
                 try:
                     result = self._processor.process(raw)
+                    self._eligibility.evaluate_and_persist(result.opportunity.id)
                     processed += 1
                     if result.created_opportunity:
                         created += 1

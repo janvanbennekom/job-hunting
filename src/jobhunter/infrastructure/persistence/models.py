@@ -221,3 +221,48 @@ class SourceScanRow(Base):
     error_summary: Mapped[str | None] = mapped_column(Text())
 
     source: Mapped[JobSourceRow] = relationship(back_populates="source_scans")
+
+
+class EligibilityDecisionRow(Base):
+    __tablename__ = "eligibility_decisions"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    opportunity_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunities.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    search_strategy_revision_id: Mapped[str] = mapped_column(
+        ForeignKey("search_strategy_revisions.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    evaluated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+
+    rule_results: Mapped[list[EligibilityRuleResultRow]] = relationship(
+        back_populates="decision"
+    )
+
+
+class EligibilityRuleResultRow(Base):
+    __tablename__ = "eligibility_rule_results"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    decision_id: Mapped[str] = mapped_column(
+        ForeignKey("eligibility_decisions.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    rule_kind: Mapped[str] = mapped_column(String(32), nullable=False)
+    rule_code: Mapped[str] = mapped_column(String(128), nullable=False)
+    outcome: Mapped[str] = mapped_column(String(16), nullable=False)
+    suggests_review: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    summary: Mapped[str | None] = mapped_column(Text())
+    evidence: Mapped[str | None] = mapped_column(Text())
+
+    decision: Mapped[EligibilityDecisionRow] = relationship(
+        back_populates="rule_results"
+    )
