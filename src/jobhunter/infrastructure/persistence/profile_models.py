@@ -144,6 +144,25 @@ class SkillRow(Base):
     )
 
 
+class CountryExperienceRow(Base):
+    __tablename__ = "country_experiences"
+    __table_args__ = (
+        UniqueConstraint(
+            "source_document_id",
+            "country",
+            name="uq_country_experiences_source_document_country",
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    country: Mapped[str] = mapped_column(String(255), nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text())
+    source_document_id: Mapped[str | None] = mapped_column(
+        ForeignKey("profile_documents.id", ondelete="RESTRICT"),
+        nullable=True,
+    )
+
+
 class LanguageCapabilityRow(Base):
     __tablename__ = "language_capabilities"
 

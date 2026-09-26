@@ -225,6 +225,46 @@ def test_assignment_capability_links_and_uniqueness(db_session: Session) -> None
     db_session.rollback()
 
 
+def test_country_experience_round_trip_and_unique_per_source(
+    db_session: Session,
+) -> None:
+    from jobhunter.domain import CountryExperience, ProfileDocument, ProfileDocumentType
+    from jobhunter.infrastructure.persistence.profile_repositories import (
+        CountryExperienceRepository,
+        ProfileDocumentRepository,
+    )
+
+    docs = ProfileDocumentRepository(db_session)
+    countries = CountryExperienceRepository(db_session)
+    doc = docs.save(
+        ProfileDocument(
+            id="pdoc-countries",
+            document_type=ProfileDocumentType.CV,
+            title="Synthetic CV",
+        )
+    )
+    entry = countries.save(
+        CountryExperience(
+            id="ce-ghana",
+            country="Ghana",
+            source_document_id=doc.id,
+        )
+    )
+    assert countries.get_by_id("ce-ghana") == entry
+    listed = countries.list_by_source_document_id(doc.id)
+    assert len(listed) == 1
+
+    duplicate = CountryExperience(
+        id="ce-ghana-dup",
+        country="Ghana",
+        source_document_id=doc.id,
+    )
+    with pytest.raises(IntegrityError):
+        countries.save(duplicate)
+        db_session.flush()
+    db_session.rollback()
+
+
 def test_skill_and_language_round_trip_nullable_provenance(
     db_session: Session,
 ) -> None:

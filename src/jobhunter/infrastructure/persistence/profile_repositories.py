@@ -9,6 +9,7 @@ from jobhunter.domain import (
     Assignment,
     AssignmentCapability,
     Capability,
+    CountryExperience,
     LanguageCapability,
     ProfessionalProfile,
     ProfessionalService,
@@ -20,6 +21,7 @@ from jobhunter.infrastructure.persistence.profile_models import (
     AssignmentCapabilityRow,
     AssignmentRow,
     CapabilityRow,
+    CountryExperienceRow,
     LanguageCapabilityRow,
     ProfessionalProfileRow,
     ProfessionalServiceRow,
@@ -181,6 +183,34 @@ class SkillRepository:
         if row is None:
             return None
         return mappers.skill_to_domain(row)
+
+
+class CountryExperienceRepository:
+    def __init__(self, session: Session) -> None:
+        self._session = session
+
+    def save(self, entity: CountryExperience) -> CountryExperience:
+        row = mappers.country_experience_to_row(entity)
+        merged = self._session.merge(row)
+        self._session.flush()
+        return mappers.country_experience_to_domain(merged)
+
+    def get_by_id(self, entity_id: str) -> CountryExperience | None:
+        row = self._session.get(CountryExperienceRow, entity_id)
+        if row is None:
+            return None
+        return mappers.country_experience_to_domain(row)
+
+    def list_by_source_document_id(
+        self, source_document_id: str
+    ) -> list[CountryExperience]:
+        stmt = (
+            select(CountryExperienceRow)
+            .where(CountryExperienceRow.source_document_id == source_document_id)
+            .order_by(CountryExperienceRow.country)
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.country_experience_to_domain(row) for row in rows]
 
 
 class LanguageCapabilityRepository:

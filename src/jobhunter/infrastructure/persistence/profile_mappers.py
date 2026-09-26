@@ -6,6 +6,7 @@ from jobhunter.domain import (
     Assignment,
     AssignmentCapability,
     Capability,
+    CountryExperience,
     LanguageCapability,
     ProfessionalProfile,
     ProfessionalService,
@@ -17,6 +18,7 @@ from jobhunter.infrastructure.persistence.profile_models import (
     AssignmentCapabilityRow,
     AssignmentRow,
     CapabilityRow,
+    CountryExperienceRow,
     LanguageCapabilityRow,
     ProfessionalProfileRow,
     ProfessionalServiceRow,
@@ -189,6 +191,24 @@ def skill_to_domain(row: SkillRow) -> Skill:
         name=row.name,
         category=row.category,
         description=row.description,
+        source_document_id=row.source_document_id,
+    )
+
+
+def country_experience_to_row(entity: CountryExperience) -> CountryExperienceRow:
+    return CountryExperienceRow(
+        id=entity.id,
+        country=entity.country,
+        notes=entity.notes,
+        source_document_id=entity.source_document_id,
+    )
+
+
+def country_experience_to_domain(row: CountryExperienceRow) -> CountryExperience:
+    return CountryExperience(
+        id=row.id,
+        country=row.country,
+        notes=row.notes,
         source_document_id=row.source_document_id,
     )
 

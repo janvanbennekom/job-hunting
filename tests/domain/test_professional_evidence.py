@@ -7,6 +7,7 @@ from jobhunter.domain import (
     AssignmentCapability,
     Capability,
     CapabilityCategory,
+    CountryExperience,
     LanguageCapability,
     ProfessionalProfile,
     ProfessionalService,
@@ -215,6 +216,25 @@ def test_professional_service_is_not_capability() -> None:
     )
     assert service.name != capability.name
     assert not hasattr(service, "code")
+
+
+def test_country_experience_provenance_and_serialization() -> None:
+    doc_id = "doc-cv-1"
+    entry = CountryExperience(
+        id="country-1",
+        country="Ghana",
+        notes="Listed in CV countries section",
+        source_document_id=doc_id,
+    )
+    assert entry.country == "Ghana"
+    assert entry.source_document_id == doc_id
+    restored = CountryExperience.from_mapping(entry.to_mapping())
+    assert restored == entry
+
+
+def test_country_experience_rejects_empty_country() -> None:
+    with pytest.raises(ValueError, match="country"):
+        CountryExperience(country="  ")
 
 
 def test_capability_is_not_skill() -> None:

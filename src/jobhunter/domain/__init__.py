@@ -3,6 +3,7 @@
 from jobhunter.domain.assignment import Assignment
 from jobhunter.domain.assignment_capability import AssignmentCapability
 from jobhunter.domain.capability import Capability
+from jobhunter.domain.country_experience import CountryExperience
 from jobhunter.domain.enums import (
     EligibilityStatus,
     LifecycleStatus,
@@ -25,6 +26,7 @@ __all__ = [
     "AssignmentCapability",
     "Capability",
     "CapabilityCategory",
+    "CountryExperience",
     "EligibilityStatus",
     "JobSource",
     "LanguageCapability",
