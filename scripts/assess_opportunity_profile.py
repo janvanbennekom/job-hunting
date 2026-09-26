@@ -48,6 +48,12 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Also assess INELIGIBLE opportunities",
     )
+    parser.add_argument(
+        "--provider",
+        choices=("openai", "fake"),
+        default="openai",
+        help="Assessment provider (default: openai). Use fake only for explicit dev/test.",
+    )
     args = parser.parse_args(argv)
 
     root = Path(__file__).resolve().parents[1]
@@ -56,9 +62,9 @@ def main(argv: list[str] | None = None) -> int:
 
     from sqlalchemy import select
 
-    from jobhunter.ai.factory import create_assessment_model, create_fake_assessment_model
+    from jobhunter.ai.factory import resolve_assessment_model
     from jobhunter.application.profile_assessment import OpportunityProfileAssessmentService
-    from jobhunter.infrastructure.config import get_settings
+    from jobhunter.infrastructure.config import Settings, get_settings
     from jobhunter.infrastructure.persistence.database import (
         create_engine_from_settings,
         create_session_factory,
@@ -67,25 +73,19 @@ def main(argv: list[str] | None = None) -> int:
     from jobhunter.infrastructure.persistence.models import OpportunitySourceRow
 
     settings = get_settings()
+
+    try:
+        model = resolve_assessment_model(settings, args.provider)
+    except (RuntimeError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+
     settings.require_database_url()
-
-    use_fake = not (settings.openai_api_key and settings.openai_model)
-    if use_fake and not args.dry_run:
-        print(
-            "OpenAI is not configured; using FakeAssessmentModel "
-            "(set JOBHUNTER_OPENAI_API_KEY and JOBHUNTER_OPENAI_MODEL for live calls)."
-        )
-
     engine = create_engine_from_settings()
     session_factory = create_session_factory(engine)
 
     try:
         with session_scope(session_factory) as session:
-            model = (
-                create_fake_assessment_model()
-                if use_fake
-                else create_assessment_model(settings)
-            )
             service = OpportunityProfileAssessmentService(session, model)
             opportunity_ids: list[str] = []
             if args.opportunity_id:
