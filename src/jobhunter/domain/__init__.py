@@ -18,8 +18,21 @@ from jobhunter.domain.profile_document import ProfileDocument
 from jobhunter.domain.profile_enums import CapabilityCategory, ProfileDocumentType
 from jobhunter.domain.professional_profile import ProfessionalProfile
 from jobhunter.domain.professional_service import ProfessionalService
+from jobhunter.domain.exclusion_criterion import ExclusionCriterion
 from jobhunter.domain.raw_opportunity import RawOpportunity
+from jobhunter.domain.search_strategy import SearchStrategy
+from jobhunter.domain.search_strategy_revision import SearchStrategyRevision
+from jobhunter.domain.search_theme import SearchTheme
 from jobhunter.domain.skill import Skill
+from jobhunter.domain.strategy_criterion import StrategyCriterion
+from jobhunter.domain.strategy_enums import (
+    ExclusionCode,
+    PreferenceStrength,
+    RevisionChangeSource,
+    RevisionStatus,
+    StrategyCriterionCategory,
+    StrategyParameterCode,
+)
 
 __all__ = [
     "Assignment",
@@ -28,17 +41,28 @@ __all__ = [
     "CapabilityCategory",
     "CountryExperience",
     "EligibilityStatus",
+    "ExclusionCode",
+    "ExclusionCriterion",
     "JobSource",
     "LanguageCapability",
     "LifecycleStatus",
     "Opportunity",
     "OpportunitySource",
     "OpportunityType",
+    "PreferenceStrength",
     "ProfessionalProfile",
     "ProfessionalService",
     "ProfileDocument",
     "ProfileDocumentType",
     "RawOpportunity",
+    "RevisionChangeSource",
+    "RevisionStatus",
+    "SearchStrategy",
+    "SearchStrategyRevision",
+    "SearchTheme",
     "Skill",
+    "StrategyCriterion",
+    "StrategyCriterionCategory",
+    "StrategyParameterCode",
     "new_domain_id",
 ]
