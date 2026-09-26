@@ -992,6 +992,13 @@ queue, detail, human review). Read paths do not persist rankings or
 assessments. Human review uses append-only `OpportunityReviewRecord` rows,
 separate from eligibility, assessment, and ranking outputs.
 
+Phase 11 adds conversational search strategy management via
+`jobhunter.application.strategy_conversation` and a Streamlit strategy page.
+Natural-language instructions are interpreted through a `StrategyChangeModel`
+port (OpenAI or explicit fake for tests). Structured mutations are validated
+and shown as a diff; only user confirmation activates a new immutable
+`SearchStrategyRevision` with `RevisionChangeSource.CONVERSATION_CONFIRMED`.
+
 
 ## 24. Scheduling
 
@@ -1173,6 +1180,18 @@ dedicated subdomain such as:
 Docker is the preferred packaging and deployment mechanism.
 
 Docker Compose is appropriate for the initial single-server deployment.
+
+JobHunter is intended to support two cooperating runtime modes on shared
+PostgreSQL persistence:
+
+1. an interactive web process (Streamlit dashboard, review, strategy
+   management); and
+2. background worker processes for scheduled source acquisition and downstream
+   processing (normalize, eligibility, assessment, ranking).
+
+Scheduled scans and pipeline execution must not depend on an active Streamlit
+session. A future scheduler/worker is expected to invoke the same application
+services used by CLI scripts today.
 
 The architecture should not depend on a specific VPS/cloud provider.
 

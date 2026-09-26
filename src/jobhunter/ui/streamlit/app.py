@@ -14,6 +14,7 @@ st.set_page_config(
 home = st.Page("pages/home.py", title="Home", icon="🏠", default=True)
 opportunities = st.Page("pages/opportunities.py", title="Opportunities", icon="📋")
 detail = st.Page("pages/opportunity_detail.py", title="Opportunity detail", icon="🔎")
+strategy = st.Page("pages/strategy.py", title="Search strategy", icon="🎯")
 
-pg = st.navigation([home, opportunities, detail])
+pg = st.navigation([home, opportunities, detail, strategy])
 pg.run()

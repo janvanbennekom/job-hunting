@@ -177,6 +177,14 @@ streamlit run src/jobhunter/ui/streamlit/app.py
 Production views exclude `model_provider=fake` assessments and fake-derived
 rankings unless you enable the sidebar development toggle.
 
+### Search strategy (Phase 11)
+
+Evolve the active search strategy through natural language on the **Search
+strategy** Streamlit page. Proposals require explicit confirmation before a new
+immutable revision is activated. OpenAI requires `JOBHUNTER_OPENAI_API_KEY` and
+`JOBHUNTER_OPENAI_MODEL`; choose the **fake** provider in the UI for local
+development only.
+
 ### FAO Jobs scan (Phase 6)
 
 Acquire vacancies from [FAO Jobs](https://jobs.fao.org/careersection/fao_external/jobsearch.ftl)

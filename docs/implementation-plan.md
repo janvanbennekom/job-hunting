@@ -1255,11 +1255,11 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–10 are complete for the Bootcamp MVP vertical slice.
+Phases 0–11 are complete for the Bootcamp MVP strategy-management slice.
 
 The current implementation step is:
 
-    Phase 11 — Conversational Strategy Management
+    Phase 12 — Multi-Source Expansion
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.

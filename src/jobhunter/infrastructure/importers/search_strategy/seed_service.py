@@ -27,6 +27,9 @@ from jobhunter.infrastructure.importers.search_strategy.validation import valida
 from jobhunter.infrastructure.search_strategy.activation_service import (
     SearchStrategyActivationService,
 )
+from jobhunter.infrastructure.search_strategy.bundle_rebind import (
+    finalize_bundle_for_strategy,
+)
 from jobhunter.infrastructure.search_strategy.identity import (
     exclusion_criterion_id,
     revision_id_for_content,
@@ -133,51 +136,5 @@ class SearchStrategySeeder:
             criteria=tuple(criteria),
             exclusions=tuple(exclusions),
         )
-        content_hash = compute_revision_content_hash(partial)
-        final_revision_id = revision_id_for_content(strategy_id, content_hash)
-        return self._rebind_bundle(partial, final_revision_id)
-
-    def _rebind_bundle(
-        self, bundle: RevisionContentBundle, revision_id: str
-    ) -> RevisionContentBundle:
-        themes = tuple(
-            SearchTheme(
-                id=theme_id(revision_id, t.theme_key),
-                revision_id=revision_id,
-                theme_key=t.theme_key,
-                label=t.label,
-                strength=t.strength,
-                is_active=t.is_active,
-                notes=t.notes,
-                sort_order=t.sort_order,
-            )
-            for t in bundle.themes
-        )
-        criteria = tuple(
-            StrategyCriterion(
-                id=strategy_criterion_id(revision_id, c.category.value, c.code.value),
-                revision_id=revision_id,
-                category=c.category,
-                code=c.code,
-                value=c.value,
-                strength=c.strength,
-                is_active=c.is_active,
-                notes=c.notes,
-                sort_order=c.sort_order,
-            )
-            for c in bundle.criteria
-        )
-        exclusions = tuple(
-            ExclusionCriterion(
-                id=exclusion_criterion_id(revision_id, e.exclusion_code.value),
-                revision_id=revision_id,
-                exclusion_code=e.exclusion_code,
-                parameters=e.parameters,
-                is_active=e.is_active,
-                notes=e.notes,
-            )
-            for e in bundle.exclusions
-        )
-        return RevisionContentBundle(
-            themes=themes, criteria=criteria, exclusions=exclusions
-        )
+        rebound, _ = finalize_bundle_for_strategy(strategy_id, partial)
+        return rebound
