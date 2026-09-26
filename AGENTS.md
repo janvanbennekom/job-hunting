@@ -879,7 +879,55 @@ A bounded implementation task is complete when:
 - relevant documentation is updated;
 - the implementation does not silently include unrelated future work.
 
+### Phase-by-Phase Implementation Autonomy
 
+The project is normally implemented one complete phase at a time.
+
+Once a phase has been approved for implementation, the implementation agent
+should complete the full phase without requesting approval for intermediate
+implementation steps.
+
+The agent may autonomously decide:
+
+- module and file organization consistent with the architecture;
+- implementation details;
+- repository and mapper structure;
+- database indexes and routine constraints;
+- test organization;
+- non-destructive migration mechanics;
+- minor refactoring and corrections required to complete the accepted phase;
+- documentation updates needed to reflect the completed implementation.
+
+The agent must stop and request review when implementation would require:
+
+- changing an accepted architectural decision;
+- changing the meaning of an existing domain concept;
+- introducing a significant new domain concept;
+- making a destructive or risky data migration;
+- introducing a major new dependency or technology;
+- resolving a material business-rule ambiguity;
+- expanding scope into a later phase;
+- weakening provenance, auditability, revision history, data integrity, or security.
+
+Within an approved phase, the normal workflow is:
+
+1. inspect the existing implementation and governing documentation;
+2. determine the detailed implementation design;
+3. implement the complete phase;
+4. run unit and integration tests;
+5. apply and verify migrations where applicable;
+6. verify existing functionality remains intact;
+7. update documentation where required;
+8. review Git scope;
+9. commit the completed phase;
+10. provide a concise completion report.
+
+Intermediate approval is not required unless one of the stop conditions above
+is encountered.
+
+The implementation agent should avoid unnecessary over-engineering. Prefer
+the simplest implementation that satisfies the accepted architecture,
+current phase requirements, testability, and Bootcamp MVP objectives.
 
 ## 30. Agent Response After Implementation
 
