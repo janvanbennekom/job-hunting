@@ -5,9 +5,12 @@ from __future__ import annotations
 from jobhunter.domain import (
     JobSource,
     Opportunity,
+    OpportunityChange,
+    OpportunityObservation,
     OpportunitySource,
     RawOpportunity,
 )
+from jobhunter.domain.opportunity_enums import MaterialChangeField
 from jobhunter.domain.enums import (
     EligibilityStatus,
     LifecycleStatus,
@@ -15,6 +18,8 @@ from jobhunter.domain.enums import (
 )
 from jobhunter.infrastructure.persistence.models import (
     JobSourceRow,
+    OpportunityChangeRow,
+    OpportunityObservationRow,
     OpportunityRow,
     OpportunitySourceRow,
     RawOpportunityRow,
@@ -86,6 +91,8 @@ def opportunity_to_row(entity: Opportunity) -> OpportunityRow:
         opportunity_type=entity.opportunity_type.value,
         lifecycle_status=entity.lifecycle_status.value,
         eligibility_status=entity.eligibility_status.value,
+        canonical_identity_key=entity.canonical_identity_key,
+        source_status=entity.source_status,
     )
 
 
@@ -102,6 +109,8 @@ def opportunity_to_domain(row: OpportunityRow) -> Opportunity:
         opportunity_type=OpportunityType(row.opportunity_type),
         lifecycle_status=LifecycleStatus(row.lifecycle_status),
         eligibility_status=EligibilityStatus(row.eligibility_status),
+        canonical_identity_key=row.canonical_identity_key,
+        source_status=row.source_status,
     )
 
 
@@ -128,4 +137,52 @@ def opportunity_source_to_domain(row: OpportunitySourceRow) -> OpportunitySource
         original_url=row.original_url,
         first_seen_at=row.first_seen_at,
         last_seen_at=row.last_seen_at,
+    )
+
+
+def opportunity_observation_to_row(
+    entity: OpportunityObservation,
+) -> OpportunityObservationRow:
+    return OpportunityObservationRow(
+        id=entity.id,
+        opportunity_id=entity.opportunity_id,
+        raw_opportunity_id=entity.raw_opportunity_id,
+        observed_at=entity.observed_at,
+        lifecycle_status=entity.lifecycle_status.value,
+    )
+
+
+def opportunity_observation_to_domain(
+    row: OpportunityObservationRow,
+) -> OpportunityObservation:
+    return OpportunityObservation(
+        id=row.id,
+        opportunity_id=row.opportunity_id,
+        raw_opportunity_id=row.raw_opportunity_id,
+        observed_at=row.observed_at,
+        lifecycle_status=LifecycleStatus(row.lifecycle_status),
+    )
+
+
+def opportunity_change_to_row(entity: OpportunityChange) -> OpportunityChangeRow:
+    return OpportunityChangeRow(
+        id=entity.id,
+        opportunity_id=entity.opportunity_id,
+        observation_id=entity.observation_id,
+        field_name=entity.field_name.value,
+        previous_value=entity.previous_value,
+        new_value=entity.new_value,
+        observed_at=entity.observed_at,
+    )
+
+
+def opportunity_change_to_domain(row: OpportunityChangeRow) -> OpportunityChange:
+    return OpportunityChange(
+        id=row.id,
+        opportunity_id=row.opportunity_id,
+        observation_id=row.observation_id,
+        field_name=MaterialChangeField(row.field_name),
+        previous_value=row.previous_value,
+        new_value=row.new_value,
+        observed_at=row.observed_at,
     )

@@ -594,6 +594,14 @@ Raw information should be retained sufficiently to:
 The exact raw-data retention strategy should balance traceability and storage
 requirements.
 
+**Phase 5 boundary:** source connectors acquire source information and map it
+into `RawOpportunity`. The source-independent processing pipeline owns
+normalization into the canonical `Opportunity` representation. Connectors must
+not embed the canonical processing pipeline.
+
+Each processing run retains append-only `RawOpportunity` rows and records an
+`OpportunityObservation` linking the raw evidence to the canonical opportunity.
+
 
 ## 13. Deduplication
 
@@ -642,6 +650,13 @@ The system should distinguish at least:
 - CLOSED/EXPIRED.
 
 Change history should be retained where useful.
+
+**Phase 5 implementation:** `OpportunityObservation` is append-only processing
+evidence (one row per processed `RawOpportunity`, idempotent on re-processing
+the same raw id). `OpportunityChange` is a lightweight audit of material field
+changes detected during processing (not a generic event store).
+`Opportunity.lifecycle_status` reflects the outcome of the latest processing
+run; history remains on observations and change records.
 
 
 ## 15. Filtering Architecture

@@ -1236,11 +1236,11 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–4 are complete for the Bootcamp MVP.
+Phases 0–5 are complete for the Bootcamp MVP.
 
 The current implementation step is:
 
-    Phase 5 — Opportunity Processing Foundation
+    Phase 6 — First Real Source Connector
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.
@@ -1264,8 +1264,14 @@ and:
     Search Strategy
     "What work does Jan currently want?"
 
-Do not begin Phase 6 automatically after Phase 5. Review opportunity
-processing results before expanding source coverage.
+Phase 5 implemented the source-independent processing pipeline (normalize,
+identify/deduplicate, change detection, lifecycle, persist) with
+`OpportunityObservation` and `OpportunityChange` persistence, deterministic
+identity, and fixture-based tests.
+
+Do not begin Phase 6 automatically. Review opportunity processing results
+before expanding source coverage.
 
 Accepted Phase 4 design decisions are recorded in Phase 4 above and in
-`architecture.md` §7.5–7.6.
+`architecture.md` §7.5–7.6. Phase 5 processing boundaries and observation
+semantics are recorded in `architecture.md` §12 and §14.

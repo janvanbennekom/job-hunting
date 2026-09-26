@@ -12,7 +12,11 @@ from jobhunter.domain.enums import (
 from jobhunter.domain.identifiers import new_domain_id
 from jobhunter.domain.job_source import JobSource
 from jobhunter.domain.language_capability import LanguageCapability
+from jobhunter.domain.normalized_opportunity import NormalizedOpportunity
 from jobhunter.domain.opportunity import Opportunity
+from jobhunter.domain.opportunity_change import OpportunityChange
+from jobhunter.domain.opportunity_enums import MaterialChangeField
+from jobhunter.domain.opportunity_observation import OpportunityObservation
 from jobhunter.domain.opportunity_source import OpportunitySource
 from jobhunter.domain.profile_document import ProfileDocument
 from jobhunter.domain.profile_enums import CapabilityCategory, ProfileDocumentType
@@ -46,7 +50,11 @@ __all__ = [
     "JobSource",
     "LanguageCapability",
     "LifecycleStatus",
+    "MaterialChangeField",
+    "NormalizedOpportunity",
     "Opportunity",
+    "OpportunityChange",
+    "OpportunityObservation",
     "OpportunitySource",
     "OpportunityType",
     "PreferenceStrength",

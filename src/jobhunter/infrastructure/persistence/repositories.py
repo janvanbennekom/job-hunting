@@ -70,6 +70,17 @@ class OpportunityRepository:
             return None
         return mappers.opportunity_to_domain(row)
 
+    def get_by_canonical_identity_key(
+        self, identity_key: str
+    ) -> Opportunity | None:
+        stmt = select(OpportunityRow).where(
+            OpportunityRow.canonical_identity_key == identity_key
+        )
+        row = self._session.scalars(stmt).first()
+        if row is None:
+            return None
+        return mappers.opportunity_to_domain(row)
+
 
 class OpportunitySourceRepository:
     def __init__(self, session: Session) -> None:

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "fixture-raw-001",
+    "source_reference": "FIXTURE-001",
+    "raw_title": "GIS implementation specialist",
+    "raw_deadline": "2026-12-31",
+    "raw_description": "Fixture opportunity for local pipeline exercise."
+  },
+  {
+    "id": "fixture-raw-002",
+    "source_reference": "FIXTURE-001",
+    "raw_title": "GIS implementation specialist",
+    "raw_deadline": "2027-01-31",
+    "raw_description": "Updated fixture description."
+  }
+]

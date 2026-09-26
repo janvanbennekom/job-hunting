@@ -129,6 +129,19 @@ from jobhunter.infrastructure.logging_config import configure_logging
 configure_logging()
 ```
 
+### Opportunity processing fixtures (Phase 5)
+
+Exercise the processing pipeline against representative JSON (requires
+PostgreSQL and migrations). Use `--dry-run` to validate fixture parsing only:
+
+```powershell
+python scripts/process_fixture_opportunities.py --dry-run
+python scripts/process_fixture_opportunities.py --fixture data/fixtures/opportunities/sample_raw_sequence.json
+```
+
+Integration tests cover the same pipeline with transaction rollback and do not
+require seeding opportunities into long-lived data.
+
 ## Tests
 
 Unit tests (domain and configuration):

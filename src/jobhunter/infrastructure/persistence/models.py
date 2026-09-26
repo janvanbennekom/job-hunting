@@ -61,6 +61,9 @@ class RawOpportunityRow(Base):
     )
 
     source: Mapped[JobSourceRow] = relationship(back_populates="raw_opportunities")
+    observations: Mapped[list[OpportunityObservationRow]] = relationship(
+        back_populates="raw_opportunity"
+    )
 
 
 class OpportunityRow(Base):
@@ -77,8 +80,18 @@ class OpportunityRow(Base):
     opportunity_type: Mapped[str] = mapped_column(String(32), nullable=False)
     lifecycle_status: Mapped[str] = mapped_column(String(32), nullable=False)
     eligibility_status: Mapped[str] = mapped_column(String(32), nullable=False)
+    canonical_identity_key: Mapped[str | None] = mapped_column(
+        String(512), unique=True
+    )
+    source_status: Mapped[str | None] = mapped_column(String(64))
 
     source_links: Mapped[list[OpportunitySourceRow]] = relationship(
+        back_populates="opportunity"
+    )
+    observations: Mapped[list[OpportunityObservationRow]] = relationship(
+        back_populates="opportunity"
+    )
+    changes: Mapped[list[OpportunityChangeRow]] = relationship(
         back_populates="opportunity"
     )
 
@@ -112,3 +125,65 @@ class OpportunitySourceRow(Base):
 
     opportunity: Mapped[OpportunityRow] = relationship(back_populates="source_links")
     source: Mapped[JobSourceRow] = relationship(back_populates="opportunity_links")
+
+
+class OpportunityObservationRow(Base):
+    __tablename__ = "opportunity_observations"
+    __table_args__ = (
+        UniqueConstraint(
+            "raw_opportunity_id",
+            name="uq_opportunity_observations_raw_opportunity_id",
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    opportunity_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunities.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    raw_opportunity_id: Mapped[str] = mapped_column(
+        ForeignKey("raw_opportunities.id", ondelete="RESTRICT"),
+        nullable=False,
+    )
+    observed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    lifecycle_status: Mapped[str] = mapped_column(String(32), nullable=False)
+
+    opportunity: Mapped[OpportunityRow] = relationship(
+        back_populates="observations"
+    )
+    raw_opportunity: Mapped[RawOpportunityRow] = relationship(
+        back_populates="observations"
+    )
+    changes: Mapped[list[OpportunityChangeRow]] = relationship(
+        back_populates="observation"
+    )
+
+
+class OpportunityChangeRow(Base):
+    __tablename__ = "opportunity_changes"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    opportunity_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunities.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    observation_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunity_observations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    field_name: Mapped[str] = mapped_column(String(64), nullable=False)
+    previous_value: Mapped[str | None] = mapped_column(Text())
+    new_value: Mapped[str | None] = mapped_column(Text())
+    observed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+
+    opportunity: Mapped[OpportunityRow] = relationship(back_populates="changes")
+    observation: Mapped[OpportunityObservationRow] = relationship(
+        back_populates="changes"
+    )

@@ -36,6 +36,8 @@ class Opportunity:
     opportunity_type: OpportunityType = OpportunityType.UNKNOWN
     lifecycle_status: LifecycleStatus = LifecycleStatus.NEW
     eligibility_status: EligibilityStatus = EligibilityStatus.UNKNOWN
+    canonical_identity_key: str | None = None
+    source_status: str | None = None
 
     def __post_init__(self) -> None:
         self.id = require_non_empty(self.id, "id")
@@ -57,6 +59,8 @@ class Opportunity:
                 "opportunity_type": enum_to_value(self.opportunity_type),
                 "lifecycle_status": enum_to_value(self.lifecycle_status),
                 "eligibility_status": enum_to_value(self.eligibility_status),
+                "canonical_identity_key": self.canonical_identity_key,
+                "source_status": self.source_status,
             }
         )
 
@@ -84,4 +88,6 @@ class Opportunity:
             eligibility_status=value_to_enum(
                 EligibilityStatus, data.get("eligibility_status", "UNKNOWN")
             ),
+            canonical_identity_key=data.get("canonical_identity_key"),
+            source_status=data.get("source_status"),
         )
