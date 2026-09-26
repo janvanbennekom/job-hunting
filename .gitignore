@@ -63,3 +63,8 @@ data/*
 # Logs
 *.log
 logs/
+
+# Local authoritative professional profile source files
+docs/cv_jan_van_bennekom-minnema_uk_details.pdf
+docs/professional_services_jan_van_bennekom-minnema_uk.pdf
+docs/2 model_instances - postgres.xlsx
