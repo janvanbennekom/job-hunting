@@ -112,6 +112,15 @@ python scripts/seed_cv_profile.py
 python scripts/seed_cv_profile.py --apply
 ```
 
+### Search strategy seed (Phase 4B)
+
+Load curated search strategy from JSON (dry-run by default):
+
+```powershell
+python scripts/seed_search_strategy.py
+python scripts/seed_search_strategy.py --apply
+```
+
 Optional logging setup in code:
 
 ```python

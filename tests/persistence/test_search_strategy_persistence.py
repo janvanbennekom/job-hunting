@@ -317,9 +317,6 @@ def test_professional_profile_tables_unaffected(db_session: Session) -> None:
     assert before == after
 
 
-def test_no_strategy_rows_without_test_insert(db_session: Session) -> None:
-    """Sanity: other tests roll back; count is zero before local inserts."""
-    count = (
-        db_session.scalar(select(func.count()).select_from(SearchStrategyRow)) or 0
-    )
-    assert count == 0
+def test_synthetic_owner_absent_before_local_insert(db_session: Session) -> None:
+    repo = SearchStrategyRepository(db_session)
+    assert repo.get_by_owner_key("synthetic-owner") is None

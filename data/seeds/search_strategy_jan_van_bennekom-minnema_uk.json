@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "owner_key": "jan-van-bennekom-minnema",
+  "change_summary": "Initial JobHunter search strategy for international Geo-ICT and land administration consulting (JVB GIS Consulting).",
+  "change_source": "INITIAL_SEED",
+  "themes": [
+    {
+      "key": "lis_implementation",
+      "label": "Land Information System (LIS) implementation",
+      "strength": "STRONGLY_PREFERRED",
+      "sort_order": 10
+    },
+    {
+      "key": "enterprise_gis_sdi",
+      "label": "Enterprise GIS / spatial data infrastructure (SDI)",
+      "strength": "PREFERRED",
+      "sort_order": 20
+    },
+    {
+      "key": "software_database_development",
+      "label": "Geospatial software and database development",
+      "strength": "STRONGLY_PREFERRED",
+      "sort_order": 30
+    },
+    {
+      "key": "geospatial_data_integration",
+      "label": "Geospatial data integration and spatial analytics",
+      "strength": "PREFERRED",
+      "sort_order": 40
+    },
+    {
+      "key": "system_integration",
+      "label": "System integration and interoperability",
+      "strength": "PREFERRED",
+      "sort_order": 50
+    },
+    {
+      "key": "land_admin_digital_transformation",
+      "label": "Land administration digital transformation",
+      "strength": "PREFERRED",
+      "sort_order": 60
+    },
+    {
+      "key": "technical_qa_implementation_support",
+      "label": "Technical quality assurance and implementation support",
+      "strength": "PREFERRED",
+      "sort_order": 70
+    },
+    {
+      "key": "business_process_improvement",
+      "label": "Business process and operational improvement",
+      "strength": "ACCEPTABLE",
+      "sort_order": 80
+    },
+    {
+      "key": "capacity_building",
+      "label": "Capacity building and technology transfer",
+      "strength": "ACCEPTABLE",
+      "sort_order": 90
+    }
+  ],
+  "criteria": [
+    {
+      "category": "PREFERENCE",
+      "code": "ASSIGNMENT_DELIVERY_MODE",
+      "value": {
+        "implementation": "STRONGLY_PREFERRED",
+        "advisory": "ACCEPTABLE"
+      },
+      "sort_order": 10
+    },
+    {
+      "category": "PREFERENCE",
+      "code": "ENGAGEMENT_MODEL",
+      "value": {
+        "international_consultancy": "STRONGLY_PREFERRED",
+        "single_consultant_engagement": "PREFERRED"
+      },
+      "notes": "Assignments suitable for one senior consultant or delivery through JVB GIS Consulting as a one-person firm.",
+      "sort_order": 20
+    },
+    {
+      "category": "PREFERENCE",
+      "code": "WORK_MODE",
+      "value": {
+        "remote": "PREFERRED",
+        "hybrid": "PREFERRED",
+        "on_site": "ACCEPTABLE"
+      },
+      "sort_order": 30
+    },
+    {
+      "category": "PREFERENCE",
+      "code": "TRAVEL_PATTERN",
+      "value": {
+        "aspect": "continuous_abroad"
+      },
+      "strength": "LESS_PREFERRED",
+      "notes": "Long continuous overseas field missions are less preferred unless otherwise compelling.",
+      "sort_order": 40
+    },
+    {
+      "category": "PREFERENCE",
+      "code": "ASSIGNMENT_DURATION",
+      "value": {
+        "ideal_min_months": 1,
+        "ideal_max_months": 12
+      },
+      "strength": "PREFERRED",
+      "sort_order": 50
+    },
+    {
+      "category": "PREFERENCE",
+      "code": "GEOGRAPHY",
+      "value": {
+        "regions": [
+          {
+            "name": "Africa",
+            "strength": "PREFERRED"
+          },
+          {
+            "name": "Middle East",
+            "strength": "PREFERRED"
+          },
+          {
+            "name": "Europe",
+            "strength": "ACCEPTABLE"
+          }
+        ],
+        "countries": []
+      },
+      "sort_order": 60
+    }
+  ],
+  "exclusions": [
+    {
+      "exclusion_code": "REQUIRES_MULTI_PERSON_TEAM_OR_CONSORTIUM",
+      "notes": "Procurements requiring multi-person consulting teams or consortia."
+    },
+    {
+      "exclusion_code": "NATIONAL_CONSULTANT_ONLY",
+      "notes": "National-consultant-only opportunities without international eligibility."
+    },
+    {
+      "exclusion_code": "JUNIOR_OR_INTERNSHIP",
+      "notes": "Junior, internship or explicitly entry-level roles."
+    },
+    {
+      "exclusion_code": "VOLUNTEER",
+      "notes": "Volunteer assignments."
+    }
+  ]
+}

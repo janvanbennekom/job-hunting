@@ -1236,11 +1236,11 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–3 are complete for the Bootcamp MVP.
+Phases 0–4 are complete for the Bootcamp MVP.
 
 The current implementation step is:
 
-    Phase 4 — Search Strategy and Preferences
+    Phase 5 — Opportunity Processing Foundation
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.
@@ -1250,8 +1250,9 @@ services, assignments, capabilities, assignment-to-capability evidence,
 skills, language capabilities, and country experience, with source
 provenance where applicable.
 
-Phase 4 introduces the separate persistent representation of what the user
-currently wants from JobHunter.
+Phase 4 introduced the separate persistent representation of what the user
+currently wants from JobHunter, including an initial curated search strategy
+seed.
 
 This maintains the architectural distinction between:
 
@@ -1263,9 +1264,8 @@ and:
     Search Strategy
     "What work does Jan currently want?"
 
-Do not begin Phase 5 automatically after Phase 4. Review the implemented
-Search Strategy model and initial strategy before beginning the opportunity
-processing pipeline.
+Do not begin Phase 6 automatically after Phase 5. Review opportunity
+processing results before expanding source coverage.
 
 Accepted Phase 4 design decisions are recorded in Phase 4 above and in
 `architecture.md` §7.5–7.6.

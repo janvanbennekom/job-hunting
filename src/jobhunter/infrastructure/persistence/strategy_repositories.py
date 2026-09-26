@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from jobhunter.domain import (
     ExclusionCriterion,
+    RevisionStatus,
     SearchStrategy,
     SearchStrategyRevision,
     SearchTheme,
@@ -98,6 +99,16 @@ class SearchStrategyRevisionRepository:
         )
         rows = self._session.scalars(stmt).all()
         return [mappers.search_strategy_revision_to_domain(row) for row in rows]
+
+    def update_status(
+        self, revision_id: str, status: RevisionStatus
+    ) -> SearchStrategyRevision:
+        row = self._session.get(SearchStrategyRevisionRow, revision_id)
+        if row is None:
+            raise ValueError(f"revision {revision_id} not found")
+        row.status = status.value
+        self._session.flush()
+        return mappers.search_strategy_revision_to_domain(row)
 
 
 class SearchThemeRepository:

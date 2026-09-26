@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "owner_key": "tests/synthetic-search-strategy",
+  "change_summary": "Synthetic search strategy for integration tests.",
+  "change_source": "INITIAL_SEED",
+  "themes": [
+    {
+      "key": "syn-theme-a",
+      "label": "Synthetic theme A",
+      "strength": "PREFERRED",
+      "sort_order": 1
+    }
+  ],
+  "criteria": [
+    {
+      "category": "PREFERENCE",
+      "code": "TRAVEL_PATTERN",
+      "value": {
+        "aspect": "continuous_abroad"
+      },
+      "strength": "LESS_PREFERRED",
+      "sort_order": 1
+    }
+  ],
+  "exclusions": [
+    {
+      "exclusion_code": "VOLUNTEER",
+      "notes": "Synthetic exclusion"
+    }
+  ]
+}
