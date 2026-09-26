@@ -275,27 +275,32 @@ eligibility assessment, and filtering.
 Responsible for authoritative evidence describing what the user can credibly
 claim.
 
-This includes:
+The professional profile includes:
 
 - professional positioning;
 - professional services;
-- skills;
-- technologies;
-- domains;
-- standards;
-- languages;
-- countries;
-- organisations/clients;
-- roles;
-- assignments;
-- education;
-- training;
-- source documents.
+- assignments and project experience;
+- capabilities and capability categories;
+- assignment-to-capability evidence relationships;
+- technical and professional skills;
+- language capabilities;
+- authoritative profile documents.
 
-The CV and Professional Services document are authoritative source documents.
+Capabilities represent a controlled classification of professional experience,
+including domain, system type, system development, data and analysis, quality
+assurance, management and strategy, and capacity development.
 
-Structured profile data may be extracted from these documents but must retain
-appropriate provenance.
+Assignments may be associated with multiple capabilities. These associations
+form structured evidence that can later be used for opportunity matching.
+
+Capabilities are distinct from skills and technologies. For example,
+"System integration and interoperability" is a capability, while PostgreSQL,
+Python or GeoServer are skills/technologies used in delivering that capability.
+
+The detailed CV, the Professional Services document, and the structured
+project spreadsheet are authoritative source material for the professional
+profile. Structured profile data may be derived or imported from these sources
+while retaining source provenance.
 
 ### 7.5 Search Strategy
 
@@ -1290,7 +1295,7 @@ The initial preferred technology direction is:
 | Language | Python |
 | Architecture | Modular monolith |
 | Database | PostgreSQL |
-| ORM / persistence | To be selected |
+| ORM / persistence | SQLAlchemy 2.x (synchronous), psycopg 3, Alembic |
 | UI | Streamlit candidate |
 | AI | Provider abstraction; provider/model TBD |
 | HTTP acquisition | Python HTTP client |
@@ -1313,7 +1318,6 @@ an implementation phase.
 The following decisions are deliberately deferred:
 
 - concrete Python web/backend framework;
-- ORM;
 - exact Streamlit architecture;
 - AI provider and models;
 - embedding model;
