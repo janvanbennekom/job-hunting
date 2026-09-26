@@ -13,6 +13,7 @@ from jobhunter.infrastructure.config import get_settings
 from jobhunter.infrastructure.persistence.base import Base
 import jobhunter.infrastructure.persistence.models  # noqa: F401
 import jobhunter.infrastructure.persistence.profile_models  # noqa: F401
+import jobhunter.infrastructure.persistence.strategy_models  # noqa: F401
 
 config = context.config
 
