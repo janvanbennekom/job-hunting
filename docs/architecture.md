@@ -307,35 +307,87 @@ while retaining source provenance.
 
 Responsible for what the user currently wants.
 
-Examples include:
+`SearchStrategy` is the stable logical identity. Configurable content lives on
+immutable `SearchStrategyRevision` snapshots. `SearchStrategy.current_revision_id`
+identifies the current active revision. Material changes create a new revision
+rather than modifying an existing active revision in place.
 
-- preferred service areas;
-- assignment types;
-- technical focus;
-- implementation/advisory preference;
-- geography;
-- duration;
-- travel preferences;
-- remote/on-site preference;
-- emerging interests;
-- ranking preferences;
-- exclusions.
+Phase 4 stores strategy state only. Deterministic filtering remains Phase 7; AI
+matching remains Phase 8; ranking remains Phase 9; conversational modification
+remains Phase 11.
 
-Search Strategy is distinct from Professional Profile.
+Search Strategy is distinct from Professional Profile. Do not copy professional
+evidence into Search Strategy to make matching easier, and do not link strategy
+themes to `ProfessionalService` rows. For example, PostgreSQL experience belongs
+to the profile; wanting more implementation-oriented assignments belongs to
+strategy.
+
+Revision content uses four semantics:
+
+A. **SearchTheme** — positive area of interest (for example LIS
+   implementation). Carries ordinal `PreferenceStrength` where applicable.
+
+B. **StrategyCriterion / PREFERENCE** — ranking preference; absence normally
+   does not reject an opportunity.
+
+C. **StrategyCriterion / HARD_CONSTRAINT** — input to deterministic eligibility
+   filtering; a clear violation may make an opportunity unsuitable.
+
+D. **ExclusionCriterion** — explicit opportunity category to exclude when
+   clearly matched.
+
+`StrategyCriterion` (not to be confused with future acquisition or discovery
+search criteria) has category `PREFERENCE` or `HARD_CONSTRAINT`, a closed
+`StrategyParameterCode` vocabulary, and a structured `value` validated per code.
+Phase 4 uses at most one criterion per `(revision, category, code)` for the
+MVP. JSON must not become an unrestricted key/value configuration bag.
+
+Ordinal preference strength for themes and preference criteria:
+
+    STRONGLY_PREFERRED
+    PREFERRED
+    ACCEPTABLE
+    LESS_PREFERRED
+
+Do not introduce numeric ranking weights in Phase 4. Later ranking may map
+these levels to small configured contributions.
+
+Examples of strategy concerns (not an exhaustive list):
+
+- preferred service or work themes;
+- assignment types and delivery mode;
+- geography, duration, travel, and remote/on-site characteristics;
+- hard limits and explicit exclusions.
+
+Long continuous overseas assignments should initially be representable as a
+preference (for example `LESS_PREFERRED`), not automatically as a hard
+exclusion.
 
 ### 7.6 Strategy History
 
-Changes to search strategy must be traceable.
+Changes to search strategy must be traceable through immutable revisions.
 
-A strategy revision should be capable of storing:
+Each `SearchStrategyRevision` stores:
 
-- version/revision;
-- effective date;
-- changed values;
-- previous values where appropriate;
-- reason;
-- source of change;
-- whether explicitly confirmed by the user.
+- `revision_number`;
+- `status` (`ACTIVE` or `SUPERSEDED`; `DRAFT` deferred until Phase 11 if
+  needed);
+- `created_at`;
+- `change_summary`;
+- `change_source`;
+- `supersedes_revision_id` (optional lineage);
+- `content_hash` (canonical hash of revision content).
+
+`effective_from` and `user_confirmed` are deferred until they have actual
+application behaviour.
+
+The same semantic seed content (matching `content_hash`) must not create a new
+revision. Changed semantic content creates and activates a new revision.
+
+Later eligibility assessments, relevance or profile-match assessments, and
+rankings should be able to record the `SearchStrategyRevision` id used when the
+opportunity was evaluated, so the system can answer what strategy was in effect
+at assessment time.
 
 ### 7.7 User Feedback
 
@@ -760,7 +812,7 @@ The initial conceptual domain model includes:
     SearchStrategy
     SearchStrategyRevision
     SearchTheme
-    SearchCriterion
+    StrategyCriterion
     ExclusionCriterion
 
     JobSource

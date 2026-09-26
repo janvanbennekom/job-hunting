@@ -398,19 +398,52 @@ matching against an opportunity.
 Represent the user's evolving opportunity-search strategy independently from
 professional evidence.
 
-## Scope
+## Accepted design
 
-Implement:
+- `SearchStrategy` is the stable logical identity;
+  `SearchStrategy.current_revision_id` points at the active revision.
+- `SearchStrategyRevision` is an immutable snapshot; material changes create a
+  new revision instead of mutating an active one.
+- Revision content: `SearchTheme`, `StrategyCriterion`, `ExclusionCriterion`.
+- `StrategyCriterion` replaces the earlier conceptual name `SearchCriterion` to
+  avoid confusion with future acquisition/discovery search criteria.
+- `StrategyCriterion` categories: `PREFERENCE` (ranking signal) and
+  `HARD_CONSTRAINT` (deterministic eligibility input). Exclusions remain
+  `ExclusionCriterion`.
+- `PreferenceStrength` is ordinal (`STRONGLY_PREFERRED`, `PREFERRED`,
+  `ACCEPTABLE`, `LESS_PREFERRED`); no numeric ranking weights in Phase 4.
+- `StrategyParameterCode` plus structured, code-validated values; at most one
+  row per `(revision, category, code)` for the MVP.
+- No persistent FK from `SearchTheme` to `ProfessionalService`.
+- Revision metadata: `revision_number`, `status` (`ACTIVE` / `SUPERSEDED`),
+  `created_at`, `change_summary`, `change_source`, `supersedes_revision_id`,
+  `content_hash`. `DRAFT`, `effective_from`, and `user_confirmed` deferred.
+- Same semantic content (`content_hash`) → no new revision; changed content →
+  new active revision.
+- Phase 4 stores state only (filtering Phase 7, matching Phase 8, ranking
+  Phase 9, conversation Phase 11). Later assessments should record the revision
+  id used.
 
-- SearchStrategy;
-- SearchStrategyRevision;
-- SearchTheme;
-- SearchCriterion;
-- ExclusionCriterion;
-- preference/priority representation.
+## Implementation sequence
 
-Initial strategy should represent the requirements defined for JobHunter,
-including relevant search themes and explicit exclusions.
+### Phase 4A.1 — Search Strategy domain
+
+Domain types, enums, validation per `StrategyParameterCode`, revision bundle,
+unit tests.
+
+### Phase 4A.2 — Persistence
+
+PostgreSQL schema, mappers, repositories, integration tests.
+
+### Phase 4A.3 — Revision activation / application service
+
+Create revision, activate (supersede prior), load full revision; transactional
+behaviour.
+
+### Phase 4B — Curated initial Jan/JVB strategy
+
+Human-reviewed curated JSON seed (dry-run / `--apply`, deterministic,
+idempotent via `content_hash`).
 
 ## Required capabilities
 
@@ -418,17 +451,18 @@ The system must support:
 
 - one current strategy;
 - strategy revision history;
-- configurable search criteria;
-- configurable priorities;
-- active/inactive criteria;
+- configurable search themes and strategy criteria;
+- ordinal preferences;
+- active/inactive items within a revision;
 - explicit exclusions.
 
-Do not implement conversational modification yet.
+Do not implement conversational modification, filtering, matching, or ranking in
+Phase 4.
 
 ## Verification
 
 A strategy can be created, persisted, retrieved, revised, and historically
-inspected without changing ProfessionalProfile.
+inspected without changing `ProfessionalProfile`.
 
 
 # Phase 5 — Opportunity Processing Foundation
@@ -1233,4 +1267,5 @@ Do not begin Phase 5 automatically after Phase 4. Review the implemented
 Search Strategy model and initial strategy before beginning the opportunity
 processing pipeline.
 
-Do not change the Phase 4 specification itself at this point.
+Accepted Phase 4 design decisions are recorded in Phase 4 above and in
+`architecture.md` §7.5–7.6.
