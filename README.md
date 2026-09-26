@@ -12,14 +12,10 @@ Governance and design authority:
 
 ## Current scope (Bootcamp MVP)
 
-Development follows the implementation plan incrementally. **Phase 0–1**
-provide the package foundation and core domain model. **Phase 2** adds
-PostgreSQL persistence (SQLAlchemy, Alembic). Connectors, AI, and UI follow in
-later phases.
-
-The Bootcamp MVP target is a single end-to-end vertical slice: one real source
-through acquire → normalize → persist → filter → AI matching → rank → minimal
-dashboard (Phases 0–10).
+Development follows the implementation plan incrementally through phased
+delivery. The Bootcamp MVP vertical slice (Phases 0–10) covers one real
+source through acquire → normalize → persist → filter → AI matching → rank →
+Streamlit dashboard and human review.
 
 ## Repository structure
 
@@ -168,6 +164,18 @@ Production ranking requires OpenAI-backed assessments. Development only:
 ```powershell
 python scripts/rank_opportunities.py --source-id fao-external-jobs --include-fake-assessments
 ```
+
+### Dashboard (Phase 10)
+
+Review opportunities, assessments, rankings, and human review decisions
+(requires PostgreSQL, migrations, and configured `.env`):
+
+```powershell
+streamlit run src/jobhunter/ui/streamlit/app.py
+```
+
+Production views exclude `model_provider=fake` assessments and fake-derived
+rankings unless you enable the sidebar development toggle.
 
 ### FAO Jobs scan (Phase 6)
 

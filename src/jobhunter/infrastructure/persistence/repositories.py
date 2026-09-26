@@ -81,6 +81,19 @@ class OpportunityRepository:
             return None
         return mappers.opportunity_to_domain(row)
 
+    def list_all(self) -> list[Opportunity]:
+        stmt = select(OpportunityRow).order_by(OpportunityRow.title)
+        rows = self._session.scalars(stmt).all()
+        return [mappers.opportunity_to_domain(row) for row in rows]
+
+    def list_ids_for_source(self, source_id: str) -> list[str]:
+        stmt = (
+            select(OpportunitySourceRow.opportunity_id)
+            .where(OpportunitySourceRow.source_id == source_id)
+            .distinct()
+        )
+        return list(self._session.scalars(stmt).all())
+
 
 class OpportunitySourceRepository:
     def __init__(self, session: Session) -> None:

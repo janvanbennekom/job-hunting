@@ -68,3 +68,25 @@ class OpportunityRankingRepository:
         if row is None:
             return None
         return mappers.ranking_to_domain(row)
+
+    def list_for_opportunity_and_revision(
+        self, opportunity_id: str, revision_id: str
+    ) -> list[OpportunityRanking]:
+        stmt = (
+            select(OpportunityRankingRow)
+            .where(
+                OpportunityRankingRow.opportunity_id == opportunity_id,
+                OpportunityRankingRow.search_strategy_revision_id == revision_id,
+            )
+            .order_by(OpportunityRankingRow.ranked_at.desc())
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.ranking_to_domain(row) for row in rows]
+
+    def get_latest_for_opportunity_and_revision(
+        self, opportunity_id: str, revision_id: str
+    ) -> OpportunityRanking | None:
+        rankings = self.list_for_opportunity_and_revision(
+            opportunity_id, revision_id
+        )
+        return rankings[0] if rankings else None

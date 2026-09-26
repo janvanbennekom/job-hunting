@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from jobhunter.domain.source_scan import SourceScan
@@ -24,3 +25,19 @@ class SourceScanRepository:
         if row is None:
             return None
         return mappers.source_scan_to_domain(row)
+
+    def list_for_source(
+        self, source_id: str, *, limit: int = 20
+    ) -> list[SourceScan]:
+        stmt = (
+            select(SourceScanRow)
+            .where(SourceScanRow.source_id == source_id)
+            .order_by(SourceScanRow.started_at.desc())
+            .limit(limit)
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.source_scan_to_domain(row) for row in rows]
+
+    def get_latest_for_source(self, source_id: str) -> SourceScan | None:
+        scans = self.list_for_source(source_id, limit=1)
+        return scans[0] if scans else None

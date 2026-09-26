@@ -342,3 +342,32 @@ class OpportunityRankingRow(Base):
     warnings: Mapped[list | None] = mapped_column(JSON, nullable=True)
     exclusion_reason: Mapped[str | None] = mapped_column(String(64))
     unranked_reason: Mapped[str | None] = mapped_column(String(64))
+
+
+class OpportunityReviewRecordRow(Base):
+    __tablename__ = "opportunity_review_records"
+    __table_args__ = ()
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    opportunity_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunities.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    recorded_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    disposition: Mapped[str] = mapped_column(String(32), nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text())
+    search_strategy_revision_id: Mapped[str | None] = mapped_column(
+        ForeignKey("search_strategy_revisions.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    profile_assessment_id: Mapped[str | None] = mapped_column(
+        ForeignKey("opportunity_profile_assessments.id", ondelete="SET NULL"),
+        nullable=True,
+    )
+    ranking_id: Mapped[str | None] = mapped_column(
+        ForeignKey("opportunity_rankings.id", ondelete="SET NULL"),
+        nullable=True,
+    )

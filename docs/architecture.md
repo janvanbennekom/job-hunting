@@ -867,6 +867,7 @@ The initial conceptual domain model includes:
     EligibilityRuleResult
     OpportunityProfileAssessment
     OpportunityRanking
+    OpportunityReviewRecord
 
     OpportunityFeedback
 
@@ -984,6 +985,12 @@ Streamlit is a strong candidate for the Bootcamp implementation because:
 
 The UI architecture should nevertheless avoid placing core business logic
 inside UI components.
+
+Phase 10 implements a Streamlit dashboard under `src/jobhunter/ui/streamlit/`.
+Pages call application services in `jobhunter.application.review` (summary,
+queue, detail, human review). Read paths do not persist rankings or
+assessments. Human review uses append-only `OpportunityReviewRecord` rows,
+separate from eligibility, assessment, and ranking outputs.
 
 
 ## 24. Scheduling
