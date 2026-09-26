@@ -119,6 +119,15 @@ class AssignmentRepository:
             return None
         return mappers.assignment_to_domain(row)
 
+    def list_by_source_document_id(self, source_document_id: str) -> list[Assignment]:
+        stmt = (
+            select(AssignmentRow)
+            .where(AssignmentRow.source_document_id == source_document_id)
+            .order_by(AssignmentRow.id)
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.assignment_to_domain(row) for row in rows]
+
 
 class AssignmentCapabilityRepository:
     def __init__(self, session: Session) -> None:

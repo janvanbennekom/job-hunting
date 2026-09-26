@@ -20,7 +20,13 @@ def _load_env_file(path: Path) -> None:
 
 
 _repo_root = Path(__file__).resolve().parents[1]
+_tests_root = Path(__file__).resolve().parent
 _load_env_file(_repo_root / ".env")
+
+import sys
+
+if str(_tests_root) not in sys.path:
+    sys.path.insert(0, str(_tests_root))
 
 
 def pytest_configure(config: pytest.Config) -> None:

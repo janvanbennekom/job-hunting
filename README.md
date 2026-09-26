@@ -75,6 +75,24 @@ Apply schema migrations:
 alembic upgrade head
 ```
 
+### Project spreadsheet import (Phase 3C.1)
+
+Import structured project/capability data from the local XLSX workbook (dry-run
+by default; does not print database credentials):
+
+```powershell
+python scripts/import_project_spreadsheet.py --source "docs/2 model_instances - postgres.xlsx"
+python scripts/import_project_spreadsheet.py --source "docs/2 model_instances - postgres.xlsx" --apply
+```
+
+To replace spreadsheet-owned assignments after a change to assignment identity
+rules, purge assignment rows for that source and re-import (capabilities and
+ProfileDocument are kept):
+
+```powershell
+python scripts/import_project_spreadsheet.py --source "docs/2 model_instances - postgres.xlsx" --purge-spreadsheet-assignments --apply
+```
+
 Optional logging setup in code:
 
 ```python

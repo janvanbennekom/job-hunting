@@ -93,13 +93,13 @@ def test_capability_round_trip_category_and_code(db_session: Session) -> None:
     repo = CapabilityRepository(db_session)
     cap = Capability(
         id="cap-1",
-        code="fsd-API",
+        code="test-cap-round-trip",
         name="System integration and interoperability",
         category=CapabilityCategory.SYSTEM_DEVELOPMENT,
     )
     repo.save(cap)
     by_id = repo.get_by_id("cap-1")
-    by_code = repo.get_by_code("fsd-API")
+    by_code = repo.get_by_code("test-cap-round-trip")
     assert by_id == cap
     assert by_code == cap
 
@@ -109,7 +109,7 @@ def test_capability_unique_code_constraint(db_session: Session) -> None:
     repo.save(
         Capability(
             id="cap-a",
-            code="fd-LA",
+            code="test-cap-dup",
             name="Land Administration",
             category=CapabilityCategory.DOMAIN,
         )
@@ -117,7 +117,7 @@ def test_capability_unique_code_constraint(db_session: Session) -> None:
     db_session.flush()
     duplicate = Capability(
         id="cap-b",
-        code="fd-LA",
+        code="test-cap-dup",
         name="Duplicate code",
         category=CapabilityCategory.DOMAIN,
     )
@@ -171,7 +171,7 @@ def test_assignment_capability_links_and_uniqueness(db_session: Session) -> None
     cap_one = capabilities.save(
         Capability(
             id="cap-gis",
-            code="fsd-GIS",
+            code="test-cap-gis",
             name="GIS development",
             category=CapabilityCategory.SYSTEM_TYPE,
         )
@@ -179,7 +179,7 @@ def test_assignment_capability_links_and_uniqueness(db_session: Session) -> None
     cap_two = capabilities.save(
         Capability(
             id="cap-etl",
-            code="fda-ETL",
+            code="test-cap-etl",
             name="Data integration",
             category=CapabilityCategory.DATA_ANALYSIS,
         )
