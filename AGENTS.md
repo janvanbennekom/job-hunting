@@ -879,13 +879,13 @@ A bounded implementation task is complete when:
 - relevant documentation is updated;
 - the implementation does not silently include unrelated future work.
 
-### Phase-by-Phase Implementation Autonomy
+## 30. Phase-by-Phase Implementation Autonomy
 
-The project is normally implemented one complete phase at a time.
+The project is implemented phase by phase.
 
-Once a phase has been approved for implementation, the implementation agent
-should complete the full phase without requesting approval for intermediate
-implementation steps.
+For an approved phase, the implementation agent should normally complete
+the full phase without requesting approval for intermediate implementation
+steps.
 
 The agent may autonomously decide:
 
@@ -894,9 +894,9 @@ The agent may autonomously decide:
 - repository and mapper structure;
 - database indexes and routine constraints;
 - test organization;
+- minor refactoring;
 - non-destructive migration mechanics;
-- minor refactoring and corrections required to complete the accepted phase;
-- documentation updates needed to reflect the completed implementation.
+- minor corrections required to complete the accepted phase.
 
 The agent must stop and request review when implementation would require:
 
@@ -907,29 +907,25 @@ The agent must stop and request review when implementation would require:
 - introducing a major new dependency or technology;
 - resolving a material business-rule ambiguity;
 - expanding scope into a later phase;
-- weakening provenance, auditability, revision history, data integrity, or security.
+- weakening provenance, auditability, revision history, or security.
 
-Within an approved phase, the normal workflow is:
+Within a phase the normal workflow is:
 
-1. inspect the existing implementation and governing documentation;
+1. inspect existing implementation and governing documentation;
 2. determine the detailed implementation design;
 3. implement the complete phase;
 4. run unit and integration tests;
 5. apply and verify migrations where applicable;
 6. verify existing functionality remains intact;
-7. update documentation where required;
+7. update documentation where the completed implementation requires it;
 8. review Git scope;
 9. commit the completed phase;
 10. provide a concise completion report.
 
-Intermediate approval is not required unless one of the stop conditions above
-is encountered.
+Intermediate approval is not required unless one of the stop conditions
+above is encountered.
 
-The implementation agent should avoid unnecessary over-engineering. Prefer
-the simplest implementation that satisfies the accepted architecture,
-current phase requirements, testability, and Bootcamp MVP objectives.
-
-## 30. Agent Response After Implementation
+## 31. Agent Response After Implementation
 
 After completing a Cursor implementation task, report:
 
