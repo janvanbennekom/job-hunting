@@ -27,6 +27,8 @@ from jobhunter.domain.raw_opportunity import RawOpportunity
 from jobhunter.domain.search_strategy import SearchStrategy
 from jobhunter.domain.search_strategy_revision import SearchStrategyRevision
 from jobhunter.domain.search_theme import SearchTheme
+from jobhunter.domain.source_scan import SourceScan
+from jobhunter.domain.source_scan_enums import SourceScanStatus
 from jobhunter.domain.skill import Skill
 from jobhunter.domain.strategy_criterion import StrategyCriterion
 from jobhunter.domain.strategy_enums import (
@@ -68,6 +70,8 @@ __all__ = [
     "SearchStrategy",
     "SearchStrategyRevision",
     "SearchTheme",
+    "SourceScan",
+    "SourceScanStatus",
     "Skill",
     "StrategyCriterion",
     "StrategyCriterionCategory",

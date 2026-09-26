@@ -565,6 +565,19 @@ Browser automation should be introduced only where necessary.
 A connector should record enough diagnostic information to determine whether
 a scan succeeded, partially succeeded, or failed.
 
+**Phase 6 (FAO Jobs):** the first implemented connector is
+`FaoJobsConnector`. It acquires vacancies via the public Oracle Taleo Career
+Section JSON endpoint ``POST /careersection/rest/jobboard/searchjobs`` (after
+establishing a session from the public job search page). It maps results to
+`RawOpportunity` only; canonical normalization and lifecycle remain in the
+Phase 5 processing pipeline (`FaoOpportunityNormalizer` is used at processing
+time, not inside the connector).
+
+**SourceScan:** each FAO scan run is recorded in `source_scans` with
+start/completion time, status (`SUCCESS`, `PARTIAL`, `FAILED`, `RUNNING`),
+counts of records retrieved/processed/failed, and optional error summary text.
+This is scan-level provenance, not a scheduling or monitoring platform.
+
 
 ## 12. Raw and Normalized Data
 

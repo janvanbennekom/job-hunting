@@ -31,4 +31,5 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 markers = [
     "integration: PostgreSQL integration tests (require database configuration)",
+    "live: optional tests that call external websites",
 ]

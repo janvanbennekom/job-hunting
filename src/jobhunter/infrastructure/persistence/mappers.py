@@ -10,6 +10,8 @@ from jobhunter.domain import (
     OpportunitySource,
     RawOpportunity,
 )
+from jobhunter.domain.source_scan import SourceScan
+from jobhunter.domain.source_scan_enums import SourceScanStatus
 from jobhunter.domain.opportunity_enums import MaterialChangeField
 from jobhunter.domain.enums import (
     EligibilityStatus,
@@ -23,6 +25,7 @@ from jobhunter.infrastructure.persistence.models import (
     OpportunityRow,
     OpportunitySourceRow,
     RawOpportunityRow,
+    SourceScanRow,
 )
 
 
@@ -173,6 +176,34 @@ def opportunity_change_to_row(entity: OpportunityChange) -> OpportunityChangeRow
         previous_value=entity.previous_value,
         new_value=entity.new_value,
         observed_at=entity.observed_at,
+    )
+
+
+def source_scan_to_row(entity: SourceScan) -> SourceScanRow:
+    return SourceScanRow(
+        id=entity.id,
+        source_id=entity.source_id,
+        started_at=entity.started_at,
+        completed_at=entity.completed_at,
+        status=entity.status.value,
+        records_retrieved=entity.records_retrieved,
+        records_processed=entity.records_processed,
+        records_failed=entity.records_failed,
+        error_summary=entity.error_summary,
+    )
+
+
+def source_scan_to_domain(row: SourceScanRow) -> SourceScan:
+    return SourceScan(
+        id=row.id,
+        source_id=row.source_id,
+        started_at=row.started_at,
+        completed_at=row.completed_at,
+        status=SourceScanStatus(row.status),
+        records_retrieved=row.records_retrieved,
+        records_processed=row.records_processed,
+        records_failed=row.records_failed,
+        error_summary=row.error_summary,
     )
 
 

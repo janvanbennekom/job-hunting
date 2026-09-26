@@ -129,6 +129,25 @@ from jobhunter.infrastructure.logging_config import configure_logging
 configure_logging()
 ```
 
+### FAO Jobs scan (Phase 6)
+
+Acquire vacancies from [FAO Jobs](https://jobs.fao.org/careersection/fao_external/jobsearch.ftl)
+and persist them through the Phase 5 pipeline (requires PostgreSQL and migrations):
+
+```powershell
+# Inspect retrieval/mapping without database writes
+python scripts/scan_fao_jobs.py --dry-run --limit 5 --keyword "GIS"
+
+# Persist a small sample (recommended for first run)
+python scripts/scan_fao_jobs.py --apply --limit 5 --keyword "land"
+```
+
+Optional live smoke test (not part of default pytest):
+
+```powershell
+pytest -m live tests/connectors/test_fao_live.py
+```
+
 ### Opportunity processing fixtures (Phase 5)
 
 Exercise the processing pipeline against representative JSON (requires

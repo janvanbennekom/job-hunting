@@ -10,6 +10,7 @@ from sqlalchemy import (
     Date,
     DateTime,
     ForeignKey,
+    Integer,
     String,
     Text,
     UniqueConstraint,
@@ -33,6 +34,9 @@ class JobSourceRow(Base):
         back_populates="source"
     )
     opportunity_links: Mapped[list[OpportunitySourceRow]] = relationship(
+        back_populates="source"
+    )
+    source_scans: Mapped[list[SourceScanRow]] = relationship(
         back_populates="source"
     )
 
@@ -187,3 +191,33 @@ class OpportunityChangeRow(Base):
     observation: Mapped[OpportunityObservationRow] = relationship(
         back_populates="changes"
     )
+
+
+class SourceScanRow(Base):
+    __tablename__ = "source_scans"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    source_id: Mapped[str] = mapped_column(
+        ForeignKey("job_sources.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    records_retrieved: Mapped[int] = mapped_column(
+        Integer(), nullable=False, default=0
+    )
+    records_processed: Mapped[int] = mapped_column(
+        Integer(), nullable=False, default=0
+    )
+    records_failed: Mapped[int] = mapped_column(
+        Integer(), nullable=False, default=0
+    )
+    error_summary: Mapped[str | None] = mapped_column(Text())
+
+    source: Mapped[JobSourceRow] = relationship(back_populates="source_scans")

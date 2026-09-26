@@ -1236,11 +1236,11 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–5 are complete for the Bootcamp MVP.
+Phases 0–6 are complete for the Bootcamp MVP.
 
 The current implementation step is:
 
-    Phase 6 — First Real Source Connector
+    Phase 7 — Filtering and Eligibility
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.
@@ -1269,8 +1269,11 @@ identify/deduplicate, change detection, lifecycle, persist) with
 `OpportunityObservation` and `OpportunityChange` persistence, deterministic
 identity, and fixture-based tests.
 
-Do not begin Phase 6 automatically. Review opportunity processing results
-before expanding source coverage.
+Phase 6 implemented the first real connector (FAO Jobs) using the public
+Taleo Career Section `searchjobs` JSON API, `SourceScan` persistence, and
+integration with the Phase 5 `OpportunityProcessingService`.
+
+Review Phase 6 scan results before starting Phase 7 filtering.
 
 Accepted Phase 4 design decisions are recorded in Phase 4 above and in
 `architecture.md` §7.5–7.6. Phase 5 processing boundaries and observation

@@ -1,0 +1,37 @@
+{
+  "pagingData": {
+    "currentPageNo": 1,
+    "pageSize": 25,
+    "totalCount": 2
+  },
+  "requisitionList": [
+    {
+      "hotJob": false,
+      "jobId": "3999001",
+      "contestNo": "TEST-2601001",
+      "column": [
+        "Land Administration Specialist",
+        "TEST-2601001",
+        "Non-staff opportunities",
+        "NPP (National Project Personnel)",
+        "[\"Kenya-Nairobi\"]",
+        "01/Jan/2026",
+        "31/Dec/2026, 11:59:00 PM"
+      ]
+    },
+    {
+      "hotJob": false,
+      "jobId": "3999002",
+      "contestNo": "TEST-2601002",
+      "column": [
+        "GIS Analyst",
+        "TEST-2601002",
+        "Staff opportunities",
+        "Professional",
+        "[\"Italy-Rome\"]",
+        "15/Feb/2026",
+        "15/Mar/2026, 11:59:00 PM"
+      ]
+    }
+  ]
+}
