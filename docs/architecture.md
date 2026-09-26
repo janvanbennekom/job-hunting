@@ -284,6 +284,7 @@ The professional profile includes:
 - assignment-to-capability evidence relationships;
 - technical and professional skills;
 - language capabilities;
+- countries of professional experience (country experience evidence);
 - authoritative profile documents.
 
 Capabilities represent a controlled classification of professional experience,
@@ -749,8 +750,12 @@ The initial conceptual domain model includes:
     ProfessionalProfile
     ProfileDocument
     ProfessionalService
-    Skill
+    Capability
     Assignment
+    AssignmentCapability
+    Skill
+    LanguageCapability
+    CountryExperience
 
     SearchStrategy
     SearchStrategyRevision

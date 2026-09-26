@@ -1200,20 +1200,37 @@ spent adding source coverage, conversational strategy management,
 personalisation, or production deployment.
 
 
-# 6. Immediate Next Step
+# 6. Current Implementation Status
 
-The immediate implementation step is:
+Phases 0–3 are complete for the Bootcamp MVP.
 
-    Phase 0 — Repository and Development Foundation
+The current implementation step is:
 
-Before implementation:
+    Phase 4 — Search Strategy and Preferences
 
-1. ensure `AGENTS.md` exists in the repository root;
-2. ensure `docs/architecture.md` exists;
-3. ensure `docs/implementation-plan.md` exists;
-4. initialize Git if not already initialized;
-5. review the repository for any existing files that must be preserved.
+Phase 3 established the professional evidence foundation from the structured
+project spreadsheet, Professional Services document, and CV.
 
-The first Cursor implementation prompt should be limited to Phase 0.
+The implemented professional evidence includes structured professional
+services, assignments, capabilities, assignment-to-capability evidence,
+skills, language capabilities, and country experience, with source
+provenance where applicable.
 
-Do not begin Phase 1 automatically after Phase 0 is complete.
+Phase 4 introduces the separate persistent representation of what the user
+currently wants from JobHunter.
+
+This maintains the architectural distinction between:
+
+    Professional Profile
+    "What can Jan credibly claim?"
+
+and:
+
+    Search Strategy
+    "What work does Jan currently want?"
+
+Do not begin Phase 5 automatically after Phase 4. Review the implemented
+Search Strategy model and initial strategy before beginning the opportunity
+processing pipeline.
+
+Do not change the Phase 4 specification itself at this point.
