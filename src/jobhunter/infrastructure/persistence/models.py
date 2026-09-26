@@ -11,6 +11,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    JSON,
     String,
     Text,
     UniqueConstraint,
@@ -266,3 +267,39 @@ class EligibilityRuleResultRow(Base):
     decision: Mapped[EligibilityDecisionRow] = relationship(
         back_populates="rule_results"
     )
+
+
+class OpportunityProfileAssessmentRow(Base):
+    __tablename__ = "opportunity_profile_assessments"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    opportunity_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunities.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    search_strategy_revision_id: Mapped[str] = mapped_column(
+        ForeignKey("search_strategy_revisions.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+    )
+    eligibility_decision_id: Mapped[str | None] = mapped_column(
+        ForeignKey("eligibility_decisions.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+    assessed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    input_digest: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+    opportunity_content_digest: Mapped[str] = mapped_column(
+        String(64), nullable=False
+    )
+    profile_evidence_digest: Mapped[str] = mapped_column(String(64), nullable=False)
+    prompt_schema_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    model_provider: Mapped[str] = mapped_column(String(64), nullable=False)
+    model_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    validation_warnings: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    result: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    provider_error: Mapped[str | None] = mapped_column(Text())

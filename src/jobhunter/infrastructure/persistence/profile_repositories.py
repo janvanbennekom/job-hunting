@@ -91,6 +91,11 @@ class ProfessionalServiceRepository:
         rows = self._session.scalars(stmt).all()
         return [mappers.professional_service_to_domain(row) for row in rows]
 
+    def list_all(self) -> list[ProfessionalService]:
+        stmt = select(ProfessionalServiceRow).order_by(ProfessionalServiceRow.name)
+        rows = self._session.scalars(stmt).all()
+        return [mappers.professional_service_to_domain(row) for row in rows]
+
 
 class CapabilityRepository:
     def __init__(self, session: Session) -> None:
@@ -115,6 +120,11 @@ class CapabilityRepository:
             return None
         return mappers.capability_to_domain(row)
 
+    def list_all(self) -> list[Capability]:
+        stmt = select(CapabilityRow).order_by(CapabilityRow.code)
+        rows = self._session.scalars(stmt).all()
+        return [mappers.capability_to_domain(row) for row in rows]
+
 
 class AssignmentRepository:
     def __init__(self, session: Session) -> None:
@@ -137,6 +147,14 @@ class AssignmentRepository:
             select(AssignmentRow)
             .where(AssignmentRow.source_document_id == source_document_id)
             .order_by(AssignmentRow.id)
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.assignment_to_domain(row) for row in rows]
+
+    def list_all(self) -> list[Assignment]:
+        stmt = select(AssignmentRow).order_by(
+            AssignmentRow.last_active_year.desc().nullslast(),
+            AssignmentRow.project_name,
         )
         rows = self._session.scalars(stmt).all()
         return [mappers.assignment_to_domain(row) for row in rows]
@@ -167,6 +185,11 @@ class AssignmentCapabilityRepository:
         rows = self._session.scalars(stmt).all()
         return [mappers.assignment_capability_to_domain(row) for row in rows]
 
+    def list_all(self) -> list[AssignmentCapability]:
+        stmt = select(AssignmentCapabilityRow).order_by(AssignmentCapabilityRow.id)
+        rows = self._session.scalars(stmt).all()
+        return [mappers.assignment_capability_to_domain(row) for row in rows]
+
 
 class SkillRepository:
     def __init__(self, session: Session) -> None:
@@ -190,6 +213,11 @@ class SkillRepository:
             .where(SkillRow.source_document_id == source_document_id)
             .order_by(SkillRow.name)
         )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.skill_to_domain(row) for row in rows]
+
+    def list_all(self) -> list[Skill]:
+        stmt = select(SkillRow).order_by(SkillRow.name)
         rows = self._session.scalars(stmt).all()
         return [mappers.skill_to_domain(row) for row in rows]
 
@@ -221,6 +249,11 @@ class CountryExperienceRepository:
         rows = self._session.scalars(stmt).all()
         return [mappers.country_experience_to_domain(row) for row in rows]
 
+    def list_all(self) -> list[CountryExperience]:
+        stmt = select(CountryExperienceRow).order_by(CountryExperienceRow.country)
+        rows = self._session.scalars(stmt).all()
+        return [mappers.country_experience_to_domain(row) for row in rows]
+
 
 class LanguageCapabilityRepository:
     def __init__(self, session: Session) -> None:
@@ -245,6 +278,13 @@ class LanguageCapabilityRepository:
             select(LanguageCapabilityRow)
             .where(LanguageCapabilityRow.source_document_id == source_document_id)
             .order_by(LanguageCapabilityRow.language)
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.language_capability_to_domain(row) for row in rows]
+
+    def list_all(self) -> list[LanguageCapability]:
+        stmt = select(LanguageCapabilityRow).order_by(
+            LanguageCapabilityRow.language
         )
         rows = self._session.scalars(stmt).all()
         return [mappers.language_capability_to_domain(row) for row in rows]

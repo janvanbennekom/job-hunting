@@ -47,6 +47,7 @@ class Settings:
     log_level: str
     database_url: str | None
     openai_api_key: str | None
+    openai_model: str | None
 
     @classmethod
     def from_environ(cls, environ: Mapping[str, str] | None = None) -> Settings:
@@ -58,6 +59,7 @@ class Settings:
             ).upper(),
             database_url=resolve_database_url(env_map),
             openai_api_key=_get_var(env_map, "JOBHUNTER_OPENAI_API_KEY") or None,
+            openai_model=_get_var(env_map, "JOBHUNTER_OPENAI_MODEL") or None,
         )
 
     def require_database_url(self) -> str:

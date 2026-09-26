@@ -8,6 +8,9 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from jobhunter.application.eligibility import EligibilityFilterService
+from jobhunter.application.profile_assessment import OpportunityProfileAssessmentService
+from jobhunter.ai.factory import create_assessment_model
+from jobhunter.infrastructure.config import get_settings
 from jobhunter.application.opportunity_processing import OpportunityProcessingService
 from jobhunter.connectors.fao.connector import FaoJobsConnector
 from jobhunter.connectors.fao.identity import (
@@ -115,6 +118,7 @@ class FaoScanService:
                 try:
                     result = self._processor.process(raw)
                     self._eligibility.evaluate_and_persist(result.opportunity.id)
+                    self._assess_profile_if_configured(result.opportunity.id)
                     processed += 1
                     if result.created_opportunity:
                         created += 1
@@ -151,6 +155,17 @@ class FaoScanService:
             processing_errors=processing_errors,
             mapping_errors=mapping.errors,
         )
+
+    def _assess_profile_if_configured(self, opportunity_id: str) -> None:
+        try:
+            model = create_assessment_model(get_settings())
+        except RuntimeError:
+            return
+        try:
+            service = OpportunityProfileAssessmentService(self._session, model)
+            service.assess_opportunity(opportunity_id)
+        except Exception:  # noqa: BLE001 — assessment must not fail scan
+            return
 
     @staticmethod
     def _resolve_status(

@@ -654,6 +654,34 @@ Use mocked AI responses for routine tests.
 Paid/live model calls should be limited to explicitly identified integration
 tests or manual evaluation.
 
+## Accepted design (Bootcamp MVP)
+
+- One append-only `OpportunityProfileAssessment` per run (logical professional
+  relevance + profile matching sections in one JSON result).
+- `AssessmentModel` port with `FakeAssessmentModel` (tests) and
+  `OpenAIAssessmentModel` (optional live use). Model via
+  `JOBHUNTER_OPENAI_MODEL`; API key via `JOBHUNTER_OPENAI_API_KEY`.
+- Ordinal relevance/alignment only; numeric scoring and ranking remain Phase 9.
+- Deterministic `ProfileEvidenceContextBuilder` with configured caps; profile
+  entity id allowlisting and opportunity excerpt validation.
+- `input_digest` reuse skips repeat LLM calls when opportunity, strategy
+  revision, profile evidence, schema, and model configuration are unchanged.
+- Eligibility gating: auto-assess `ELIGIBLE`, `REVIEW_REQUIRED`, `UNKNOWN`;
+  skip `INELIGIBLE` unless forced; skip `EXPIRED`/`CLOSED` unless forced.
+- FAO list summaries: `source_data_sufficiency` = `LIST_SUMMARY_ONLY`; do not
+  infer missing ToR requirements.
+- Integrated after Phase 7 in FAO scan when OpenAI is configured.
+
+## Acceptance criteria
+
+- Persisted assessments with strategy revision id, digests, provider metadata,
+  validation warnings, and structured JSON result.
+- Normal pytest uses `FakeAssessmentModel` only; optional `live` marker for
+  OpenAI.
+- CLI `scripts/assess_opportunity_profile.py` supports opportunity id, source
+  id, dry-run, force, and include-ineligible.
+- AI failure does not invalidate opportunities or scan results.
+
 
 # Phase 9 — Ranking and Explainability
 
@@ -1236,11 +1264,11 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–7 are complete for the Bootcamp MVP.
+Phases 0–8 are complete for the Bootcamp MVP.
 
 The current implementation step is:
 
-    Phase 8 — AI Relevance and Profile Matching
+    Phase 9 — Ranking and Explainability
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.
@@ -1277,7 +1305,11 @@ Phase 7 implemented deterministic eligibility filtering via
 `EligibilityFilterService`, persistent eligibility decisions and rule results,
 and integration after Phase 5 processing (including FAO scans).
 
-Review Phase 7 eligibility results before starting Phase 8 AI matching.
+Phase 8 implemented AI profile/relevance assessment via
+`OpportunityProfileAssessmentService`, persistent
+`OpportunityProfileAssessment` records, deterministic evidence context
+construction, grounded structured output validation, and integration after
+Phase 7 (including FAO scans when OpenAI is configured).
 
 Accepted Phase 4 design decisions are recorded in Phase 4 above and in
 `architecture.md` §7.5–7.6. Phase 5 processing boundaries and observation

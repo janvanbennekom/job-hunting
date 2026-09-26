@@ -187,16 +187,13 @@ A scan should conceptually execute the following pipeline:
     Detect Changes
       │
       ▼
-    Deterministic Eligibility Filter
+    Deterministic Eligibility Filter (Phase 7)
       │
       ▼
-    AI Relevance Assessment
+    AI Profile / Relevance Assessment (Phase 8)
       │
       ▼
-    AI Profile Match
-      │
-      ▼
-    Ranking
+    Ranking (Phase 9)
       │
       ▼
     Persist Assessment
@@ -716,50 +713,42 @@ TRUE/FALSE/UNKNOWN tri-state semantics where appropriate. Aggregate
 lifecycle), `ELIGIBLE` (may continue— not a quality match), `REVIEW_REQUIRED`
 (suggestive but inconclusive evidence), `UNKNOWN` (insufficient information
 without specific concern). `ProfessionalProfile` is not used in Phase 7.
-Interpreted eligibility and profile matching remain Phase 8+.
+**Phase 8 (AI profile / relevance assessment):** produces one append-only
+`OpportunityProfileAssessment` per evaluation run, with logical sections for
+professional relevance and profile matching. It uses `ProfessionalProfile`
+evidence (via deterministic context selection), the active
+`SearchStrategyRevision` (themes and `PREFERENCE` criteria only—not as
+professional evidence), and Phase 7 rule summaries where interpretation is
+still needed. Output uses **ordinal** relevance and alignment classifications,
+not numeric 0–100 scores. It does not decide whether to apply.
+
+Interpreted eligibility concerns identified in Phase 8 are recorded in the
+assessment; deterministic eligibility remains Phase 7.
 
 
 ## 16. AI Assessment Architecture
 
-AI assessment should return structured results.
+Phase 8 persists a structured `OpportunityProfileAssessment` (JSON result plus
+metadata). A successful assessment includes, among other fields:
 
-A conceptual assessment might contain:
+- `overall_relevance` (ordinal band);
+- `source_data_sufficiency` (e.g. `LIST_SUMMARY_ONLY` for sparse list summaries);
+- `professional_relevance` (scope, delivery mode and seniority **inferences**);
+- grounded `service_alignments`, `assignment_evidence`, `capability_evidence`,
+  `skill_evidence`, `language_evidence`, `country_evidence` (profile entity ids
+  from the context pack only);
+- `theme_alignments` and `preference_notes` (strategy interpretation);
+- `interpreted_eligibility` (Phase 7 UNKNOWN / review-oriented rules);
+- `strengths`, `gaps`, `uncertainties`, `rationale`.
 
-    eligibility:
-        status
-        confidence
-        explanation
+Each grounded item uses `basis`: `OPPORTUNITY_FACT`, `PROFILE_FACT`, or
+`INFERENCE`. Opportunity excerpts must be substrings of supplied opportunity
+fields.
 
-    professional_relevance:
-        score
-        matched_service_areas
-        explanation
-
-    profile_match:
-        domain_score
-        technical_score
-        experience_score
-        seniority_score
-        international_experience_score
-        client_donor_score
-        language_score
-
-    evidence:
-        relevant_assignments
-        relevant_skills
-        relevant_clients
-        relevant_countries
-
-    gaps:
-        ...
-
-    uncertainty:
-        ...
-
-Exact fields and scoring scales will be defined during implementation.
+**Numeric dimension scores and final priority ranking are Phase 9**, not Phase 8.
 
 AI responses used by application logic must be validated against a structured
-schema.
+schema; malformed or ungrounded output must not become trusted assessment data.
 
 
 ## 17. Ranking Architecture
@@ -862,9 +851,9 @@ The initial conceptual domain model includes:
     OpportunityObservation
     OpportunityChange
 
-    EligibilityAssessment
-    RelevanceAssessment
-    ProfileMatchAssessment
+    EligibilityDecision
+    EligibilityRuleResult
+    OpportunityProfileAssessment
     Ranking
 
     OpportunityFeedback
@@ -885,17 +874,19 @@ Application/domain logic should not directly depend on a specific LLM provider.
 
 Use an application-level AI interface.
 
-Conceptually:
+Phase 8 introduces an `AssessmentModel` port (e.g. `assess(request)` returning
+validated structured JSON). Provider-specific implementations (OpenAI, fake/test)
+sit in infrastructure. Model id and API credentials are configuration
+(`JOBHUNTER_OPENAI_MODEL`, `JOBHUNTER_OPENAI_API_KEY`); no vendor SDK in
+domain/application code.
 
-    AIService
+Future capabilities may extend the same pattern:
 
-        assess_relevance(...)
-        match_profile(...)
         interpret_strategy_change(...)
         generate_cover_letter(...)
         tailor_cv(...)
 
-Provider-specific implementations sit behind this interface.
+Provider-specific implementations sit behind application ports.
 
 This allows model choice to evolve independently from the core domain model.
 

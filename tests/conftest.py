@@ -29,6 +29,9 @@ if str(_tests_root) not in sys.path:
     sys.path.insert(0, str(_tests_root))
 
 
+pytest_plugins = ("persistence.conftest",)
+
+
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line(
         "markers",

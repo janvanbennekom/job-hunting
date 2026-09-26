@@ -1,0 +1,54 @@
+"""Enumerations for Phase 8 profile/relevance assessment."""
+
+from __future__ import annotations
+
+from enum import StrEnum
+
+
+class AssessmentStatus(StrEnum):
+    SUCCEEDED = "SUCCEEDED"
+    SUCCEEDED_WITH_WARNINGS = "SUCCEEDED_WITH_WARNINGS"
+    FAILED_VALIDATION = "FAILED_VALIDATION"
+    FAILED_PROVIDER = "FAILED_PROVIDER"
+
+
+class OverallRelevance(StrEnum):
+    STRONG_FIT = "STRONG_FIT"
+    MODERATE_FIT = "MODERATE_FIT"
+    WEAK_FIT = "WEAK_FIT"
+    OUT_OF_SCOPE = "OUT_OF_SCOPE"
+    INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
+    UNKNOWN = "UNKNOWN"
+
+
+class SourceDataSufficiency(StrEnum):
+    LIST_SUMMARY_ONLY = "LIST_SUMMARY_ONLY"
+    PARTIAL = "PARTIAL"
+    ADEQUATE = "ADEQUATE"
+
+
+class AlignmentLevel(StrEnum):
+    STRONG = "STRONG"
+    MODERATE = "MODERATE"
+    WEAK = "WEAK"
+    NONE = "NONE"
+    UNKNOWN = "UNKNOWN"
+    INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
+
+
+class EvidenceBasis(StrEnum):
+    OPPORTUNITY_FACT = "OPPORTUNITY_FACT"
+    PROFILE_FACT = "PROFILE_FACT"
+    INFERENCE = "INFERENCE"
+
+
+class OpportunityEvidenceField(StrEnum):
+    TITLE = "TITLE"
+    DESCRIPTION = "DESCRIPTION"
+    LOCATION = "LOCATION"
+    ORGANISATION = "ORGANISATION"
+    OPPORTUNITY_TYPE = "OPPORTUNITY_TYPE"
+    SOURCE_STATUS = "SOURCE_STATUS"
+
+
+PROFILE_ASSESSMENT_SCHEMA_VERSION = "profile_assessment_v1"

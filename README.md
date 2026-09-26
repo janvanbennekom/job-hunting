@@ -139,6 +139,19 @@ python scripts/evaluate_opportunity_eligibility.py --source-id fao-external-jobs
 
 FAO scans (`--apply`) run Phase 7 automatically after Phase 5 processing.
 
+### Profile / relevance assessment (Phase 8)
+
+Assess opportunities with grounded AI structured output (tests use
+`FakeAssessmentModel`; live OpenAI requires env configuration):
+
+```powershell
+python scripts/assess_opportunity_profile.py --source-id fao-external-jobs
+```
+
+Set `JOBHUNTER_OPENAI_API_KEY` and `JOBHUNTER_OPENAI_MODEL` for OpenAI-backed
+assessment. FAO scans (`--apply`) run Phase 8 after Phase 7 when OpenAI is
+configured; unchanged opportunities reuse prior successful assessments.
+
 ### FAO Jobs scan (Phase 6)
 
 Acquire vacancies from [FAO Jobs](https://jobs.fao.org/careersection/fao_external/jobsearch.ftl)
