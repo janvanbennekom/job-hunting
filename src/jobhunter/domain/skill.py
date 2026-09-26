@@ -17,6 +17,7 @@ class Skill:
     id: str = field(default_factory=new_domain_id)
     category: str | None = None
     description: str | None = None
+    cv_emphasized: bool = False
     source_document_id: str | None = None
 
     def __post_init__(self) -> None:
@@ -30,6 +31,7 @@ class Skill:
                 "name": self.name,
                 "category": self.category,
                 "description": self.description,
+                "cv_emphasized": self.cv_emphasized,
                 "source_document_id": self.source_document_id,
             }
         )
@@ -41,5 +43,6 @@ class Skill:
             name=data["name"],
             category=data.get("category"),
             description=data.get("description"),
+            cv_emphasized=bool(data.get("cv_emphasized", False)),
             source_document_id=data.get("source_document_id"),
         )

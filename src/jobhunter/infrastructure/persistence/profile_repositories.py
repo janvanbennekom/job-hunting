@@ -184,6 +184,15 @@ class SkillRepository:
             return None
         return mappers.skill_to_domain(row)
 
+    def list_by_source_document_id(self, source_document_id: str) -> list[Skill]:
+        stmt = (
+            select(SkillRow)
+            .where(SkillRow.source_document_id == source_document_id)
+            .order_by(SkillRow.name)
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.skill_to_domain(row) for row in rows]
+
 
 class CountryExperienceRepository:
     def __init__(self, session: Session) -> None:
@@ -228,3 +237,14 @@ class LanguageCapabilityRepository:
         if row is None:
             return None
         return mappers.language_capability_to_domain(row)
+
+    def list_by_source_document_id(
+        self, source_document_id: str
+    ) -> list[LanguageCapability]:
+        stmt = (
+            select(LanguageCapabilityRow)
+            .where(LanguageCapabilityRow.source_document_id == source_document_id)
+            .order_by(LanguageCapabilityRow.language)
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.language_capability_to_domain(row) for row in rows]

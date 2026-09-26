@@ -1,0 +1,725 @@
+{
+  "schema_version": 1,
+  "source_reference": "docs/cv_jan_van_bennekom-minnema_uk_details.pdf",
+  "source_document": {
+    "title": "Curriculum Vitae",
+    "version_label": "2026-09-07"
+  },
+  "skills": [
+    {
+      "key": "python",
+      "name": "Python",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "csharp",
+      "name": "C#",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "dotnet",
+      "name": ".NET",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "aspnet-mvc",
+      "name": "ASP.NET MVC",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "plpgsql",
+      "name": "PL/pgSQL",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "django-geodjango",
+      "name": "Django / GeoDjango",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "django-rest-framework",
+      "name": "Django REST Framework (DRF)",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "javascript",
+      "name": "JavaScript",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "react-nextjs",
+      "name": "React / Next.js",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "html-css-bootstrap",
+      "name": "HTML / CSS / Bootstrap",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "angular",
+      "name": "Angular",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "java",
+      "name": "Java",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "php",
+      "name": "PHP",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "vba",
+      "name": "Visual Basic for Applications (VBA)",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "qgis-plugin-processing",
+      "name": "QGIS Plugin and Processing Frameworks",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "rest-api-integration",
+      "name": "REST API development and integration",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "ai-assisted-development",
+      "name": "AI-assisted software development",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "llm-api-integration",
+      "name": "LLM / API integration",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "agentic-ai-workflows",
+      "name": "Agentic AI development and workflow automation",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "visual-studio",
+      "name": "Microsoft Visual Studio",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "oracle-sql-plsql",
+      "name": "Oracle SQL & PL/SQL",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "entity-framework-hibernate",
+      "name": "Entity Framework / Hibernate (ORM)",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "llblgen-pro",
+      "name": "LLBLGen Pro",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "jasperreports",
+      "name": "JasperReports",
+      "category": "programming_development",
+      "cv_emphasized": true
+    },
+    {
+      "key": "devexpress-crystal-oracle-dev",
+      "name": "DevExpress / Crystal Reports / Oracle Developer",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "mapinfo-basic",
+      "name": "MapInfo Basic",
+      "category": "programming_development",
+      "cv_emphasized": false
+    },
+    {
+      "key": "postgresql-postgis",
+      "name": "PostgreSQL / PostGIS",
+      "category": "databases_data",
+      "cv_emphasized": true,
+      "description": "PostGIS geometry, raster, topology; JSON/JSONB; pgRouting; pg_trgm; pgvector"
+    },
+    {
+      "key": "oracle-database-spatial",
+      "name": "Oracle Database / Oracle Spatial",
+      "category": "databases_data",
+      "cv_emphasized": true
+    },
+    {
+      "key": "microsoft-sql-server",
+      "name": "Microsoft SQL Server",
+      "category": "databases_data",
+      "cv_emphasized": true
+    },
+    {
+      "key": "mysql",
+      "name": "MySQL",
+      "category": "databases_data",
+      "cv_emphasized": false
+    },
+    {
+      "key": "sqlite",
+      "name": "SQLite",
+      "category": "databases_data",
+      "cv_emphasized": true
+    },
+    {
+      "key": "firebird",
+      "name": "Firebird",
+      "category": "databases_data",
+      "cv_emphasized": false
+    },
+    {
+      "key": "microsoft-access",
+      "name": "Microsoft Access",
+      "category": "databases_data",
+      "cv_emphasized": true
+    },
+    {
+      "key": "jupyter-geopandas",
+      "name": "Jupyter Notebook / geopandas",
+      "category": "databases_data",
+      "cv_emphasized": true
+    },
+    {
+      "key": "arcpy",
+      "name": "arcpy",
+      "category": "databases_data",
+      "cv_emphasized": false
+    },
+    {
+      "key": "power-bi-streamlit",
+      "name": "Power BI / Streamlit",
+      "category": "databases_data",
+      "cv_emphasized": false
+    },
+    {
+      "key": "fme-etl",
+      "name": "FME (ETL)",
+      "category": "databases_data",
+      "cv_emphasized": false
+    },
+    {
+      "key": "gdal-ogr",
+      "name": "GDAL / OGR",
+      "category": "databases_data",
+      "cv_emphasized": true
+    },
+    {
+      "key": "3dcitydb",
+      "name": "3D City Database",
+      "category": "databases_data",
+      "cv_emphasized": false
+    },
+    {
+      "key": "data-mining-predictive-ml",
+      "name": "Data mining / predictive analytics / ML",
+      "category": "databases_data",
+      "cv_emphasized": false
+    },
+    {
+      "key": "qgis",
+      "name": "QGIS",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "arcgis-pro",
+      "name": "ArcGIS Pro",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "arcgis-online",
+      "name": "ArcGIS Online",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "arcgis-enterprise",
+      "name": "ArcGIS Enterprise",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "arcgis-experience-web",
+      "name": "ArcGIS Experience Builder / Dashboards / Map Viewer / Hub / StoryMaps",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": false
+    },
+    {
+      "key": "geoserver",
+      "name": "GeoServer",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "qgis-server",
+      "name": "QGIS Server",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "mapserver-mapbox",
+      "name": "MapServer / Mapbox",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": false
+    },
+    {
+      "key": "geonode-sdi",
+      "name": "GeoNode SDI",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "qgis-web-client-2",
+      "name": "QGIS Web Client 2",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": false
+    },
+    {
+      "key": "openlayers-leaflet",
+      "name": "OpenLayers / Leaflet",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "sola",
+      "name": "Solutions for Open Land Administration (SOLA)",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "google-earth-global-mapper",
+      "name": "Google Earth Pro / Global Mapper",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": true
+    },
+    {
+      "key": "tilemill-cartocss",
+      "name": "TileMill / CartoCSS",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": false
+    },
+    {
+      "key": "mapinfo-geomedia",
+      "name": "MapInfo / GeoMedia",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": false
+    },
+    {
+      "key": "microstation-autocad",
+      "name": "MicroStation / AutoCAD",
+      "category": "gis_platforms_lis",
+      "cv_emphasized": false
+    },
+    {
+      "key": "iso-19152-ladm",
+      "name": "ISO 19152 Land Administration Domain Model (LADM)",
+      "category": "standards_modelling",
+      "cv_emphasized": true
+    },
+    {
+      "key": "inspire",
+      "name": "INSPIRE",
+      "category": "standards_modelling",
+      "cv_emphasized": false
+    },
+    {
+      "key": "nsdi-frameworks",
+      "name": "NSDI concepts and frameworks",
+      "category": "standards_modelling",
+      "cv_emphasized": true
+    },
+    {
+      "key": "iso-19115-19139-metadata",
+      "name": "ISO 19115 / ISO 19139 metadata",
+      "category": "standards_modelling",
+      "cv_emphasized": false
+    },
+    {
+      "key": "ogc-wms-wfs-wmts-api",
+      "name": "OGC WMS / WFS / WMTS / OGC API",
+      "category": "standards_modelling",
+      "cv_emphasized": true
+    },
+    {
+      "key": "uml-bpmn-ocl",
+      "name": "UML / BPMN / OCL",
+      "category": "standards_modelling",
+      "cv_emphasized": true
+    },
+    {
+      "key": "xml-xpath-xforms",
+      "name": "XML / XPath / XForms",
+      "category": "standards_modelling",
+      "cv_emphasized": false
+    },
+    {
+      "key": "gml-kml-citygml",
+      "name": "GML / KML / CityGML",
+      "category": "standards_modelling",
+      "cv_emphasized": true
+    },
+    {
+      "key": "3d-tiles-collada",
+      "name": "3D Tiles / COLLADA",
+      "category": "standards_modelling",
+      "cv_emphasized": false
+    },
+    {
+      "key": "enterprise-architect-visual-paradigm",
+      "name": "Sparx Enterprise Architect / Visual Paradigm",
+      "category": "standards_modelling",
+      "cv_emphasized": true
+    },
+    {
+      "key": "oracle-designer-visio",
+      "name": "Oracle Designer / Microsoft Visio",
+      "category": "standards_modelling",
+      "cv_emphasized": true
+    },
+    {
+      "key": "capi-land-tenure",
+      "name": "CAPI / land-tenure field collection",
+      "category": "field_collection_3d",
+      "cv_emphasized": false
+    },
+    {
+      "key": "qfield",
+      "name": "QField",
+      "category": "field_collection_3d",
+      "cv_emphasized": false
+    },
+    {
+      "key": "odk-ecosystem",
+      "name": "Open Data Kit (ODK) ecosystem",
+      "category": "field_collection_3d",
+      "cv_emphasized": true,
+      "description": "ODK, ODK Collect, GeoODK Collect, ODK Aggregate, ODK Central"
+    },
+    {
+      "key": "gis4mobile-mapit",
+      "name": "Gis4Mobile / MapIt",
+      "category": "field_collection_3d",
+      "cv_emphasized": true
+    },
+    {
+      "key": "arcgis-field-maps-survey123",
+      "name": "ArcGIS Field Maps / Survey123",
+      "category": "field_collection_3d",
+      "cv_emphasized": true
+    },
+    {
+      "key": "cspro",
+      "name": "CSPro",
+      "category": "field_collection_3d",
+      "cv_emphasized": false
+    },
+    {
+      "key": "cesium-sketchup-blender-unity",
+      "name": "CesiumJS / SketchUp / Blender / Unity 3D",
+      "category": "field_collection_3d",
+      "cv_emphasized": true,
+      "description": "SketchUp emphasized in CV"
+    },
+    {
+      "key": "communityviz-envision",
+      "name": "CommunityViz / Envision Tomorrow",
+      "category": "field_collection_3d",
+      "cv_emphasized": false
+    },
+    {
+      "key": "enterprise-solution-architecture",
+      "name": "Enterprise / Solution Architecture",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": false
+    },
+    {
+      "key": "is-it-strategy",
+      "name": "IS/IT Strategy",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": false
+    },
+    {
+      "key": "togaf-zachman",
+      "name": "TOGAF / Zachman Framework",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": false
+    },
+    {
+      "key": "soa-api-integration",
+      "name": "SOA / API-based integration",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": false
+    },
+    {
+      "key": "archimate-archi",
+      "name": "ArchiMate / Archi Modelling Tool",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": true
+    },
+    {
+      "key": "itil",
+      "name": "ITIL",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": false
+    },
+    {
+      "key": "m-files",
+      "name": "M-Files workflow & document management",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": false
+    },
+    {
+      "key": "docker",
+      "name": "Docker containerisation",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": true
+    },
+    {
+      "key": "git-github",
+      "name": "Git / GitHub",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": true
+    },
+    {
+      "key": "tfs-vss-oracle-scm",
+      "name": "TFS / Visual SourceSafe / Oracle SCM",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": false
+    },
+    {
+      "key": "hetzner-cloud-hosting",
+      "name": "Cloud hosting (Hetzner)",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": true
+    },
+    {
+      "key": "windows-server-ubuntu",
+      "name": "Microsoft Windows Server / Ubuntu",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": true
+    },
+    {
+      "key": "nginx-apache-tomcat-glassfish",
+      "name": "Nginx / Apache HTTP Server / Tomcat / GlassFish",
+      "category": "architecture_infrastructure",
+      "cv_emphasized": false
+    },
+    {
+      "key": "pmbok-prince2-scrum-dsdm-rup",
+      "name": "PMBOK / PRINCE2 / Scrum / DSDM / RUP",
+      "category": "methodologies_procurement",
+      "cv_emphasized": true,
+      "description": "PMBOK emphasized in CV"
+    },
+    {
+      "key": "oracle-pmm-cdm",
+      "name": "Oracle PMM / CDM",
+      "category": "methodologies_procurement",
+      "cv_emphasized": true
+    },
+    {
+      "key": "microsoft-project",
+      "name": "Microsoft Project",
+      "category": "methodologies_procurement",
+      "cv_emphasized": true
+    },
+    {
+      "key": "qa-qc-static-analysis-testing",
+      "name": "QA/QC, static analysis, test strategies",
+      "category": "methodologies_procurement",
+      "cv_emphasized": false
+    },
+    {
+      "key": "donor-procurement",
+      "name": "MCC / World Bank / ADB / DFID(FCDO) / EU procurement procedures",
+      "category": "methodologies_procurement",
+      "cv_emphasized": false
+    }
+  ],
+  "languages": [
+    {
+      "key": "dutch",
+      "language": "Dutch",
+      "proficiency_text": "Speaking: Mother tongue; Reading: Mother tongue; Writing: Mother tongue"
+    },
+    {
+      "key": "english",
+      "language": "English",
+      "proficiency_text": "Speaking: Excellent; Reading: Excellent; Writing: Excellent"
+    },
+    {
+      "key": "spanish",
+      "language": "Spanish",
+      "proficiency_text": "Speaking: Good; Reading: Very good; Writing: Fair"
+    },
+    {
+      "key": "german",
+      "language": "German",
+      "proficiency_text": "Speaking: Fair; Reading: Good; Writing: Basic"
+    },
+    {
+      "key": "french",
+      "language": "French",
+      "proficiency_text": "Speaking: Fair; Reading: Good; Writing: Basic"
+    }
+  ],
+  "countries": [
+    {
+      "country": "Albania",
+      "notes": null
+    },
+    {
+      "country": "Bolivia",
+      "notes": null
+    },
+    {
+      "country": "Botswana",
+      "notes": "resident"
+    },
+    {
+      "country": "Croatia",
+      "notes": null
+    },
+    {
+      "country": "Denmark",
+      "notes": null
+    },
+    {
+      "country": "El Salvador",
+      "notes": null
+    },
+    {
+      "country": "Ethiopia",
+      "notes": null
+    },
+    {
+      "country": "Eswatini (Swaziland)",
+      "notes": null
+    },
+    {
+      "country": "Gambia",
+      "notes": null
+    },
+    {
+      "country": "Germany",
+      "notes": null
+    },
+    {
+      "country": "Ghana",
+      "notes": null
+    },
+    {
+      "country": "Guatemala",
+      "notes": null
+    },
+    {
+      "country": "Guyana",
+      "notes": null
+    },
+    {
+      "country": "Italy",
+      "notes": null
+    },
+    {
+      "country": "Japan",
+      "notes": null
+    },
+    {
+      "country": "Lebanon",
+      "notes": null
+    },
+    {
+      "country": "Lesotho",
+      "notes": "resident"
+    },
+    {
+      "country": "Malawi",
+      "notes": null
+    },
+    {
+      "country": "Mozambique",
+      "notes": null
+    },
+    {
+      "country": "Nepal",
+      "notes": null
+    },
+    {
+      "country": "Poland",
+      "notes": null
+    },
+    {
+      "country": "Romania",
+      "notes": null
+    },
+    {
+      "country": "Rwanda",
+      "notes": null
+    },
+    {
+      "country": "Saudi Arabia",
+      "notes": null
+    },
+    {
+      "country": "Serbia",
+      "notes": null
+    },
+    {
+      "country": "Slovakia",
+      "notes": null
+    },
+    {
+      "country": "The Netherlands",
+      "notes": null
+    },
+    {
+      "country": "Tanzania",
+      "notes": null
+    },
+    {
+      "country": "Timor-Leste",
+      "notes": null
+    },
+    {
+      "country": "Trinidad & Tobago",
+      "notes": null
+    },
+    {
+      "country": "Uzbekistan",
+      "notes": null
+    }
+  ]
+}

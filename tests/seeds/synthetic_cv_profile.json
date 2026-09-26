@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "source_reference": "tests/seeds/synthetic_cv_profile.json",
+  "source_document": {
+    "title": "Synthetic CV",
+    "version_label": "test-1"
+  },
+  "professional_profile": {
+    "display_name": "Synthetic Consultant"
+  },
+  "skills": [
+    {
+      "key": "syn-skill-a",
+      "name": "Synthetic Skill A",
+      "category": "test_cat",
+      "cv_emphasized": true
+    },
+    {
+      "key": "syn-skill-b",
+      "name": "Synthetic Skill B",
+      "category": "test_cat",
+      "cv_emphasized": false
+    },
+    {
+      "key": "syn-skill-c",
+      "name": "Synthetic Skill C",
+      "category": "other_cat",
+      "description": "With description"
+    }
+  ],
+  "languages": [
+    {
+      "key": "dutch",
+      "language": "Dutch",
+      "proficiency_text": "Speaking: Native; Reading: Native; Writing: Native"
+    },
+    {
+      "key": "english",
+      "language": "English",
+      "proficiency_text": "Speaking: Fluent; Reading: Fluent; Writing: Fluent"
+    },
+    {
+      "key": "spanish",
+      "language": "Spanish",
+      "proficiency_text": "Speaking: Basic; Reading: Basic; Writing: Basic"
+    },
+    {
+      "key": "german",
+      "language": "German",
+      "proficiency_text": "Speaking: Basic; Reading: Good; Writing: Basic"
+    },
+    {
+      "key": "french",
+      "language": "French",
+      "proficiency_text": "Speaking: Basic; Reading: Good; Writing: Basic"
+    }
+  ],
+  "countries": [
+    {
+      "country": "Synthetic Country 01",
+      "notes": "resident"
+    },
+    {
+      "country": "Synthetic Country 02",
+      "notes": "resident"
+    },
+    {
+      "country": "Synthetic Country 03",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 04",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 05",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 06",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 07",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 08",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 09",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 10",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 11",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 12",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 13",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 14",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 15",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 16",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 17",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 18",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 19",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 20",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 21",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 22",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 23",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 24",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 25",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 26",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 27",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 28",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 29",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 30",
+      "notes": null
+    },
+    {
+      "country": "Synthetic Country 31",
+      "notes": null
+    }
+  ]
+}

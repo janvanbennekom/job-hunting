@@ -138,6 +138,7 @@ class SkillRow(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     category: Mapped[str | None] = mapped_column(String(255))
     description: Mapped[str | None] = mapped_column(Text())
+    cv_emphasized: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     source_document_id: Mapped[str | None] = mapped_column(
         ForeignKey("profile_documents.id", ondelete="RESTRICT"),
         nullable=True,

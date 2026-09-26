@@ -181,6 +181,7 @@ def skill_to_row(entity: Skill) -> SkillRow:
         name=entity.name,
         category=entity.category,
         description=entity.description,
+        cv_emphasized=entity.cv_emphasized,
         source_document_id=entity.source_document_id,
     )
 
@@ -191,6 +192,7 @@ def skill_to_domain(row: SkillRow) -> Skill:
         name=row.name,
         category=row.category,
         description=row.description,
+        cv_emphasized=row.cv_emphasized,
         source_document_id=row.source_document_id,
     )
 

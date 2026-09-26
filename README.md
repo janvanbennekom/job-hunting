@@ -102,6 +102,16 @@ python scripts/seed_professional_services.py
 python scripts/seed_professional_services.py --apply
 ```
 
+### CV profile seed (Phase 3C.3B)
+
+Load curated CV-derived skills, languages and countries from JSON (dry-run by
+default):
+
+```powershell
+python scripts/seed_cv_profile.py
+python scripts/seed_cv_profile.py --apply
+```
+
 Optional logging setup in code:
 
 ```python
