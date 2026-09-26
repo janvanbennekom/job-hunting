@@ -783,6 +783,18 @@ Ranking weights must be configurable.
 The stored ranking should include an explanation of the important contributing
 factors.
 
+**Phase 9 (deterministic ranking_v1):** `OpportunityRankingService` consumes
+successful production `OpportunityProfileAssessment` results (excluding
+`model_provider=fake` in normal operation) and the active
+`SearchStrategyRevision`. No LLM calls. Internal integer points in
+`ranking_config_v1` drive ordering; user-facing output is priority bands
+(`HIGH`, `MEDIUM`, `LOW`, `REVIEW`) plus `RankingFactor` explanations.
+`UNRANKED` / `EXCLUDED` are statuses, not bands. Rank position is derived
+dynamically when listing candidates (no persisted `rank_sequence`).
+`LIST_SUMMARY_ONLY` adds warnings and a modest score penalty but does not cap
+priority bands. Append-only `OpportunityRanking` rows reference eligibility and
+assessment FKs and an `input_digest` for idempotency.
+
 
 ## 18. Persistence Architecture
 
@@ -854,7 +866,7 @@ The initial conceptual domain model includes:
     EligibilityDecision
     EligibilityRuleResult
     OpportunityProfileAssessment
-    Ranking
+    OpportunityRanking
 
     OpportunityFeedback
 

@@ -692,26 +692,17 @@ strategy.
 
 ## Scope
 
-Implement configurable ranking.
-
-Ranking should combine:
-
-- AI-derived profile assessment;
-- professional-service alignment;
-- current strategic priorities;
-- assignment preferences;
-- eligibility;
-- other explicitly configured factors.
-
-Avoid an opaque end-to-end AI ranking prompt.
-
-Where practical, AI provides assessment dimensions and deterministic logic
-combines them into the final ranking.
+Implement deterministic `ranking_v1` (no LLM). Combine Phase 8 structured
+assessment with active `SearchStrategyRevision` (theme strengths, eligibility
+context). Internal integer points for ordering; user-facing `HIGH` / `MEDIUM` /
+`LOW` / `REVIEW` bands plus factors. Append-only `OpportunityRanking` persistence
+with `input_digest` idempotency. CLI `scripts/rank_opportunities.py`. Production
+ranking excludes `model_provider=fake` unless `--include-fake-assessments`.
 
 ## Required result
 
-Each ranking should explain the main factors that increased or reduced the
-opportunity's priority.
+Each ranking explains main factors; rank order is computed dynamically (no
+persisted `rank_sequence`).
 
 ## Verification
 
@@ -1264,11 +1255,11 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–8 are complete for the Bootcamp MVP.
+Phases 0–9 are complete for the Bootcamp MVP.
 
 The current implementation step is:
 
-    Phase 9 — Ranking and Explainability
+    Phase 10 — Minimal Dashboard
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.
@@ -1310,6 +1301,10 @@ Phase 8 implemented AI profile/relevance assessment via
 `OpportunityProfileAssessment` records, deterministic evidence context
 construction, grounded structured output validation, and integration after
 Phase 7 (including FAO scans when OpenAI is configured).
+
+Phase 9 implemented deterministic prioritisation via
+`OpportunityRankingService`, `ranking_config_v1`, append-only
+`OpportunityRanking` persistence, and `scripts/rank_opportunities.py`.
 
 Accepted Phase 4 design decisions are recorded in Phase 4 above and in
 `architecture.md` §7.5–7.6. Phase 5 processing boundaries and observation

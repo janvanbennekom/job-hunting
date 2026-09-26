@@ -39,6 +39,22 @@ class EligibilityDecisionRepository:
         rows = self._session.scalars(stmt).all()
         return [mappers.eligibility_decision_to_domain(row) for row in rows]
 
+    def get_latest_for_opportunity_and_revision(
+        self, opportunity_id: str, revision_id: str
+    ) -> EligibilityDecision | None:
+        stmt = (
+            select(EligibilityDecisionRow)
+            .where(
+                EligibilityDecisionRow.opportunity_id == opportunity_id,
+                EligibilityDecisionRow.search_strategy_revision_id == revision_id,
+            )
+            .order_by(EligibilityDecisionRow.evaluated_at.desc())
+        )
+        row = self._session.scalars(stmt).first()
+        if row is None:
+            return None
+        return mappers.eligibility_decision_to_domain(row)
+
 
 class EligibilityRuleResultRepository:
     def __init__(self, session: Session) -> None:

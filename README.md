@@ -154,6 +154,21 @@ Automated tests inject `FakeAssessmentModel` directly. FAO scans (`--apply`) run
 Phase 8 after Phase 7 only when OpenAI is configured; unchanged opportunities
 reuse prior successful assessments.
 
+### Opportunity ranking (Phase 9)
+
+Deterministic prioritisation from Phase 8 assessments and active search strategy
+(no AI ranking call):
+
+```powershell
+python scripts/rank_opportunities.py --source-id fao-external-jobs
+```
+
+Production ranking requires OpenAI-backed assessments. Development only:
+
+```powershell
+python scripts/rank_opportunities.py --source-id fao-external-jobs --include-fake-assessments
+```
+
 ### FAO Jobs scan (Phase 6)
 
 Acquire vacancies from [FAO Jobs](https://jobs.fao.org/careersection/fao_external/jobsearch.ftl)

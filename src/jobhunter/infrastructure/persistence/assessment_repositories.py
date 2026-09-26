@@ -59,3 +59,27 @@ class OpportunityProfileAssessmentRepository:
         if row is None:
             return None
         return mappers.assessment_to_domain(row)
+
+    def get_latest_success_for_revision(
+        self,
+        opportunity_id: str,
+        revision_id: str,
+        *,
+        allow_fake: bool = False,
+    ) -> OpportunityProfileAssessment | None:
+        stmt = (
+            select(OpportunityProfileAssessmentRow)
+            .where(
+                OpportunityProfileAssessmentRow.opportunity_id == opportunity_id,
+                OpportunityProfileAssessmentRow.search_strategy_revision_id
+                == revision_id,
+                OpportunityProfileAssessmentRow.status.in_(_SUCCESS_STATUSES),
+            )
+            .order_by(OpportunityProfileAssessmentRow.assessed_at.desc())
+        )
+        for row in self._session.scalars(stmt).all():
+            entity = mappers.assessment_to_domain(row)
+            if entity.model_provider == "fake" and not allow_fake:
+                continue
+            return entity
+        return None
