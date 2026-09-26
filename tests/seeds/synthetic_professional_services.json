@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "source_reference": "tests/seeds/synthetic_professional_services.json",
+  "source_document": {
+    "title": "Synthetic Professional Services",
+    "version_label": "test-1"
+  },
+  "professional_profile": {
+    "display_name": "Synthetic Consultant",
+    "positioning_summary": "Synthetic positioning for integration tests."
+  },
+  "services": [
+    {
+      "key": "syn-service-a",
+      "name": "Synthetic Service A",
+      "description": "First synthetic service.",
+      "is_active": true
+    },
+    {
+      "key": "syn-service-b",
+      "name": "Synthetic Service B",
+      "description": "Second synthetic service.",
+      "is_active": true
+    }
+  ]
+}

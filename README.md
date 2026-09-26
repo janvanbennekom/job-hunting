@@ -93,6 +93,15 @@ ProfileDocument are kept):
 python scripts/import_project_spreadsheet.py --source "docs/2 model_instances - postgres.xlsx" --purge-spreadsheet-assignments --apply
 ```
 
+### Professional Services seed (Phase 3C.2)
+
+Load curated service definitions from JSON (dry-run by default):
+
+```powershell
+python scripts/seed_professional_services.py
+python scripts/seed_professional_services.py --apply
+```
+
 Optional logging setup in code:
 
 ```python

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "source_reference": "docs/professional_services_jan_van_bennekom-minnema_uk.pdf",
+  "source_document": {
+    "title": "Professional Services",
+    "version_label": "2026-07-06"
+  },
+  "professional_profile": {
+    "display_name": "Jan van Bennekom-Minnema",
+    "positioning_summary": "Senior Geo-ICT and Land Administration Specialist with more than 30 years of experience spanning land registration and cadastre, Land Information Systems (LIS), Geographic Information Systems (GIS), urban and spatial planning, Spatial Data Infrastructures (SDI), geospatial software and databases, systems integration, and spatial data science. Work combines strategic advisory support with hands-on implementation across Geo-ICT, land administration and spatial planning, with a balance between implementation-oriented and advisory assignments—from hands-on technical delivery to strategic advice and technical leadership."
+  },
+  "services": [
+    {
+      "key": "lis-implementation",
+      "name": "Land Information System (LIS) Implementation",
+      "description": "Design, develop, configure, deploy, pilot and operationalise modern Land Information Systems, supporting projects from requirements definition through implementation and rollout.",
+      "is_active": true
+    },
+    {
+      "key": "gis-geospatial-systems-implementation",
+      "name": "GIS & Geospatial Systems Implementation",
+      "description": "Design, implement, deploy and maintain enterprise GIS platforms, geospatial databases, web mapping solutions, mobile field data collection systems and spatial data infrastructures, supporting end-to-end field-to-office workflows.",
+      "is_active": true
+    },
+    {
+      "key": "geospatial-software-database-development",
+      "name": "Geospatial Software & Database Development",
+      "description": "Develop, customise, integrate and maintain geospatial software, spatial databases and web-based information systems using open-source and commercial technologies.",
+      "is_active": true
+    },
+    {
+      "key": "geospatial-data-integration-analytics",
+      "name": "Geospatial Data Integration & Spatial Analytics",
+      "description": "Acquire, migrate, integrate and analyse heterogeneous geospatial datasets (including remote sensing imagery, DEMs, cadastral data, infrastructure, demographics, land use and environmental information) to support spatial planning, infrastructure development and land governance.",
+      "is_active": true
+    },
+    {
+      "key": "system-integration-interoperability",
+      "name": "System Integration & Interoperability",
+      "description": "Design and implement interoperability and integration between cadastral, land registration, valuation, planning and other enterprise and government information systems through standards, APIs and shared services.",
+      "is_active": true
+    },
+    {
+      "key": "land-administration-digital-transformation",
+      "name": "Land Administration Digital Transformation",
+      "description": "Design and support the modernisation of cadastral and land registration organisations by combining technology, data, business processes and institutional change, including target architectures, ICT strategies, technical specifications, Terms of Reference, procurement documentation, implementation roadmaps and investment plans.",
+      "is_active": true
+    },
+    {
+      "key": "technical-qa-implementation-support",
+      "name": "Technical Quality Assurance & Implementation Support",
+      "description": "Review system designs, software, databases, data, project deliverables and implementation progress, and communicate practical findings and recommendations to clients, implementation teams and stakeholders to support successful system deployment and operational readiness.",
+      "is_active": true
+    },
+    {
+      "key": "business-process-operational-improvement",
+      "name": "Business Process & Operational Improvement",
+      "description": "Develop practical workflows, Standard Operating Procedures (SOPs) and operational processes in close collaboration with institutional stakeholders to improve the efficiency and effectiveness of day-to-day land administration.",
+      "is_active": true
+    },
+    {
+      "key": "capacity-building-technology-transfer",
+      "name": "Capacity Building & Technology Transfer",
+      "description": "Build long-term institutional capacity through practical training, mentoring, knowledge transfer, workshops and operational support during system implementation, working effectively with multidisciplinary teams in diverse cultural and institutional environments.",
+      "is_active": true
+    }
+  ]
+}

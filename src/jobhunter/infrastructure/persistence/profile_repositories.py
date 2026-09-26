@@ -78,6 +78,17 @@ class ProfessionalServiceRepository:
             return None
         return mappers.professional_service_to_domain(row)
 
+    def list_by_source_document_id(
+        self, source_document_id: str
+    ) -> list[ProfessionalService]:
+        stmt = (
+            select(ProfessionalServiceRow)
+            .where(ProfessionalServiceRow.source_document_id == source_document_id)
+            .order_by(ProfessionalServiceRow.id)
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.professional_service_to_domain(row) for row in rows]
+
 
 class CapabilityRepository:
     def __init__(self, session: Session) -> None:

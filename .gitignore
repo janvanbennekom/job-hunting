@@ -55,10 +55,12 @@ htmlcov/
 Thumbs.db
 desktop.ini
 
-# Local data (runtime; fixtures under data/fixtures/ are tracked)
+# Local data (runtime; fixtures and curated seeds are tracked)
 data/*
 !data/fixtures/
 !data/fixtures/**
+!data/seeds/
+!data/seeds/**
 
 # Logs
 *.log
