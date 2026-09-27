@@ -562,15 +562,24 @@ Browser automation should be introduced only where necessary.
 A connector should record enough diagnostic information to determine whether
 a scan succeeded, partially succeeded, or failed.
 
-**Phase 6 (FAO Jobs):** the first implemented connector is
-`FaoJobsConnector`. It acquires vacancies via the public Oracle Taleo Career
-Section JSON endpoint ``POST /careersection/rest/jobboard/searchjobs`` (after
-establishing a session from the public job search page). It maps results to
-`RawOpportunity` only; canonical normalization and lifecycle remain in the
-Phase 5 processing pipeline (`FaoOpportunityNormalizer` is used at processing
-time, not inside the connector).
+**Implemented connectors (Phase 6 / Phase 12):** each connector acquires source
+records, maps them to `RawOpportunity`, and is orchestrated by a source-specific
+scan service that records `SourceScan` and invokes the shared Phase 5–7 pipeline
+(and Phase 8 when production AI is configured). Source-specific normalizers run
+at processing time, not inside connectors.
 
-**SourceScan:** each FAO scan run is recorded in `source_scans` with
+- **FAO Jobs** — `FaoJobsConnector` via the public Oracle Taleo Career Section
+  JSON endpoint ``POST /careersection/rest/jobboard/searchjobs`` (session from
+  the public job search page). `FaoOpportunityNormalizer`.
+- **DevelopmentAid Jobs** — `DevelopmentAidJobsConnector` via the site's
+  frontend JSON API ``POST /api/frontend/job/search`` and
+  ``GET /api/frontend/job/{id}`` for full HTML descriptions (no account required
+  for search/detail in current use). `DevelopmentAidOpportunityNormalizer`.
+
+Additional sources should follow the same pattern: connector + scan service +
+normalizer; no duplicate eligibility, assessment, or ranking pipelines.
+
+**SourceScan:** each scan run is recorded in `source_scans` with
 start/completion time, status (`SUCCESS`, `PARTIAL`, `FAILED`, `RUNNING`),
 counts of records retrieved/processed/failed, and optional error summary text.
 This is scan-level provenance, not a scheduling or monitoring platform.

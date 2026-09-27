@@ -1255,11 +1255,11 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–11 are complete for the Bootcamp MVP strategy-management slice.
+Phases 0–12 are complete for the Bootcamp MVP multi-source acquisition slice.
 
 The current implementation step is:
 
-    Phase 12 — Multi-Source Expansion
+    Phase 13 — Scheduling and Notifications
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.
@@ -1291,6 +1291,11 @@ identity, and fixture-based tests.
 Phase 6 implemented the first real connector (FAO Jobs) using the public
 Taleo Career Section `searchjobs` JSON API, `SourceScan` persistence, and
 integration with the Phase 5 `OpportunityProcessingService`.
+
+Phase 12 added DevelopmentAid Jobs as the second connector
+(`DevelopmentAidJobsConnector`, frontend JSON search/detail API), demonstrating
+the same SourceScan → Phase 5 → Phase 7 → (optional Phase 8) path without
+source-specific eligibility or dashboard logic.
 
 Phase 7 implemented deterministic eligibility filtering via
 `EligibilityFilterService`, persistent eligibility decisions and rule results,

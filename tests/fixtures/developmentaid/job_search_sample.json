@@ -1,0 +1,38 @@
+{
+  "total": 2,
+  "items": [
+    {
+      "id": 900001,
+      "title": "Senior GIS and Land Administration Specialist",
+      "slug": "senior-gis-land-administration-specialist",
+      "postedDate": "2026-09-20",
+      "organization": {
+        "name": "Example Consulting GmbH",
+        "id": 1001
+      },
+      "locationNames": "Kenya",
+      "expectedStartingDate": "2026-11-01",
+      "deadline": "2026-10-15",
+      "jobType": "Contract, 6 to 12 months",
+      "experience": 8,
+      "fullyVisible": true,
+      "publicationStatus": "live"
+    },
+    {
+      "id": 900002,
+      "title": "GIS Intern",
+      "slug": "gis-intern",
+      "postedDate": "2026-09-21",
+      "organization": {
+        "name": "Sample NGO",
+        "id": 1002
+      },
+      "locationNames": "Remote",
+      "deadline": "2026-10-01",
+      "jobType": "Internship",
+      "experience": 0,
+      "fullyVisible": true,
+      "publicationStatus": "live"
+    }
+  ]
+}

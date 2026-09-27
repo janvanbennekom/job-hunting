@@ -133,7 +133,7 @@ Evaluate persisted opportunities against the active search strategy revision:
 python scripts/evaluate_opportunity_eligibility.py --source-id fao-external-jobs
 ```
 
-FAO scans (`--apply`) run Phase 7 automatically after Phase 5 processing.
+Source scans (`--apply`, e.g. FAO or DevelopmentAid) run Phase 7 automatically after Phase 5 processing.
 
 ### Profile / relevance assessment (Phase 8)
 
@@ -146,7 +146,7 @@ python scripts/assess_opportunity_profile.py --source-id fao-external-jobs
 python scripts/assess_opportunity_profile.py --source-id fao-external-jobs --provider fake
 ```
 
-Automated tests inject `FakeAssessmentModel` directly. FAO scans (`--apply`) run
+Automated tests inject `FakeAssessmentModel` directly. Source scans (`--apply`) run
 Phase 8 after Phase 7 only when OpenAI is configured; unchanged opportunities
 reuse prior successful assessments.
 
@@ -202,6 +202,23 @@ Optional live smoke test (not part of default pytest):
 
 ```powershell
 pytest -m live tests/connectors/test_fao_live.py
+```
+
+### DevelopmentAid Jobs scan (Phase 12)
+
+Acquire vacancies from [DevelopmentAid job search](https://www.developmentaid.org/jobs/search)
+via the public frontend JSON API and the same downstream pipeline as FAO:
+
+```powershell
+python scripts/scan_developmentaid_jobs.py --dry-run --limit 5 --keyword "GIS"
+python scripts/scan_developmentaid_jobs.py --apply --limit 8 --keyword "land administration"
+```
+
+Use `--no-details` to skip per-job detail fetches (list summaries only). Optional
+live smoke test:
+
+```powershell
+pytest -m live tests/connectors/test_developmentaid_live.py
 ```
 
 ### Opportunity processing fixtures (Phase 5)

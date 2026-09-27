@@ -1,0 +1,13 @@
+{
+  "id": 900001,
+  "title": "Senior GIS and Land Administration Specialist",
+  "postedDate": "2026-09-20",
+  "deadline": "2026-10-15",
+  "employer": "Example Consulting GmbH",
+  "description": "<p>Lead implementation of land information system modules.</p><p>Experience with cadastre and PostgreSQL required.</p>",
+  "minimumExperience": 8,
+  "expectedStartingDate": "2026-11-01",
+  "locations": [{"id": 1, "name": "Kenya"}],
+  "languages": [{"id": 92, "name": "English"}],
+  "sectors": [{"id": 10, "name": "Land Administration"}]
+}
