@@ -1,0 +1,24 @@
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.venv
+venv
+htmlcov
+.coverage
+TODO.md
+config/automation.json
+docs/cv_jan_van_bennekom-minnema_uk_details.pdf
+docs/professional_services_jan_van_bennekom-minnema_uk.pdf
+docs/2 model_instances - postgres.xlsx
+tests
+data
+*.md
+!README.md
+terminals

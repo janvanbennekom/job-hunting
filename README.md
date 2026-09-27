@@ -71,6 +71,22 @@ Apply schema migrations:
 alembic upgrade head
 ```
 
+### Docker / Synology deployment
+
+Production packaging uses a **single image** for Streamlit and the scheduled
+worker. See [docs/deployment.md](docs/deployment.md) for build, migrations,
+environment variables, SMTP notifications, and Synology Task Scheduler setup.
+
+Quick start (bundled PostgreSQL):
+
+```powershell
+Copy-Item .env.example .env
+Copy-Item config/automation.example.json config/automation.json
+docker compose build
+docker compose --profile tools run --rm migrate
+docker compose up -d web
+```
+
 ### Project spreadsheet import (Phase 3C.1)
 
 Import structured project/capability data from the local XLSX workbook (dry-run

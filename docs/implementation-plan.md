@@ -1302,6 +1302,10 @@ source scan adapters/registry, `automation_runs` audit persistence,
 production-only batch assessment, optional Phase 9 ranking, and
 `NotificationSender` (console) summaries from persisted state.
 
+**Deployment hardening (post–Phase 13):** Docker image, `docker-compose.yml`,
+[deployment.md](deployment.md), SMTP notification adapter, test isolation for
+developer `.env` OpenAI keys, and gitignored `config/automation.json`.
+
 Phase 7 implemented deterministic eligibility filtering via
 `EligibilityFilterService`, persistent eligibility decisions and rule results,
 and integration after Phase 5 processing (including FAO scans).

@@ -65,7 +65,9 @@ def main(argv: list[str] | None = None) -> int:
     sys.path.insert(0, str(root / "src"))
     _load_env(root / ".env")
 
-    from jobhunter.application.automation.notification import ConsoleNotificationSender
+    from jobhunter.application.automation.notification_factory import (
+        resolve_notification_sender,
+    )
     from jobhunter.application.automation.pipeline import ScheduledPipelineOrchestrator
     from jobhunter.application.automation.schedule import is_schedule_due
     from jobhunter.domain.automation_enums import AutomationTriggerType
@@ -106,7 +108,7 @@ def main(argv: list[str] | None = None) -> int:
         engine = create_engine_from_settings()
         session_factory = create_session_factory(engine)
         sender = (
-            ConsoleNotificationSender()
+            resolve_notification_sender(settings)
             if config.notifications.enabled
             else None
         )

@@ -1213,6 +1213,12 @@ session. The Phase 13 worker (`run_scheduled_pipeline.py`) invokes the same
 application services as per-source CLI scans, with explicit flags for production
 assessment and ranking.
 
+**Deployment packaging:** one Docker image serves Streamlit and the worker CLI.
+Synology (or cron) invokes `docker compose run --rm worker` on a short interval;
+`--apply-if-due` decides whether Mon/Thu 08:00 Europe/Amsterdam applies.
+Notifications use `NotificationSender`: SMTP when `JOBHUNTER_SMTP_*` env vars are
+set, otherwise console output for logs. See [deployment.md](deployment.md).
+
 The architecture should not depend on a specific VPS/cloud provider.
 
 A provider such as Hetzner Cloud is a suitable initial deployment candidate,

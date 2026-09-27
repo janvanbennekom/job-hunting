@@ -42,10 +42,14 @@ def test_resolve_openai_without_config_raises() -> None:
         resolve_assessment_model(settings, "openai")
 
 
-def test_cli_missing_openai_config_exits_before_db() -> None:
-    from scripts.assess_opportunity_profile import main
+def test_cli_missing_openai_config_exits_before_db(monkeypatch) -> None:
+    import scripts.assess_opportunity_profile as cli
 
-    code = main(
+    monkeypatch.setattr(cli, "_load_env", lambda _path: None)
+    monkeypatch.delenv("JOBHUNTER_OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("JOBHUNTER_OPENAI_MODEL", raising=False)
+
+    code = cli.main(
         [
             "--opportunity-id",
             "does-not-matter",

@@ -1,0 +1,72 @@
+# JobHunter — self-contained stack (optional bundled PostgreSQL).
+# Copy .env.example to .env and set secrets before first start.
+# For an existing/external database, set JOBHUNTER_DATABASE_URL in .env and
+# do not start the db service (see docs/deployment.md).
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-job_hunter}
+      POSTGRES_USER: ${POSTGRES_USER:-jobhunter}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - jobhunter_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build: .
+    image: jobhunter:local
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+    command: ["python", "-m", "alembic", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - tools
+
+  web:
+    build: .
+    image: jobhunter:local
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      JOBHUNTER_AUTOMATION_CONFIG: ${JOBHUNTER_AUTOMATION_CONFIG:-/config/automation.json}
+    ports:
+      - "${JOBHUNTER_WEB_PORT:-8501}:8501"
+    volumes:
+      - ${JOBHUNTER_AUTOMATION_CONFIG_HOST:-./config/automation.json}:/config/automation.json:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  worker:
+    build: .
+    image: jobhunter:local
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+      JOBHUNTER_AUTOMATION_CONFIG: ${JOBHUNTER_AUTOMATION_CONFIG:-/config/automation.json}
+    volumes:
+      - ${JOBHUNTER_AUTOMATION_CONFIG_HOST:-./config/automation.json}:/config/automation.json:ro
+    command: ["python", "scripts/run_scheduled_pipeline.py", "--apply-if-due"]
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles:
+      - worker
+
+volumes:
+  jobhunter_pgdata:
