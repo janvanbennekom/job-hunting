@@ -22,6 +22,7 @@ from jobhunter.domain.opportunity_notification_enums import (
 )
 from jobhunter.domain.ranking_enums import PriorityBand, RankingStatus
 from jobhunter.infrastructure.config import Settings
+from jobhunter.infrastructure.web_urls import build_opportunity_dashboard_url
 from jobhunter.infrastructure.persistence.assessment_repositories import (
     OpportunityProfileAssessmentRepository,
 )
@@ -255,10 +256,10 @@ class HighRankingAlertService:
         deadline = (
             opportunity.deadline.isoformat() if opportunity.deadline else None
         )
-        dashboard_url = None
-        base = (self._settings.web_base_url or "").rstrip("/")
-        if base:
-            dashboard_url = f"{base}/?opportunity_id={opportunity.id}"
+        dashboard_url = build_opportunity_dashboard_url(
+            self._settings.web_base_url,
+            opportunity.id,
+        )
         return HighRankingOpportunityAlert(
             opportunity_id=opportunity.id,
             title=opportunity.title,

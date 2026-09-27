@@ -1,0 +1,17 @@
+:8080 {
+	@health path /health
+	handle @health {
+		respond "ok" 200
+	}
+
+	handle /app* {
+		reverse_proxy oauth2-proxy:4180 {
+			flush_interval -1
+		}
+	}
+
+	handle {
+		root * /srv/landing
+		file_server
+	}
+}

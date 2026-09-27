@@ -1,0 +1,3 @@
+# Copy to config/oauth2-proxy/allowed_emails.txt (gitignored).
+# One authorised email address per line (lowercase recommended).
+you@example.com

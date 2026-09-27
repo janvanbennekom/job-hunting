@@ -911,6 +911,17 @@ Immediate SMTP/console alerts for **HIGH** production rankings only:
 
 Phase 8 assessment semantics and Phase 9 ranking semantics are unchanged.
 
+### Synology production deployment milestone (completed)
+
+Deployment/operations work adjacent to Phase 13 (not Phase 14):
+
+- `docker-compose.prod.yml`: edge (Caddy), oauth2-proxy, Streamlit under `/app`,
+  external PostgreSQL only;
+- public static landing at `/`;
+- production SMTP guard and worker PostgreSQL advisory lock;
+- expanded [deployment.md](deployment.md) for DSM reverse proxy, Task Scheduler,
+  backup, and OAuth setup.
+
 ## Important principle
 
 Notifications use persisted scan results.
@@ -1320,8 +1331,12 @@ duplicate-safe immediate HIGH-band opportunity alerts (`opportunity_notification
 `HighRankingAlertService`).
 
 **Deployment hardening (post–Phase 13):** Docker image, `docker-compose.yml`,
-[deployment.md](deployment.md), SMTP notification adapter, test isolation for
-developer `.env` OpenAI keys, and gitignored `config/automation.json`.
+`docker-compose.prod.yml` (Synology: Caddy edge, oauth2-proxy, `/app` Streamlit),
+[deployment.md](deployment.md), SMTP notification adapter, production guards,
+worker advisory lock, test isolation for developer `.env` OpenAI keys, and
+gitignored `config/automation.json` / OAuth allowed-email list.
+
+**Synology production deployment milestone:** complete (see Phase 13 section above).
 
 **Next functional phase:** Phase 14 — Application Tracking (not started).
 

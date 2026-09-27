@@ -83,9 +83,13 @@ Quick start (bundled PostgreSQL):
 Copy-Item .env.example .env
 Copy-Item config/automation.example.json config/automation.json
 docker compose build
-docker compose --profile tools run --rm migrate
-docker compose up -d web
+docker compose --profile bundled-db up -d db
+docker compose --profile bundled-db --profile tools run --rm migrate
+docker compose --profile bundled-db up -d web
 ```
+
+Synology production (external PostgreSQL, oauth2-proxy, public landing) is documented in
+[docs/deployment.md](docs/deployment.md) using `docker-compose.prod.yml`.
 
 ### Project spreadsheet import (Phase 3C.1)
 

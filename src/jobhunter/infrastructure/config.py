@@ -89,8 +89,21 @@ class Settings:
             web_base_url=_get_var(env_map, "JOBHUNTER_WEB_BASE_URL") or None,
         )
 
+    def is_production(self) -> bool:
+        return self.env.strip().lower() == "production"
+
     def smtp_configured(self) -> bool:
         return bool(self.smtp_host and self.smtp_from and self.smtp_to)
+
+    def smtp_production_ready(self) -> bool:
+        """SMTP sufficient for production notification delivery."""
+        if not self.smtp_host or not self.smtp_from or not self.smtp_to:
+            return False
+        if self.smtp_port is None:
+            return False
+        if self.smtp_username and not self.smtp_password:
+            return False
+        return True
 
     def require_database_url(self) -> str:
         if not self.database_url:

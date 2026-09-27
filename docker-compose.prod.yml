@@ -1,0 +1,123 @@
+# Production overlay — external PostgreSQL, edge + oauth2-proxy, no public Streamlit.
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile tools run --rm migrate
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d edge web oauth2-proxy
+
+services:
+  db:
+    profiles:
+      - bundled-db-never
+
+  web:
+    restart: unless-stopped
+    ports: !reset []
+    depends_on: !reset null
+    environment:
+      JOBHUNTER_ENV: production
+      POSTGRES_HOST: ""
+    command:
+      [
+        "streamlit",
+        "run",
+        "src/jobhunter/ui/streamlit/app.py",
+        "--server.port=8501",
+        "--server.address=0.0.0.0",
+        "--server.headless=true",
+        "--server.baseUrlPath=/app",
+        "--server.enableCORS=false",
+        "--server.enableXsrfProtection=true",
+      ]
+    networks:
+      - jobhunter_internal
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-fsS",
+          "http://127.0.0.1:8501/app/_stcore/health",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+
+  worker:
+    depends_on: !reset null
+    environment:
+      JOBHUNTER_ENV: production
+      POSTGRES_HOST: ""
+    networks:
+      - jobhunter_internal
+
+  migrate:
+    depends_on: !reset null
+    environment:
+      POSTGRES_HOST: ""
+    networks:
+      - jobhunter_internal
+
+  oauth2-proxy:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      OAUTH2_PROXY_HTTP_ADDRESS: 0.0.0.0:4180
+      OAUTH2_PROXY_UPSTREAMS: http://web:8501
+      OAUTH2_PROXY_REVERSE_PROXY: "true"
+      OAUTH2_PROXY_PROXY_PREFIX: /app
+      OAUTH2_PROXY_COOKIE_SECURE: "true"
+      OAUTH2_PROXY_COOKIE_SAMESITE: lax
+      OAUTH2_PROXY_SET_XAUTHREQUEST: "true"
+      OAUTH2_PROXY_PASS_ACCESS_TOKEN: "false"
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: "false"
+      OAUTH2_PROXY_AUTHENTICATED_EMAILS_FILE: /config/oauth2-proxy/allowed_emails.txt
+    volumes:
+      - ${JOBHUNTER_OAUTH2_ALLOWED_EMAILS_HOST:-./config/oauth2-proxy/allowed_emails.txt}:/config/oauth2-proxy/allowed_emails.txt:ro
+    networks:
+      - jobhunter_internal
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q -O /dev/null http://127.0.0.1:4180/ping || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  edge:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${JOBHUNTER_EDGE_PORT:-8080}:8080"
+    volumes:
+      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./deploy/landing:/srv/landing:ro
+    depends_on:
+      web:
+        condition: service_healthy
+      oauth2-proxy:
+        condition: service_healthy
+    networks:
+      - jobhunter_internal
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:8080/health",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  jobhunter_internal:
+    driver: bridge

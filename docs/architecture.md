@@ -1045,6 +1045,32 @@ summary notification. A failure sending one HIGH alert does not abort processing
 of other opportunities; failures are recorded in `opportunity_notifications` and
 surfaced in run warnings.
 
+### Synology production deployment
+
+Production on a Synology NAS uses `docker-compose.prod.yml` overlay:
+
+```text
+Internet → DSM HTTPS reverse proxy (jobhunter.jvbgis.com)
+         → edge (Caddy, localhost:8080 only)
+              /     → static landing (no database)
+              /app  → oauth2-proxy (OIDC + allowed-email list)
+                     → Streamlit (internal, baseUrlPath /app)
+```
+
+- **PostgreSQL** remains an **external** server (`JOBHUNTER_DATABASE_URL`); no
+  database container on the NAS.
+- **Worker** and **migrate** are one-shot Compose services; Synology Task Scheduler
+  invokes the worker every ~15 minutes with `--apply-if-due`.
+- **Trust boundary:** only the edge port is exposed to DSM; Streamlit port 8501 is
+  not published on the host.
+- **Authentication** is delegated to oauth2-proxy; JobHunter does not implement user
+  management.
+- **Production guards:** `JOBHUNTER_ENV=production` requires SMTP when notifications
+  are enabled; worker `--apply` uses a PostgreSQL advisory lock to prevent duplicate
+  concurrent runs.
+
+See [deployment.md](deployment.md) for operational steps.
+
 
 ## 25. Notifications
 
@@ -1089,7 +1115,11 @@ retried on a later worker pass until it succeeds or the policy no longer applies
 A materially new append-only ranking that is again HIGH may produce a new alert
 with a new key.
 
-Optional dashboard links in alert email use `JOBHUNTER_WEB_BASE_URL` when set.
+Optional dashboard links in alert email use `JOBHUNTER_WEB_BASE_URL` when set
+(site root or `/app` suffix; application code normalises to `/app/?opportunity_id=…`).
+
+In production, when `JOBHUNTER_ENV=production` and notifications are enabled,
+SMTP must be configured; console fallback is not used for worker delivery.
 
 ### Run summary content
 

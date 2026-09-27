@@ -111,14 +111,30 @@ def main(argv: list[str] | None = None) -> int:
             config.notifications.enabled
             or config.notifications.high_ranking_alerts_enabled
         )
-        sender = resolve_notification_sender(settings) if needs_sender else None
-        with session_scope(session_factory) as session:
-            orchestrator = ScheduledPipelineOrchestrator(
-                session,
-                config,
-                notification_sender=sender,
+        sender = None
+        if needs_sender:
+            sender = resolve_notification_sender(
+                settings,
+                require_smtp_in_production=True,
             )
-            result = orchestrator.run(apply=True, trigger_type=trigger)
+        from jobhunter.application.automation.worker_lock import WorkerAutomationLock
+
+        with session_scope(session_factory) as session:
+            lock = WorkerAutomationLock(session)
+            if not lock.try_acquire():
+                print(
+                    "Another worker holds the JobHunter automation lock; skipping."
+                )
+                return 0
+            try:
+                orchestrator = ScheduledPipelineOrchestrator(
+                    session,
+                    config,
+                    notification_sender=sender,
+                )
+                result = orchestrator.run(apply=True, trigger_type=trigger)
+            finally:
+                lock.release()
     else:
         settings = get_settings()
         settings.require_database_url()

@@ -12,6 +12,38 @@ from jobhunter.application.automation.smtp_notification import SmtpNotificationS
 from jobhunter.infrastructure.config import Settings
 
 
+def test_production_requires_smtp_when_notifications_expected() -> None:
+    settings = Settings(
+        env="production",
+        log_level="INFO",
+        database_url=None,
+        openai_api_key=None,
+        openai_model=None,
+    )
+    import pytest
+
+    with pytest.raises(RuntimeError, match="Production notification"):
+        resolve_notification_sender(settings, require_smtp_in_production=True)
+
+
+def test_production_uses_smtp_when_ready() -> None:
+    settings = Settings(
+        env="production",
+        log_level="INFO",
+        database_url=None,
+        openai_api_key=None,
+        openai_model=None,
+        smtp_host="smtp.example.com",
+        smtp_port=587,
+        smtp_from="jobhunter@example.com",
+        smtp_to="user@example.com",
+        smtp_username="smtp-user",
+        smtp_password="secret",
+    )
+    sender = resolve_notification_sender(settings, require_smtp_in_production=True)
+    assert isinstance(sender, SmtpNotificationSender)
+
+
 def test_resolve_console_when_smtp_incomplete() -> None:
     settings = Settings(
         env="test",

@@ -5,6 +5,8 @@
 
 services:
   db:
+    profiles:
+      - bundled-db
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
