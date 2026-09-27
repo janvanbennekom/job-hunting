@@ -10,6 +10,11 @@ from jobhunter.domain import (
     OpportunitySource,
     RawOpportunity,
 )
+from jobhunter.domain.automation_enums import (
+    AutomationRunStatus,
+    AutomationTriggerType,
+)
+from jobhunter.domain.automation_run import AutomationRun
 from jobhunter.domain.source_scan import SourceScan
 from jobhunter.domain.source_scan_enums import SourceScanStatus
 from jobhunter.domain.opportunity_enums import MaterialChangeField
@@ -19,6 +24,7 @@ from jobhunter.domain.enums import (
     OpportunityType,
 )
 from jobhunter.infrastructure.persistence.models import (
+    AutomationRunRow,
     JobSourceRow,
     OpportunityChangeRow,
     OpportunityObservationRow,
@@ -176,6 +182,42 @@ def opportunity_change_to_row(entity: OpportunityChange) -> OpportunityChangeRow
         previous_value=entity.previous_value,
         new_value=entity.new_value,
         observed_at=entity.observed_at,
+    )
+
+
+def automation_run_to_row(entity: AutomationRun) -> AutomationRunRow:
+    return AutomationRunRow(
+        id=entity.id,
+        started_at=entity.started_at,
+        completed_at=entity.completed_at,
+        status=entity.status.value,
+        trigger_type=entity.trigger_type.value,
+        config_snapshot=entity.config_snapshot,
+        source_scan_ids=entity.source_scan_ids,
+        records_retrieved=entity.records_retrieved,
+        records_processed=entity.records_processed,
+        records_failed=entity.records_failed,
+        sources_succeeded=entity.sources_succeeded,
+        sources_failed=entity.sources_failed,
+        error_summary=entity.error_summary,
+    )
+
+
+def automation_run_to_domain(row: AutomationRunRow) -> AutomationRun:
+    return AutomationRun(
+        id=row.id,
+        started_at=row.started_at,
+        completed_at=row.completed_at,
+        status=AutomationRunStatus(row.status),
+        trigger_type=AutomationTriggerType(row.trigger_type),
+        config_snapshot=dict(row.config_snapshot or {}),
+        source_scan_ids=list(row.source_scan_ids or []),
+        records_retrieved=row.records_retrieved,
+        records_processed=row.records_processed,
+        records_failed=row.records_failed,
+        sources_succeeded=row.sources_succeeded,
+        sources_failed=row.sources_failed,
+        error_summary=row.error_summary,
     )
 
 

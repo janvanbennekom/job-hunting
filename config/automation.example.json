@@ -1,0 +1,31 @@
+{
+  "schedule": {
+    "enabled": true,
+    "timezone": "Europe/Amsterdam",
+    "days_of_week": ["monday", "thursday"],
+    "time_of_day": "08:00"
+  },
+  "pipeline": {
+    "production_assessment_enabled": false,
+    "assessment_required": false,
+    "ranking_enabled": true
+  },
+  "notifications": {
+    "enabled": true
+  },
+  "sources": [
+    {
+      "key": "fao",
+      "enabled": true,
+      "keyword": "",
+      "limit": 25
+    },
+    {
+      "key": "developmentaid",
+      "enabled": true,
+      "keyword": "",
+      "limit": 25,
+      "fetch_details": true
+    }
+  ]
+}

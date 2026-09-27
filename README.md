@@ -204,6 +204,30 @@ Optional live smoke test (not part of default pytest):
 pytest -m live tests/connectors/test_fao_live.py
 ```
 
+### Scheduled pipeline / worker (Phase 13)
+
+Run the full multi-source pipeline once (acquire → Phase 5 → Phase 7 → optional
+Phase 8 → optional Phase 9 → notification). Intended for cron, Synology Task
+Scheduler, or a future Docker worker — not for Streamlit.
+
+Copy `config/automation.example.json` to `config/automation.json` (or set
+`JOBHUNTER_AUTOMATION_CONFIG`) to adjust schedule semantics, enabled sources,
+limits, and whether production OpenAI assessment / ranking / notifications run.
+
+```powershell
+# Safe preview (no SourceScans, opportunities, assessments, rankings, or automation_runs)
+python scripts/run_scheduled_pipeline.py --dry-run
+
+# Manual one-shot run (persists; console notification when enabled)
+python scripts/run_scheduled_pipeline.py --apply
+
+# External scheduler: run only when schedule is due (Europe/Amsterdam weekday/time)
+python scripts/run_scheduled_pipeline.py --apply-if-due
+```
+
+Production automation never uses `FakeAssessmentModel`. Enable OpenAI in config
+(`pipeline.production_assessment_enabled`) only when `JOBHUNTER_OPENAI_*` is set.
+
 ### DevelopmentAid Jobs scan (Phase 12)
 
 Acquire vacancies from [DevelopmentAid job search](https://www.developmentaid.org/jobs/search)

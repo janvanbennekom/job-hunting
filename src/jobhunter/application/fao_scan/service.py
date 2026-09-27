@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+
+from jobhunter.application.source_scan.outcomes import SourceScanOutcomeIds
 from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
@@ -36,6 +38,9 @@ class FaoScanReport:
     processed: int = 0
     failed: int = 0
     created_opportunities: int = 0
+    processed_opportunity_ids: list[str] = field(default_factory=list)
+    new_opportunity_ids: list[str] = field(default_factory=list)
+    materially_updated_opportunity_ids: list[str] = field(default_factory=list)
     processing_errors: list[str] = field(default_factory=list)
     mapping_errors: list[str] = field(default_factory=list)
 
@@ -84,6 +89,7 @@ class FaoScanService:
         keyword: str | None = None,
         limit: int = 10,
         apply: bool = True,
+        run_profile_assessment: bool = True,
     ) -> FaoScanReport:
         started = datetime.now(timezone.utc)
         if apply:
@@ -112,13 +118,16 @@ class FaoScanService:
         failed = len(mapping.errors)
         created = 0
         processing_errors: list[str] = list(mapping.errors)
+        outcome_ids = SourceScanOutcomeIds()
 
         if apply:
             for raw in mapping.raw_opportunities:
                 try:
                     result = self._processor.process(raw)
                     self._eligibility.evaluate_and_persist(result.opportunity.id)
-                    self._assess_profile_if_configured(result.opportunity.id)
+                    if run_profile_assessment:
+                        self._assess_profile_if_configured(result.opportunity.id)
+                    outcome_ids.record(result)
                     processed += 1
                     if result.created_opportunity:
                         created += 1
@@ -152,6 +161,11 @@ class FaoScanService:
             processed=processed if apply else 0,
             failed=failed,
             created_opportunities=created,
+            processed_opportunity_ids=outcome_ids.processed_opportunity_ids,
+            new_opportunity_ids=outcome_ids.new_opportunity_ids,
+            materially_updated_opportunity_ids=(
+                outcome_ids.materially_updated_opportunity_ids
+            ),
             processing_errors=processing_errors,
             mapping_errors=mapping.errors,
         )

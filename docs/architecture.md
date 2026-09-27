@@ -1027,12 +1027,22 @@ The scheduler should support:
 - result aggregation;
 - notification triggering.
 
-The exact scheduling mechanism depends on deployment architecture.
+**Phase 13:** scheduling semantics and pipeline configuration live in JSON
+(`config/automation.example.json`, path override via `JOBHUNTER_AUTOMATION_CONFIG`).
+An external scheduler (cron, Synology Task Scheduler, Docker `schedule`, etc.) should
+invoke `scripts/run_scheduled_pipeline.py --apply-if-due` or `--apply` once and
+exit. The application does not embed a long-running scheduler process.
+
+`ScheduledPipelineOrchestrator` coordinates registered source scan adapters (FAO,
+DevelopmentAid, …), optional production OpenAI assessment, Phase 9 ranking, and
+notification delivery. Each full execution is audited in `automation_runs` with
+links to per-source `source_scans` rows.
 
 
 ## 25. Notifications
 
-The first notification channel should be email.
+Phase 13 introduces `NotificationSender` (console implementation for now). Email
+can be added later without changing orchestration. The first notification channel should be email.
 
 A scan report may contain:
 
@@ -1199,8 +1209,9 @@ PostgreSQL persistence:
    processing (normalize, eligibility, assessment, ranking).
 
 Scheduled scans and pipeline execution must not depend on an active Streamlit
-session. A future scheduler/worker is expected to invoke the same application
-services used by CLI scripts today.
+session. The Phase 13 worker (`run_scheduled_pipeline.py`) invokes the same
+application services as per-source CLI scans, with explicit flags for production
+assessment and ranking.
 
 The architecture should not depend on a specific VPS/cloud provider.
 

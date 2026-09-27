@@ -194,6 +194,42 @@ class OpportunityChangeRow(Base):
     )
 
 
+class AutomationRunRow(Base):
+    __tablename__ = "automation_runs"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, index=True
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    trigger_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    config_snapshot: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default="{}"
+    )
+    source_scan_ids: Mapped[list[str]] = mapped_column(
+        JSONB, nullable=False, server_default="[]"
+    )
+    records_retrieved: Mapped[int] = mapped_column(
+        Integer(), nullable=False, default=0
+    )
+    records_processed: Mapped[int] = mapped_column(
+        Integer(), nullable=False, default=0
+    )
+    records_failed: Mapped[int] = mapped_column(
+        Integer(), nullable=False, default=0
+    )
+    sources_succeeded: Mapped[int] = mapped_column(
+        Integer(), nullable=False, default=0
+    )
+    sources_failed: Mapped[int] = mapped_column(
+        Integer(), nullable=False, default=0
+    )
+    error_summary: Mapped[str | None] = mapped_column(Text())
+
+
 class SourceScanRow(Base):
     __tablename__ = "source_scans"
 

@@ -1255,11 +1255,11 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–12 are complete for the Bootcamp MVP multi-source acquisition slice.
+Phases 0–13 are complete for the Bootcamp MVP unattended-operation slice.
 
 The current implementation step is:
 
-    Phase 13 — Scheduling and Notifications
+    Phase 14 — Application Tracking
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.
@@ -1296,6 +1296,11 @@ Phase 12 added DevelopmentAid Jobs as the second connector
 (`DevelopmentAidJobsConnector`, frontend JSON search/detail API), demonstrating
 the same SourceScan → Phase 5 → Phase 7 → (optional Phase 8) path without
 source-specific eligibility or dashboard logic.
+
+Phase 13 added `ScheduledPipelineOrchestrator`, JSON automation configuration,
+source scan adapters/registry, `automation_runs` audit persistence,
+production-only batch assessment, optional Phase 9 ranking, and
+`NotificationSender` (console) summaries from persisted state.
 
 Phase 7 implemented deterministic eligibility filtering via
 `EligibilityFilterService`, persistent eligibility decisions and rule results,
