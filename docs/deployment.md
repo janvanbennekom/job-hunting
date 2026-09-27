@@ -139,6 +139,18 @@ and notifications without rebuilding the image.
 - **Development / logs:** `ConsoleNotificationSender` (stdout → `docker logs`)
 - **Production email:** configure SMTP env vars; worker uses `SmtpNotificationSender`
 
+Two email types share SMTP when configured:
+
+| Type | When | Notes |
+|------|------|--------|
+| Run summary | End of each applied worker run | Aggregated scan/ranking highlights; MEDIUM may appear here |
+| HIGH opportunity alert | After ranking, per eligible new HIGH row | One message per `high_ranking:{ranking_id}`; no retroactive historical blast |
+
+Set `JOBHUNTER_WEB_BASE_URL` (no trailing slash) so HIGH alerts can link to the
+dashboard (`/?opportunity_id=…`). Toggle immediate HIGH alerts with
+`notifications.high_ranking_alerts_enabled` in `config/automation.json`.
+Failed HIGH sends are stored in `opportunity_notifications` and retried on later runs.
+
 ## Persistence
 
 | Data | Location |

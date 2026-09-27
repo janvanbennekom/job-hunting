@@ -35,9 +35,9 @@ def database_engine():
         version = conn.execute(
             text("SELECT version_num FROM alembic_version")
         ).scalar()
-        if version != "20260927_0012":
+        if version != "20260927_0013":
             pytest.skip(
-                f"Unexpected alembic revision {version!r}; expected 20260927_0012. "
+                f"Unexpected alembic revision {version!r}; expected 20260927_0013. "
                 "Run: alembic upgrade head"
             )
     yield engine

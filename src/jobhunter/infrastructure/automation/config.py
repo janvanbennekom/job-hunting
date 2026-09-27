@@ -102,9 +102,13 @@ class PipelineAutomationConfig:
 @dataclass(frozen=True, slots=True)
 class NotificationAutomationConfig:
     enabled: bool = True
+    high_ranking_alerts_enabled: bool = True
 
     def sanitized_snapshot(self) -> dict[str, Any]:
-        return {"enabled": self.enabled}
+        return {
+            "enabled": self.enabled,
+            "high_ranking_alerts_enabled": self.high_ranking_alerts_enabled,
+        }
 
 
 @dataclass(frozen=True, slots=True)
@@ -215,6 +219,9 @@ def parse_automation_config(data: Mapping[str, Any]) -> AutomationConfig:
     notifications_raw = data.get("notifications") or {}
     notifications = NotificationAutomationConfig(
         enabled=bool(notifications_raw.get("enabled", True)),
+        high_ranking_alerts_enabled=bool(
+            notifications_raw.get("high_ranking_alerts_enabled", True)
+        ),
     )
     sources_raw = data.get("sources")
     if not sources_raw:

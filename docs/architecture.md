@@ -1034,19 +1034,68 @@ invoke `scripts/run_scheduled_pipeline.py --apply-if-due` or `--apply` once and
 exit. The application does not embed a long-running scheduler process.
 
 `ScheduledPipelineOrchestrator` coordinates registered source scan adapters (FAO,
-DevelopmentAid, …), optional production OpenAI assessment, Phase 9 ranking, and
-notification delivery. Each full execution is audited in `automation_runs` with
-links to per-source `source_scans` rows.
+DevelopmentAid, …), optional production OpenAI assessment, Phase 9 ranking,
+HIGH-band opportunity alert evaluation, and end-of-run summary notification.
+Each full execution is audited in `automation_runs` with links to per-source
+`source_scans` rows.
+
+Worker sequence (conceptual): scan → normalize/process → eligibility → production
+assessment → deterministic ranking → **opportunity alert evaluation** → run
+summary notification. A failure sending one HIGH alert does not abort processing
+of other opportunities; failures are recorded in `opportunity_notifications` and
+surfaced in run warnings.
 
 
 ## 25. Notifications
 
-Phase 13 introduces `NotificationSender` (console implementation for now). Email
-can be added later without changing orchestration. The first notification channel should be email.
+Phase 13 introduces `NotificationSender` with `ConsoleNotificationSender` and
+`SmtpNotificationSender` (SMTP when `JOBHUNTER_SMTP_*` is configured).
+
+Two notification kinds share the same transport abstraction:
+
+1. **Scheduled run summary** — aggregated counts and highlights from persisted
+   state at the end of a worker run (MEDIUM opportunities may appear here).
+2. **Immediate HIGH opportunity alert** — one email per newly produced production
+   ranking that satisfies the alert policy (see below).
+
+Notification bodies are built from persisted JobHunter state only; no extra LLM
+calls for email text.
+
+### HIGH immediate alert policy
+
+An immediate alert is sent only when all of the following hold:
+
+- opportunity lifecycle is actionable (not `CLOSED` or `EXPIRED`);
+- eligibility is not `INELIGIBLE`;
+- latest applicable ranking state is `RANKED` with band **HIGH** (`ranking_v1`);
+- linked profile assessment is production (`model_provider` is not `fake`);
+- the ranking outcome from the current worker pass is **new** (`reused` is false —
+  no retroactive blast for historical HIGH rows when the feature is deployed);
+- no prior **successful** delivery exists for this ranking state.
+
+LOW-band opportunities are dashboard-only. MEDIUM-band opportunities are not
+emailed immediately but may still appear in the scheduled run summary.
+
+### Duplicate suppression and retry
+
+Alert identity is tied to the ranking row, not merely `opportunity_id`:
+
+- `notification_key` = `high_ranking:{ranking_id}` (unique in
+  `opportunity_notifications`).
+
+A successful send (`status` = `SENT`) suppresses duplicate delivery for that key.
+A failed send (`status` = `FAILED`, `error_summary` set) remains auditable and is
+retried on a later worker pass until it succeeds or the policy no longer applies.
+A materially new append-only ranking that is again HIGH may produce a new alert
+with a new key.
+
+Optional dashboard links in alert email use `JOBHUNTER_WEB_BASE_URL` when set.
+
+### Run summary content
 
 A scan report may contain:
 
-- new high-ranking opportunities;
+- new high-ranking opportunities (summary context);
 - materially updated opportunities;
 - still-open high-priority opportunities;
 - failed source scans;

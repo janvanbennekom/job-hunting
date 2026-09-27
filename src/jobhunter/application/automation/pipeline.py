@@ -16,6 +16,9 @@ from jobhunter.application.automation.notification import (
     AutomationNotificationSummary,
     NotificationSender,
 )
+from jobhunter.application.automation.high_ranking_alerts import (
+    HighRankingAlertService,
+)
 from jobhunter.application.automation.source_adapters import (
     SourceAdapterResult,
     SourceScanAdapter,
@@ -23,6 +26,7 @@ from jobhunter.application.automation.source_adapters import (
     get_adapter,
 )
 from jobhunter.application.ranking import OpportunityRankingService
+from jobhunter.application.ranking.service import RankingOutcome
 from jobhunter.domain.automation_enums import (
     AutomationRunStatus,
     AutomationTriggerType,
@@ -46,6 +50,8 @@ class PipelineRunResult:
     ranking_ranked: int = 0
     ranking_unranked: int = 0
     notification: AutomationNotificationSummary | None = None
+    high_ranking_alerts_sent: int = 0
+    high_ranking_alerts_failed: int = 0
     warnings: list[str] = field(default_factory=list)
     exit_code: int = 0
 
@@ -154,6 +160,7 @@ class ScheduledPipelineOrchestrator:
         ranking_attempted = 0
         ranking_ranked = 0
         ranking_unranked = 0
+        ranking_outcomes: list[RankingOutcome] = []
         if apply and self._config.pipeline.ranking_enabled and all_processed:
             ranking_service = OpportunityRankingService(self._session)
             unique_ids = _unique_preserve_order(all_processed)
@@ -164,6 +171,7 @@ class ScheduledPipelineOrchestrator:
                         opp_id,
                         include_fake_assessments=False,
                     )
+                    ranking_outcomes.append(outcome)
                     if outcome.ranking.status.value == "RANKED":
                         ranking_ranked += 1
                     else:
@@ -173,6 +181,24 @@ class ScheduledPipelineOrchestrator:
                     ranking_unranked += 1
         elif not apply and self._config.pipeline.ranking_enabled:
             warnings.append("ranking_enabled: would rank processed opportunities (dry-run)")
+
+        high_alerts_sent = 0
+        high_alerts_failed = 0
+        if (
+            apply
+            and self._config.notifications.high_ranking_alerts_enabled
+            and ranking_outcomes
+            and self._notification_sender is not None
+        ):
+            alert_service = HighRankingAlertService(self._session, self._settings)
+            alert_result = alert_service.process_ranking_outcomes(
+                ranking_outcomes,
+                sender=self._notification_sender,
+            )
+            high_alerts_sent = alert_result.sent
+            high_alerts_failed = alert_result.failed
+            for err in alert_result.errors:
+                warnings.append(f"high_ranking_alert: {err}")
 
         if apply and run_entity is not None:
             run_entity = self._finalize_run(
@@ -211,6 +237,8 @@ class ScheduledPipelineOrchestrator:
             ranking_ranked=ranking_ranked,
             ranking_unranked=ranking_unranked,
             notification=notification_summary,
+            high_ranking_alerts_sent=high_alerts_sent,
+            high_ranking_alerts_failed=high_alerts_failed,
             warnings=warnings,
             exit_code=exit_code,
         )

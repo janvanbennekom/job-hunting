@@ -103,10 +103,21 @@ class AutomationNotificationSummary:
 class NotificationSender(Protocol):
     def send(self, summary: AutomationNotificationSummary) -> None: ...
 
+    def send_high_ranking_alert(self, alert: object) -> None: ...
+
 
 class ConsoleNotificationSender:
     def send(self, summary: AutomationNotificationSummary) -> None:
         print(summary.render_text())
+
+    def send_high_ranking_alert(self, alert: object) -> None:
+        from jobhunter.application.automation.high_ranking_alerts import (
+            HighRankingOpportunityAlert,
+        )
+
+        if isinstance(alert, HighRankingOpportunityAlert):
+            print(alert.render_subject())
+            print(alert.render_text())
 
 
 class AutomationNotificationBuilder:

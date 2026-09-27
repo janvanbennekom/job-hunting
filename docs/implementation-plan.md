@@ -896,6 +896,21 @@ Reports should highlight:
 - STILL OPEN high-priority opportunities;
 - source failures where useful.
 
+### Phase 13 extension — HIGH opportunity alerts (completed)
+
+Immediate SMTP/console alerts for **HIGH** production rankings only:
+
+- integrated after Phase 9 ranking in `ScheduledPipelineOrchestrator`;
+- append-only `opportunity_notifications` audit with unique `notification_key`
+  per ranking row (`high_ranking:{ranking_id}`);
+- activation limited to **new** ranking outcomes in the current worker run
+  (`reused` false) — no automatic email for historical HIGH rows;
+- failed sends recorded and retried; successful sends suppress duplicates;
+- `notifications.high_ranking_alerts_enabled` in automation JSON;
+- optional `JOBHUNTER_WEB_BASE_URL` for dashboard links in alert email.
+
+Phase 8 assessment semantics and Phase 9 ranking semantics are unchanged.
+
 ## Important principle
 
 Notifications use persisted scan results.
@@ -1299,12 +1314,16 @@ source-specific eligibility or dashboard logic.
 
 Phase 13 added `ScheduledPipelineOrchestrator`, JSON automation configuration,
 source scan adapters/registry, `automation_runs` audit persistence,
-production-only batch assessment, optional Phase 9 ranking, and
-`NotificationSender` (console) summaries from persisted state.
+production-only batch assessment, optional Phase 9 ranking,
+`NotificationSender` (console/SMTP) run summaries from persisted state, and
+duplicate-safe immediate HIGH-band opportunity alerts (`opportunity_notifications`,
+`HighRankingAlertService`).
 
 **Deployment hardening (post–Phase 13):** Docker image, `docker-compose.yml`,
 [deployment.md](deployment.md), SMTP notification adapter, test isolation for
 developer `.env` OpenAI keys, and gitignored `config/automation.json`.
+
+**Next functional phase:** Phase 14 — Application Tracking (not started).
 
 Phase 7 implemented deterministic eligibility filtering via
 `EligibilityFilterService`, persistent eligibility decisions and rule results,

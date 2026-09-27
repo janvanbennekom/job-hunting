@@ -11,7 +11,8 @@
     "ranking_enabled": true
   },
   "notifications": {
-    "enabled": true
+    "enabled": true,
+    "high_ranking_alerts_enabled": true
   },
   "sources": [
     {

@@ -63,6 +63,7 @@ class Settings:
     smtp_to: str | None = None
     smtp_use_ssl: bool = False
     smtp_starttls: bool = True
+    web_base_url: str | None = None
 
     @classmethod
     def from_environ(cls, environ: Mapping[str, str] | None = None) -> Settings:
@@ -85,6 +86,7 @@ class Settings:
             smtp_to=_get_var(env_map, "JOBHUNTER_SMTP_TO") or None,
             smtp_use_ssl=_get_bool(env_map, "JOBHUNTER_SMTP_USE_SSL"),
             smtp_starttls=_get_bool(env_map, "JOBHUNTER_SMTP_STARTTLS", True),
+            web_base_url=_get_var(env_map, "JOBHUNTER_WEB_BASE_URL") or None,
         )
 
     def smtp_configured(self) -> bool:

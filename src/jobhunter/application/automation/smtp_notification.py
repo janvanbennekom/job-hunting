@@ -59,6 +59,29 @@ class SmtpNotificationSender(NotificationSender):
             self._login(client)
             client.send_message(message)
 
+    def send_high_ranking_alert(self, alert: object) -> None:
+        from jobhunter.application.automation.high_ranking_alerts import (
+            HighRankingOpportunityAlert,
+        )
+
+        if not isinstance(alert, HighRankingOpportunityAlert):
+            raise TypeError("expected HighRankingOpportunityAlert")
+        message = EmailMessage()
+        message["Subject"] = alert.render_subject()
+        message["From"] = self._mail_from
+        message["To"] = self._mail_to
+        message.set_content(alert.render_text())
+        if self._use_ssl:
+            with smtplib.SMTP_SSL(self._host, self._port, timeout=60) as client:
+                self._login(client)
+                client.send_message(message)
+            return
+        with smtplib.SMTP(self._host, self._port, timeout=60) as client:
+            if self._starttls:
+                client.starttls()
+            self._login(client)
+            client.send_message(message)
+
     def _login(self, client: smtplib.SMTP) -> None:
         if self._username and self._password:
             client.login(self._username, self._password)

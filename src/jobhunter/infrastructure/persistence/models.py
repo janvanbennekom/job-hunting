@@ -230,6 +230,38 @@ class AutomationRunRow(Base):
     error_summary: Mapped[str | None] = mapped_column(Text())
 
 
+class OpportunityNotificationRow(Base):
+    __tablename__ = "opportunity_notifications"
+    __table_args__ = (
+        UniqueConstraint(
+            "notification_key",
+            name="uq_opportunity_notifications_key",
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    opportunity_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunities.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    ranking_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunity_rankings.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    notification_type: Mapped[str] = mapped_column(String(32), nullable=False)
+    channel: Mapped[str] = mapped_column(String(16), nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False)
+    attempted_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    sent_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+    error_summary: Mapped[str | None] = mapped_column(Text())
+    notification_key: Mapped[str] = mapped_column(String(128), nullable=False)
+
+
 class SourceScanRow(Base):
     __tablename__ = "source_scans"
 

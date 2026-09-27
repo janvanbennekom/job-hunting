@@ -223,8 +223,12 @@ pytest -m live tests/connectors/test_fao_live.py
 ### Scheduled pipeline / worker (Phase 13)
 
 Run the full multi-source pipeline once (acquire → Phase 5 → Phase 7 → optional
-Phase 8 → optional Phase 9 → notification). Intended for cron, Synology Task
-Scheduler, or a future Docker worker — not for Streamlit.
+Phase 8 → optional Phase 9 → HIGH alert evaluation → run summary notification).
+Intended for cron, Synology Task Scheduler, or Docker worker — not for Streamlit.
+
+Immediate email/console alerts are sent only for **new** production **HIGH**
+rankings (see `docs/architecture.md` §25). Set `JOBHUNTER_WEB_BASE_URL` for
+dashboard links in those emails.
 
 Copy `config/automation.example.json` to `config/automation.json` (or set
 `JOBHUNTER_AUTOMATION_CONFIG`) to adjust schedule semantics, enabled sources,

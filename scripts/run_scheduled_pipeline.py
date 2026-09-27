@@ -107,11 +107,11 @@ def main(argv: list[str] | None = None) -> int:
     if apply:
         engine = create_engine_from_settings()
         session_factory = create_session_factory(engine)
-        sender = (
-            resolve_notification_sender(settings)
-            if config.notifications.enabled
-            else None
+        needs_sender = (
+            config.notifications.enabled
+            or config.notifications.high_ranking_alerts_enabled
         )
+        sender = resolve_notification_sender(settings) if needs_sender else None
         with session_scope(session_factory) as session:
             orchestrator = ScheduledPipelineOrchestrator(
                 session,
