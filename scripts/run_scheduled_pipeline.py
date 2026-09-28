@@ -90,9 +90,14 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if due or not config.schedule.enabled else 1
 
     if args.apply_if_due:
-        if not is_schedule_due(config.schedule):
-            print("Schedule not due; skipping run.")
-            return 0
+        settings = get_settings()
+        settings.require_database_url()
+        engine = create_engine_from_settings(settings)
+        session_factory = create_session_factory(engine)
+        with session_scope(session_factory) as session:
+            if not is_schedule_due(config.schedule, session=session):
+                print("Schedule not due; skipping run.")
+                return 0
         args.apply = True
         args.trigger = "scheduled"
 

@@ -1294,7 +1294,8 @@ assessment and ranking.
 
 **Deployment packaging:** one Docker image serves Streamlit and the worker CLI.
 Synology (or cron) invokes `docker compose run --rm worker` on a short interval;
-`--apply-if-due` decides whether Mon/Thu 08:00 Europe/Amsterdam applies.
+`--apply-if-due` opens on Mon/Thu from 08:00 Europe/Amsterdam (polled ~every
+15 minutes) and skips once a SCHEDULED SUCCESS/PARTIAL run exists that day.
 Notifications use `NotificationSender`: SMTP when `JOBHUNTER_SMTP_*` env vars are
 set, otherwise console output for logs. See [deployment.md](deployment.md).
 

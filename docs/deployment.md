@@ -51,6 +51,26 @@ git pull origin main
 
 Never commit `.env` or `config/automation.json`.
 
+### `config/automation.json` permissions (non-root container)
+
+The application image runs as **`appuser` (UID 10001)**. The worker and web
+containers mount `config/automation.json` read-only at `/config/automation.json`.
+If the file is not readable by UID 10001, startup or worker runs fail with
+`PermissionError`.
+
+On the NAS (example paths):
+
+```bash
+cd /volume1/docker/job-hunter
+chmod 755 config
+chmod 644 config/automation.json
+# Either ownership readable by UID 10001:
+chown 10001:10001 config/automation.json
+# Or keep your admin user but ensure world-read on the file and traverse on config/
+```
+
+Do **not** run the application container as root to work around permissions.
+
 ## D. Build (production)
 
 ```bash
@@ -151,10 +171,14 @@ Restrict PostgreSQL firewall rules to the NAS (and admin workstations).
 
 ## M. Task Scheduler (worker)
 
-**Recommended frequency:** every **15 minutes**.
+**Recommended frequency:** every **15 minutes** (compatible with internal schedule logic).
 
-Internal pipeline schedule (unchanged): Monday and Thursday 08:00
-Europe/Amsterdam via `--apply-if-due`.
+Internal schedule: Monday and Thursday **from 08:00** Europe/Amsterdam. The worker
+does **not** require the external task to fire at exactly 08:00: any poll **on or
+after** 08:00 on a configured weekday may start a run. A second scheduled run the
+same local calendar day is suppressed using persisted `AutomationRun` rows
+(`trigger_type=SCHEDULED`, status SUCCESS or PARTIAL). The PostgreSQL advisory
+lock still prevents overlapping workers.
 
 | Setting | Value |
 |---------|--------|
@@ -189,6 +213,18 @@ Automation summary sent successfully.
 
 If the summary is not sent, look for an explicit skip line (`dry-run`,
 `notifications disabled`, or `no notification sender`) instead of the success line.
+
+**When not due** (typical off-window poll): stdout is only:
+
+```text
+Schedule not due; skipping run.
+```
+
+(exit code 0; no scans, OpenAI, or email).
+
+**DSM settings:** enable **Send run details to DSM** (or equivalent) so stdout is
+retained in Task Scheduler history. Run the task as a user that can execute
+`sudo docker` (often `admin` / `root`).
 
 **Disable safely:** disable or delete the DSM scheduled task (stack keeps running).
 
