@@ -1008,6 +1008,37 @@ port (OpenAI or explicit fake for tests). Structured mutations are validated
 and shown as a diff; only user confirmation activates a new immutable
 `SearchStrategyRevision` with `RevisionChangeSource.CONVERSATION_CONFIRMED`.
 
+Phase 15 extends the dashboard for operators:
+
+- **Search strategy display** — `jobhunter.application.strategy_display` builds
+  tabular presentation DTOs from `ActiveStrategyView` (themes, preferences, hard
+  constraints, exclusions) with human-readable labels; canonical strategy data
+  remains in revision snapshots.
+- **Structured strategy edits** — `StructuredStrategyEditService` applies the
+  same deterministic `apply_mutations` path as conversational proposals, without
+  an LLM; confirmation uses `RevisionChangeSource.STRUCTURED_EDIT`.
+- **Navigation** — `ui/streamlit/navigation.py` and query parameters link Home
+  counts to filtered Opportunities and to
+  `opportunity_detail?opportunity_id=…` (also used in HIGH alert emails via
+  `build_opportunity_dashboard_url`).
+- **Sources** — `jobhunter.application.sources` is registry-driven
+  (`registry.py`); operational acquisition settings remain in
+  `automation.json` and do **not** create `SearchStrategyRevision` rows.
+  Scan health and opportunity link counts come from PostgreSQL.
+
+**Configuration separation (enforced conceptually):**
+
+| Concern | Question | Persistence | Creates strategy revision? |
+|--------|----------|-------------|----------------------------|
+| Search strategy | What opportunities do I want? | `SearchStrategyRevision` | Yes |
+| Source configuration | Where/how broadly to scan? | `automation.json` (+ connector code) | No |
+| Automation | When/how to run and notify? | `automation.json`, worker env | No |
+
+**Future connectors:** register metadata in `application/sources/registry.py`,
+add `KNOWN_SOURCE_KEYS` / `SOURCE_KEY_TO_JOB_SOURCE_ID`, and a `sources` entry
+in `automation.json`; the Sources UI lists registered connectors without
+hard-coding a fixed pair.
+
 
 ## 24. Scheduling
 

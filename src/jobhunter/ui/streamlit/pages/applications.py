@@ -12,6 +12,7 @@ from jobhunter.application.pursuit import (
 )
 from jobhunter.domain.pursuit_enums import PursuitStatus
 from jobhunter.ui.streamlit.bootstrap import get_session_factory
+from jobhunter.ui.streamlit.navigation import navigate_to_opportunity_detail
 from jobhunter.ui.streamlit.sidebar import render_sidebar
 
 render_sidebar()
@@ -61,18 +62,14 @@ for item in items:
     if overdue:
         label += " · overdue next action"
     with st.expander(label, expanded=False):
-        st.write(
-            {
-                "organisation": item.organisation,
-                "source": item.source_name,
-                "band": item.priority_band,
-                "deadline": str(item.submission_deadline or ""),
-                "next_action": item.next_action,
-                "next_action_date": str(item.next_action_date or ""),
-            }
-        )
+        st.write(f"**Organisation:** {item.organisation or '—'}")
+        st.write(f"**Source:** {item.source_name or '—'}")
+        st.write(f"**Ranking band:** {item.priority_band or '—'}")
+        st.write(f"**Submission deadline:** {item.submission_deadline or '—'}")
+        st.write(f"**Next action:** {item.next_action or '—'}")
+        if item.next_action_date:
+            st.write(f"**Next action date:** {item.next_action_date}")
         if item.primary_url:
             st.link_button("Open source", item.primary_url, key=f"src-{item.opportunity_id}")
-        if st.button("Open in JobHunter", key=f"detail-{item.opportunity_id}"):
-            st.session_state["selected_opportunity_id"] = item.opportunity_id
-            st.switch_page("pages/opportunity_detail.py")
+        if st.button("Open opportunity detail", key=f"detail-{item.opportunity_id}"):
+            navigate_to_opportunity_detail(item.opportunity_id)

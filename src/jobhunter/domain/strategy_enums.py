@@ -13,6 +13,7 @@ class RevisionStatus(StrEnum):
 class RevisionChangeSource(StrEnum):
     INITIAL_SEED = "INITIAL_SEED"
     MANUAL = "MANUAL"
+    STRUCTURED_EDIT = "STRUCTURED_EDIT"
     CONVERSATION_CONFIRMED = "CONVERSATION_CONFIRMED"
     IMPORT = "IMPORT"
 

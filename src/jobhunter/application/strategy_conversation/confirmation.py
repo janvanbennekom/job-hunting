@@ -77,7 +77,7 @@ class StrategyChangeConfirmationService:
             owner_key,
             proposal.proposed_bundle,
             change_summary=proposal.change_summary,
-            change_source=RevisionChangeSource.CONVERSATION_CONFIRMED,
+            change_source=proposal.change_source,
             apply=True,
         )
         if result.no_op:

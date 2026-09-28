@@ -3,6 +3,7 @@
 from jobhunter.infrastructure.web_urls import (
     build_opportunity_dashboard_url,
     normalize_dashboard_base_url,
+    parse_opportunity_id_from_query,
 )
 
 
@@ -25,4 +26,13 @@ def test_build_opportunity_dashboard_url() -> None:
         "https://jobhunter.jvbgis.com",
         "opp-123",
     )
-    assert url == "https://jobhunter.jvbgis.com/app/?opportunity_id=opp-123"
+    assert url == "https://jobhunter.jvbgis.com/app/opportunity_detail?opportunity_id=opp-123"
+
+
+def test_parse_opportunity_id_from_query() -> None:
+    assert (
+        parse_opportunity_id_from_query({"opportunity_id": "abc"})
+        == "abc"
+    )
+    assert parse_opportunity_id_from_query({"id": "legacy"}) == "legacy"
+    assert parse_opportunity_id_from_query({}) is None

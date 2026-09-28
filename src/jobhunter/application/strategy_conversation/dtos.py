@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
+from jobhunter.domain import RevisionChangeSource
 from jobhunter.domain.revision_content_bundle import RevisionContentBundle
 
 
@@ -46,6 +47,7 @@ class StrategyChangeProposal:
     model_provider: str | None = None
     model_name: str | None = None
     provider_error: str | None = None
+    change_source: RevisionChangeSource = RevisionChangeSource.CONVERSATION_CONFIRMED
 
 
 @dataclass(frozen=True, slots=True)

@@ -216,13 +216,31 @@ from review triage SHORTLIST / INVESTIGATE / DISMISS). Use **Start pursuing** on
 opportunity detail or the **Applications** work queue. Requires Alembic revision
 `20260928_0014`.
 
-### Search strategy (Phase 11)
+### Search strategy (Phase 11 + Phase 15)
 
-Evolve the active search strategy through natural language on the **Search
-strategy** Streamlit page. Proposals require explicit confirmation before a new
-immutable revision is activated. OpenAI requires `JOBHUNTER_OPENAI_API_KEY` and
-`JOBHUNTER_OPENAI_MODEL`; choose the **fake** provider in the UI for local
-development only.
+The **Search strategy** page shows themes, criteria, and exclusions in
+structured tables. Change strategy in two ways (both create a new immutable
+revision only after you confirm a diff):
+
+1. **Structured edit** — deterministic field changes (no LLM).
+2. **Request a change** — natural language interpreted by OpenAI or the
+   explicit fake provider for development.
+
+Operational source limits and keywords are **not** strategy revisions; see
+**Sources** and `config/automation.json`.
+
+### Operator UI (Phase 15)
+
+- **Home** — lifecycle, eligibility, and ranking summaries as tables; click a
+  count to open **Opportunities** with the matching filter.
+- **Opportunities** / **Applications** — open opportunity detail without
+  entering UUIDs; deep links:
+  `…/app/opportunity_detail?opportunity_id=<uuid>`.
+- **Sources** — registry-driven scan status and `automation.json` acquisition
+  settings (read-only in UI; edit the file on the deployment host).
+
+HIGH-ranking email alerts use `JOBHUNTER_WEB_BASE_URL` for the same detail
+links when configured.
 
 ### FAO Jobs scan (Phase 6)
 

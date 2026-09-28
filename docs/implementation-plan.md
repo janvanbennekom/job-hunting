@@ -96,10 +96,11 @@ The planned phases are:
 | 12 | Multi-Source Expansion |
 | 13 | Scheduling and Notifications |
 | 14 | Application Tracking |
-| 15 | CV and Cover-Letter Personalisation |
-| 16 | XLSX Export and Operational Features |
-| 17 | Deployment |
-| 18 | Hardening and Further Evolution |
+| 15 | Operational UI and Configuration |
+| 16 | CV and Cover-Letter Personalisation |
+| 17 | XLSX Export and Operational Features |
+| 18 | Deployment |
+| 19 | Hardening and Further Evolution |
 
 Phases may contain multiple bounded implementation steps.
 
@@ -952,11 +953,56 @@ Support the workflow after the user decides to pursue an opportunity.
 ## Deferred to later phases
 
 - Email/calendar reminders for next actions and deadlines
-- CV/cover-letter/EOI generation (Phase 15)
+- CV/cover-letter/EOI generation (Phase 16)
 - Automatic external submission
 
 
-# Phase 15 — CV and Cover-Letter Personalisation
+# Phase 15 — Operational UI and Configuration
+
+## Objective
+
+Improve the Streamlit dashboard as an **operator-facing** application: readable
+strategy and dashboard views, structured strategy editing, navigation and
+deep links, and operational source visibility—without changing eligibility,
+assessment, ranking, pursuit, notifications, or scheduling semantics.
+
+## Scope
+
+- Replace JSON/developer-oriented strategy and dashboard summaries with
+  structured tables and human-readable labels.
+- **Structured edit** route for search strategy: deterministic mutations →
+  diff → confirmation → new `SearchStrategyRevision`
+  (`RevisionChangeSource.STRUCTURED_EDIT`), reusing
+  `SearchStrategyActivationService` (NO-OP when `content_hash` unchanged).
+- Retain Phase 11 **Request a change** (LLM) route; both routes converge on
+  the same activation path.
+- Dashboard drill-down from lifecycle/eligibility/ranking counts to filtered
+  Opportunities (query parameters).
+- Opportunities and Applications → Opportunity detail without UUID copy/paste;
+  bookmarkable `/app/opportunity_detail?opportunity_id=…`.
+- HIGH-ranking notification links to opportunity detail via
+  `JOBHUNTER_WEB_BASE_URL` and `build_opportunity_dashboard_url`.
+- **Sources** page: registry-driven operational status (scans, counts) with
+  acquisition settings read from `automation.json` (operational config, not
+  strategy revisions).
+- Document separation: **search strategy** (revisioned) vs **source
+  configuration** vs **automation** (schedule/worker/notifications).
+
+## Out of scope
+
+- New source connectors.
+- Persisted source configuration in PostgreSQL (deferred; Option A:
+  `automation.json` remains authoritative for acquisition settings).
+- CV/cover-letter generation.
+
+## Verification
+
+- Full test suite green; focused tests for presentation, structured edits,
+  URLs, and source registry.
+- No Alembic migration required when reusing existing strategy schema.
+
+
+# Phase 16 — CV and Cover-Letter Personalisation
 
 ## Objective
 
@@ -1011,7 +1057,7 @@ Generated documents are drafts until accepted by the user.
 No automatic external application submission is included in this phase.
 
 
-# Phase 16 — XLSX Export and Operational Features
+# Phase 17 — XLSX Export and Operational Features
 
 ## Objective
 
@@ -1050,7 +1096,7 @@ Also review requirements for:
 Implement only features demonstrated to be useful.
 
 
-# Phase 17 — Deployment
+# Phase 18 — Deployment
 
 ## Objective
 
@@ -1114,7 +1160,7 @@ Initially:
 CI/CD is optional and should be introduced only when useful.
 
 
-# Phase 18 — Hardening and Further Evolution
+# Phase 19 — Hardening and Further Evolution
 
 ## Objective
 
@@ -1269,12 +1315,14 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–14 are complete for the Bootcamp MVP and production pursuit-tracking slice.
-Phase 15 (CV/cover-letter personalisation) is the current planned phase.
+Phases 0–15 are complete for the Bootcamp MVP, production operations, pursuit
+tracking, and operator-facing UI/configuration.
 
 The current implementation step is:
 
-    Phase 14 — Application Tracking
+    Phase 15 — Operational UI and Configuration
+
+Phase 16 (CV/cover-letter personalisation) is the next planned phase.
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.

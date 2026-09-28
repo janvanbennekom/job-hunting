@@ -14,6 +14,7 @@ from jobhunter.application.review import HumanReviewService, OpportunityDetailSe
 from jobhunter.domain.pursuit_enums import PursuitStatus
 from jobhunter.domain.review_enums import ReviewDisposition
 from jobhunter.ui.streamlit.bootstrap import allow_fake_results, get_session_factory
+from jobhunter.ui.streamlit.navigation import resolve_opportunity_id_from_url
 from jobhunter.ui.streamlit.sidebar import render_sidebar
 
 render_sidebar()
@@ -21,11 +22,17 @@ render_sidebar()
 st.title("Opportunity detail")
 
 session_factory = get_session_factory()
-default_id = st.session_state.get("selected_opportunity_id", "")
-opportunity_id = st.text_input("Opportunity id", value=default_id)
+opportunity_id = (
+    resolve_opportunity_id_from_url()
+    or st.session_state.get("selected_opportunity_id")
+    or ""
+)
 
 if not opportunity_id:
-    st.info("Select an opportunity from the Opportunities page or enter an id.")
+    st.info(
+        "Open an opportunity from **Opportunities** or **Applications**, or use a "
+        "bookmark link with `?opportunity_id=…`."
+    )
     st.stop()
 
 with session_factory() as session:
@@ -39,7 +46,6 @@ if detail is None:
 
 facts = detail.facts
 st.header(facts.title)
-st.caption(f"Opportunity id: {facts.opportunity_id}")
 
 if facts.primary_external_url:
     st.link_button("Open source posting", facts.primary_external_url)
