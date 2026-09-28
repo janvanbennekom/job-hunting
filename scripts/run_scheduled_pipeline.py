@@ -68,6 +68,9 @@ def main(argv: list[str] | None = None) -> int:
     from jobhunter.application.automation.notification_factory import (
         resolve_notification_sender,
     )
+    from jobhunter.application.automation.notification_observability import (
+        report_notification_sender,
+    )
     from jobhunter.application.automation.pipeline import ScheduledPipelineOrchestrator
     from jobhunter.application.automation.schedule import is_schedule_due
     from jobhunter.domain.automation_enums import AutomationTriggerType
@@ -117,6 +120,7 @@ def main(argv: list[str] | None = None) -> int:
                 settings,
                 require_smtp_in_production=True,
             )
+        report_notification_sender(sender, needs_sender=needs_sender)
         from jobhunter.application.automation.worker_lock import WorkerAutomationLock
 
         with session_scope(session_factory) as session:

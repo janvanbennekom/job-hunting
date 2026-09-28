@@ -16,6 +16,10 @@ from jobhunter.application.automation.notification import (
     AutomationNotificationSummary,
     NotificationSender,
 )
+from jobhunter.application.automation.notification_observability import (
+    deliver_automation_summary,
+    report_summary_skipped_notifications_disabled,
+)
 from jobhunter.application.automation.high_ranking_alerts import (
     HighRankingAlertService,
 )
@@ -224,8 +228,14 @@ class ScheduledPipelineOrchestrator:
                 updated_ids=_unique_preserve_order(all_updated),
                 warnings=warnings,
             )
-            if apply and self._config.notifications.enabled and self._notification_sender:
-                self._notification_sender.send(notification_summary)
+            deliver_automation_summary(
+                self._notification_sender,
+                notification_summary,
+                apply=apply,
+                notifications_enabled=self._config.notifications.enabled,
+            )
+        elif apply:
+            report_summary_skipped_notifications_disabled()
 
         exit_code = _compute_exit_code(source_results, run_entity)
         return PipelineRunResult(

@@ -178,6 +178,18 @@ a run is due.
 sudo docker compose -f docker-compose.prod.yml --profile worker run --rm worker
 ```
 
+After a due apply run with `notifications.enabled: true`, stdout should include
+notification delivery markers (no secrets):
+
+```text
+Notification sender: SmtpNotificationSender
+Sending automation summary via SmtpNotificationSender...
+Automation summary sent successfully.
+```
+
+If the summary is not sent, look for an explicit skip line (`dry-run`,
+`notifications disabled`, or `no notification sender`) instead of the success line.
+
 **Disable safely:** disable or delete the DSM scheduled task (stack keeps running).
 
 **Manual verification (immediate, not schedule-gated):**
