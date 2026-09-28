@@ -5,8 +5,15 @@
 	}
 
 	handle /app* {
-		reverse_proxy oauth2-proxy:4180 {
+		basic_auth {
+			{$JOBHUNTER_BASIC_AUTH_USER} {$JOBHUNTER_BASIC_AUTH_HASH}
+		}
+		reverse_proxy web:8501 {
 			flush_interval -1
+			header_up Host {http.request.host}
+			header_up X-Forwarded-Host {http.request.host}
+			header_up X-Forwarded-Proto https
+			header_up X-Forwarded-Port 443
 		}
 	}
 

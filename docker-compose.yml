@@ -29,12 +29,7 @@ services:
     build: .
     image: jobhunter:local
     env_file: .env
-    environment:
-      POSTGRES_HOST: db
     command: ["python", "-m", "alembic", "upgrade", "head"]
-    depends_on:
-      db:
-        condition: service_healthy
     profiles:
       - tools
 
@@ -44,29 +39,21 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      POSTGRES_HOST: db
       JOBHUNTER_AUTOMATION_CONFIG: ${JOBHUNTER_AUTOMATION_CONFIG:-/config/automation.json}
     ports:
       - "${JOBHUNTER_WEB_PORT:-8501}:8501"
     volumes:
       - ${JOBHUNTER_AUTOMATION_CONFIG_HOST:-./config/automation.json}:/config/automation.json:ro
-    depends_on:
-      db:
-        condition: service_healthy
 
   worker:
     build: .
     image: jobhunter:local
     env_file: .env
     environment:
-      POSTGRES_HOST: db
       JOBHUNTER_AUTOMATION_CONFIG: ${JOBHUNTER_AUTOMATION_CONFIG:-/config/automation.json}
     volumes:
       - ${JOBHUNTER_AUTOMATION_CONFIG_HOST:-./config/automation.json}:/config/automation.json:ro
     command: ["python", "scripts/run_scheduled_pipeline.py", "--apply-if-due"]
-    depends_on:
-      db:
-        condition: service_healthy
     profiles:
       - worker
 

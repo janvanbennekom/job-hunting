@@ -1,0 +1,32 @@
+# Optional overlay: local PostgreSQL container (service name `db`, port 5432).
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.bundled-db.yml \
+#     --profile bundled-db --profile tools run --rm migrate
+#
+# For external PostgreSQL (e.g. db.jvbgis.com), do NOT use this file. Set
+# JOBHUNTER_DATABASE_URL in .env and run compose without --profile bundled-db.
+
+services:
+  migrate:
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+
+  web:
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+
+  worker:
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"

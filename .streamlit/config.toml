@@ -1,0 +1,9 @@
+# Shared Streamlit settings (baseUrlPath set in production via docker-compose command).
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = true
+enableWebsocketCompression = true
+
+[browser]
+gatherUsageStats = false

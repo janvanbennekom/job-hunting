@@ -1047,14 +1047,14 @@ surfaced in run warnings.
 
 ### Synology production deployment
 
-Production on a Synology NAS uses `docker-compose.prod.yml` overlay:
+Production on a Synology NAS uses standalone `docker-compose.prod.yml` (external
+PostgreSQL, no merge/`!reset` with the dev compose file):
 
 ```text
 Internet → DSM HTTPS reverse proxy (jobhunter.jvbgis.com)
          → edge (Caddy, localhost:8080 only)
               /     → static landing (no database)
-              /app  → oauth2-proxy (OIDC + allowed-email list)
-                     → Streamlit (internal, baseUrlPath /app)
+              /app  → Caddy HTTP basic auth → Streamlit (internal, baseUrlPath /app)
 ```
 
 - **PostgreSQL** remains an **external** server (`JOBHUNTER_DATABASE_URL`); no
@@ -1063,8 +1063,8 @@ Internet → DSM HTTPS reverse proxy (jobhunter.jvbgis.com)
   invokes the worker every ~15 minutes with `--apply-if-due`.
 - **Trust boundary:** only the edge port is exposed to DSM; Streamlit port 8501 is
   not published on the host.
-- **Authentication** is delegated to oauth2-proxy; JobHunter does not implement user
-  management.
+- **Authentication** for `/app` is Caddy HTTP basic auth (bcrypt hash in `.env`);
+  JobHunter does not implement user management.
 - **Production guards:** `JOBHUNTER_ENV=production` requires SMTP when notifications
   are enabled; worker `--apply` uses a PostgreSQL advisory lock to prevent duplicate
   concurrent runs.

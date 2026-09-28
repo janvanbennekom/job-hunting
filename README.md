@@ -79,17 +79,29 @@ environment variables, SMTP notifications, and Synology Task Scheduler setup.
 
 Quick start (bundled PostgreSQL):
 
+**External PostgreSQL** (e.g. `db.jvbgis.com`) — set `JOBHUNTER_DATABASE_URL` in `.env`:
+
 ```powershell
-Copy-Item .env.example .env
 Copy-Item config/automation.example.json config/automation.json
 docker compose build
-docker compose --profile bundled-db up -d db
-docker compose --profile bundled-db --profile tools run --rm migrate
-docker compose --profile bundled-db up -d web
+docker compose --profile tools run --rm migrate
+docker compose up -d web
 ```
 
-Synology production (external PostgreSQL, oauth2-proxy, public landing) is documented in
-[docs/deployment.md](docs/deployment.md) using `docker-compose.prod.yml`.
+**Bundled PostgreSQL** in Docker (optional):
+
+```powershell
+Copy-Item .env.example .env
+# Set POSTGRES_PASSWORD in .env
+Copy-Item config/automation.example.json config/automation.json
+docker compose -f docker-compose.yml -f docker-compose.bundled-db.yml build
+docker compose -f docker-compose.yml -f docker-compose.bundled-db.yml --profile bundled-db up -d db
+docker compose -f docker-compose.yml -f docker-compose.bundled-db.yml --profile bundled-db --profile tools run --rm migrate
+docker compose -f docker-compose.yml -f docker-compose.bundled-db.yml --profile bundled-db up -d web
+```
+
+Synology production (external PostgreSQL, Caddy basic auth, public landing) uses
+`docker compose -f docker-compose.prod.yml` — see [docs/deployment.md](docs/deployment.md).
 
 ### Project spreadsheet import (Phase 3C.1)
 
