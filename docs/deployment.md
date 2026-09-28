@@ -253,6 +253,29 @@ Adjust `docker` / `docker compose` paths for your DSM install (`which docker`).
 
 ```bash
 cd /volume1/docker/job-hunter
+# sync updated source (git pull or copy files)
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml --profile tools run --rm migrate
+docker compose -f docker-compose.prod.yml up -d web edge
+```
+
+**Phase 14 (application tracking):** migration `20260928_0014` adds
+`opportunity_pursuits` and `opportunity_pursuit_status_events`. No data backfill;
+existing opportunities have no pursuit until you **Start pursuing** in the UI.
+Worker containers do not require changes beyond the shared image rebuild.
+
+```bash
+cd /volume1/docker/job-hunter
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml --profile tools run --rm migrate
+docker compose -f docker-compose.prod.yml up -d web edge
+# verify: open /app → Applications page; Alembic at 20260928_0014
+```
+
+Legacy one-liner (same steps):
+
+```bash
+cd /volume1/docker/job-hunter
 git pull origin main
 docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml --profile tools run --rm migrate

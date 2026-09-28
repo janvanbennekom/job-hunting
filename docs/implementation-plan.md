@@ -929,43 +929,31 @@ Notifications use persisted scan results.
 They must not independently repeat the discovery process.
 
 
-# Phase 14 — Application Tracking
+# Phase 14 — Application Tracking (completed)
 
 ## Objective
 
 Support the workflow after the user decides to pursue an opportunity.
 
-## Scope
+## Implemented
 
-Implement:
-
-- selection for action;
-- application status;
-- application date;
-- remarks;
-- follow-up;
-- response history;
-- application events.
-
-Possible statuses include:
-
-    considering
-    selected
-    preparing
-    applied
-    shortlisted
-    interview
-    rejected
-    withdrawn
-    awarded
-    closed
-
-The exact model should be reviewed before implementation.
+- Explicit **Start pursuing** (no auto-link to review SHORTLIST)
+- `opportunity_pursuits` + append-only `opportunity_pursuit_status_events`
+- `PursuitTrackingService` / `ApplicationQueueQueryService`
+- Streamlit **Applications** work queue and pursuit panel on opportunity detail
+- Alembic `20260928_0014`
 
 ## Verification
 
-Application history remains separate from automated opportunity lifecycle
-status.
+- Pursuit history separate from opportunity lifecycle and review triage
+- Terminal pursuit states block further transitions; stage skipping allowed
+- Worker/scheduling/notifications unchanged
+
+## Deferred to later phases
+
+- Email/calendar reminders for next actions and deadlines
+- CV/cover-letter/EOI generation (Phase 15)
+- Automatic external submission
 
 
 # Phase 15 — CV and Cover-Letter Personalisation
@@ -1281,7 +1269,8 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–13 are complete for the Bootcamp MVP unattended-operation slice.
+Phases 0–14 are complete for the Bootcamp MVP and production pursuit-tracking slice.
+Phase 15 (CV/cover-letter personalisation) is the current planned phase.
 
 The current implementation step is:
 

@@ -5,7 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import StrEnum
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from jobhunter.application.pursuit.dtos import PursuitCurrentView
 
 from jobhunter.domain.enums import EligibilityStatus, LifecycleStatus
 from jobhunter.domain.ranking_enums import PriorityBand, RankingStatus
@@ -180,6 +183,7 @@ class OpportunityDetailView:
     assessment: AssessmentSectionView
     ranking: RankingSectionView
     human_review: HumanReviewSectionView
+    pursuit: PursuitCurrentView | None = None
     profile_labels: dict[str, str] = field(default_factory=dict)
 
 

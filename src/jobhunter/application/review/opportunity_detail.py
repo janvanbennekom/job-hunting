@@ -45,6 +45,12 @@ from jobhunter.infrastructure.persistence.review_repositories import (
 )
 
 
+def _load_pursuit_view(session: Session, opportunity_id: str):
+    from jobhunter.application.pursuit.service import PursuitTrackingService
+
+    return PursuitTrackingService(session).get_current(opportunity_id)
+
+
 class OpportunityDetailService:
     def __init__(self, session: Session) -> None:
         self._session = session
@@ -123,6 +129,7 @@ class OpportunityDetailService:
             assessment=assessment_section,
             ranking=ranking_section,
             human_review=human_section,
+            pursuit=_load_pursuit_view(self._session, opp.id),
             profile_labels=label_map,
         )
 

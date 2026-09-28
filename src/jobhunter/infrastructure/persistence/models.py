@@ -439,3 +439,52 @@ class OpportunityReviewRecordRow(Base):
         ForeignKey("opportunity_rankings.id", ondelete="SET NULL"),
         nullable=True,
     )
+
+
+class OpportunityPursuitRow(Base):
+    __tablename__ = "opportunity_pursuits"
+    __table_args__ = (
+        UniqueConstraint("opportunity_id", name="uq_opportunity_pursuits_opportunity"),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    opportunity_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunities.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    submission_deadline: Mapped[date | None] = mapped_column(Date())
+    submission_url: Mapped[str | None] = mapped_column(Text())
+    next_action: Mapped[str | None] = mapped_column(Text())
+    next_action_date: Mapped[date | None] = mapped_column(Date())
+    contact_name: Mapped[str | None] = mapped_column(String(255))
+    contact_organisation: Mapped[str | None] = mapped_column(String(255))
+    contact_email: Mapped[str | None] = mapped_column(String(255))
+    reference_identifier: Mapped[str | None] = mapped_column(String(255))
+    operational_updated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True)
+    )
+
+
+class OpportunityPursuitStatusEventRow(Base):
+    __tablename__ = "opportunity_pursuit_status_events"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    pursuit_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunity_pursuits.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    opportunity_id: Mapped[str] = mapped_column(
+        ForeignKey("opportunities.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    recorded_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text())
+    effective_date: Mapped[date | None] = mapped_column(Date())

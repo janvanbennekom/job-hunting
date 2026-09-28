@@ -1159,26 +1159,47 @@ Useful export fields may include:
 - remarks.
 
 
-## 27. Application Tracking
+## 27. Application Tracking (Phase 14)
 
-Application tracking remains user-controlled.
+Application / **pursuit** tracking is separate from opportunity lifecycle,
+eligibility, AI assessment, ranking, and **review triage** (SHORTLIST /
+INVESTIGATE / DISMISS).
 
-The application domain should support status values such as:
+| Mechanism | Question |
+|-----------|----------|
+| Review triage | Should I consider this opportunity? |
+| Pursuit tracking | What am I doing after I decide to pursue it? |
 
-    considering
-    selected
-    preparing
-    applied
-    shortlisted
-    interview
-    rejected
-    withdrawn
-    awarded
-    closed
+Pursuit is started only by an explicit human action (**Start pursuing**).
+SHORTLIST does not create pursuit records.
 
-The exact status model will be refined during implementation.
+### Pursuit status model
 
-Application events should allow chronological history to be retained.
+Append-only `opportunity_pursuit_status_events` record transitions. Current
+status is the latest event by `(recorded_at desc, id desc)`. Operational
+fields (submission deadline, next action, contacts, submission URL, reference)
+live on `opportunity_pursuits` as the current working copy with
+`operational_updated_at` (not a full audit trail of every edit).
+
+Statuses (`PursuitStatus`):
+
+- `CONSIDERING` — initial when pursuit starts
+- `PREPARING` — EOI/proposal preparation
+- `SUBMITTED` — EOI or proposal submitted
+- `CLIENT_SHORTLISTED` — client/procurement shortlist (**not** review SHORTLIST)
+- `INTERVIEW`, `NEGOTIATION`
+- Terminal: `AWARDED`, `NOT_AWARDED`, `WITHDRAWN`
+
+Stage skipping is allowed (e.g. `CONSIDERING` → `SUBMITTED`). Terminal states
+block further transitions.
+
+### UI
+
+- **Applications** page — active/completed pursuit work queue
+- **Opportunity detail** — pursuit panel alongside existing review form
+
+Deferred: email/calendar reminders, automatic submission, EOI/proposal generation
+(Phase 15+).
 
 
 ## 28. Personalisation Architecture

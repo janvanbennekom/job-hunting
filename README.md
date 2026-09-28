@@ -209,6 +209,13 @@ streamlit run src/jobhunter/ui/streamlit/app.py
 Production views exclude `model_provider=fake` assessments and fake-derived
 rankings unless you enable the sidebar development toggle.
 
+### Application tracking (Phase 14)
+
+Track consultancy pursuit **after** you decide to pursue an opportunity (separate
+from review triage SHORTLIST / INVESTIGATE / DISMISS). Use **Start pursuing** on
+opportunity detail or the **Applications** work queue. Requires Alembic revision
+`20260928_0014`.
+
 ### Search strategy (Phase 11)
 
 Evolve the active search strategy through natural language on the **Search

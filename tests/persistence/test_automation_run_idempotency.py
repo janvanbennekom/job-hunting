@@ -33,12 +33,12 @@ def _schedule() -> ScheduleConfig:
 def test_has_completed_scheduled_run_for_slot(db_session: Session) -> None:
     repo = AutomationRunRepository(db_session)
     schedule = _schedule()
-    # Monday 2026-09-28 08:30 Amsterdam
-    now = datetime(2026, 9, 28, 6, 30, tzinfo=ZoneInfo("UTC"))
+    # Monday 2026-10-05 08:30 Amsterdam (isolated from production test data)
+    now = datetime(2026, 10, 5, 6, 30, tzinfo=ZoneInfo("UTC"))
     assert not repo.has_completed_scheduled_run_for_slot(schedule, now)
 
     run = AutomationRun(
-        started_at=datetime(2026, 9, 28, 6, 5, tzinfo=ZoneInfo("UTC")),
+        started_at=datetime(2026, 10, 5, 6, 5, tzinfo=ZoneInfo("UTC")),
         trigger_type=AutomationTriggerType.SCHEDULED,
         status=AutomationRunStatus.SUCCESS,
     )
