@@ -1087,6 +1087,13 @@ UN Careers, TED, Workday/WFP, etc.) per prioritized review after 17B.
 **Status:** Complete (2026-09-29). Findings in `docs/source-expansion-analysis.md`
 §19. No connector or credential implementation.
 
+### Phase 17C-2 — DevelopmentAid metadata utilisation
+
+**Status:** Complete (2026-09-29). Rich anonymous detail mapping,
+`structured_facts` in raw extra, assessment prompt/digest hardening, UI
+structured fields, dual listing/application URLs. No auth, no Alembic change.
+See `docs/source-expansion-analysis.md` §20.
+
 
 # Phase 18 — Production Validation and Tuning
 

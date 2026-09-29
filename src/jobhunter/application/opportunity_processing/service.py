@@ -22,6 +22,7 @@ from jobhunter.domain.opportunity_material_changes import (
 from jobhunter.domain.opportunity_change import OpportunityChange
 from jobhunter.domain.opportunity_observation import OpportunityObservation
 from jobhunter.domain.opportunity_source import OpportunitySource
+from jobhunter.domain.opportunity_structured_facts import parse_structured_facts_from_extra
 from jobhunter.domain.raw_opportunity import RawOpportunity
 from jobhunter.infrastructure.persistence.opportunity_processing_repositories import (
     OpportunityChangeRepository,
@@ -217,14 +218,19 @@ class OpportunityProcessingService:
             (link for link in links if link.source_id == raw.source_id),
             None,
         )
+        structured = parse_structured_facts_from_extra(raw.extra)
+        application_url = structured.application_url
+        listing_url = raw.source_url
+        original_url = application_url if application_url else None
+
         if existing is None:
             self._source_link_repo.save(
                 OpportunitySource(
                     opportunity_id=opportunity_id,
                     source_id=raw.source_id,
                     source_reference=raw.source_reference,
-                    source_url=raw.source_url,
-                    original_url=raw.source_url,
+                    source_url=listing_url,
+                    original_url=original_url,
                     first_seen_at=observed_at,
                     last_seen_at=observed_at,
                 )
@@ -236,8 +242,8 @@ class OpportunityProcessingService:
             opportunity_id=existing.opportunity_id,
             source_id=existing.source_id,
             source_reference=raw.source_reference or existing.source_reference,
-            source_url=raw.source_url or existing.source_url,
-            original_url=existing.original_url or raw.source_url,
+            source_url=listing_url or existing.source_url,
+            original_url=original_url or existing.original_url,
             first_seen_at=existing.first_seen_at or observed_at,
             last_seen_at=observed_at,
         )

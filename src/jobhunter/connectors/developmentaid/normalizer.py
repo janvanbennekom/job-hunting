@@ -2,10 +2,24 @@
 
 from __future__ import annotations
 
+from jobhunter.domain.date_placeholders import parse_api_date
 from jobhunter.domain.enums import OpportunityType
 from jobhunter.domain.normalized_opportunity import NormalizedOpportunity
+from jobhunter.domain.opportunity_structured_facts import parse_structured_facts_from_extra
 from jobhunter.domain.raw_opportunity import RawOpportunity
-from jobhunter.domain.serialization import deserialize_optional_date
+
+
+def _opportunity_type_from_contract_label(label: str | None) -> OpportunityType:
+    if not label:
+        return OpportunityType.UNKNOWN
+    lowered = label.lower()
+    if "permanent" in lowered or "employment" in lowered:
+        return OpportunityType.EMPLOYMENT
+    if "contract" in lowered or "consult" in lowered:
+        return OpportunityType.CONSULTANCY
+    if "intern" in lowered:
+        return OpportunityType.OTHER
+    return OpportunityType.UNKNOWN
 
 
 class DevelopmentAidOpportunityNormalizer:
@@ -17,36 +31,39 @@ class DevelopmentAidOpportunityNormalizer:
             raise ValueError("raw_title is required for normalization")
 
         extra = raw.extra or {}
-        job_type = extra.get("developmentaid_job_type")
-        opportunity_type = OpportunityType.UNKNOWN
-        if isinstance(job_type, str):
-            lowered = job_type.lower()
-            if "permanent" in lowered or "employment" in lowered:
-                opportunity_type = OpportunityType.EMPLOYMENT
-            elif "contract" in lowered or "consult" in lowered:
-                opportunity_type = OpportunityType.CONSULTANCY
-            elif "intern" in lowered:
-                opportunity_type = OpportunityType.OTHER
+        structured = parse_structured_facts_from_extra(extra)
+        contract_label = structured.contract_type_label
+        if not contract_label:
+            legacy = extra.get("developmentaid_job_type")
+            contract_label = legacy.strip() if isinstance(legacy, str) else None
 
-        publication = extra.get("developmentaid_posted_date")
-        expected_start = extra.get("developmentaid_expected_start")
+        opportunity_type = _opportunity_type_from_contract_label(contract_label)
+
+        posted_raw = extra.get("source_posted_date") or extra.get(
+            "developmentaid_posted_date"
+        )
+        expected_raw = extra.get("source_expected_start_date") or extra.get(
+            "developmentaid_expected_start"
+        )
+
+        source_status = extra.get("source_publication_status")
+        if source_status is None:
+            source_status = extra.get("developmentaid_publication_status")
+        if source_status is not None:
+            source_status = str(source_status)
 
         return NormalizedOpportunity(
             title=title,
             organisation=(raw.raw_organisation or "").strip() or None,
             location=(raw.raw_location or "").strip() or None,
             description=(raw.raw_description or "").strip() or None,
-            publication_date=(
-                deserialize_optional_date(str(publication))
-                if publication
-                else None
+            publication_date=parse_api_date(
+                str(posted_raw) if posted_raw is not None else None
             ),
-            deadline=deserialize_optional_date(raw.raw_deadline),
-            expected_start_date=(
-                deserialize_optional_date(str(expected_start))
-                if expected_start
-                else None
+            deadline=parse_api_date(raw.raw_deadline),
+            expected_start_date=parse_api_date(
+                str(expected_raw) if expected_raw is not None else None
             ),
             opportunity_type=opportunity_type,
-            source_status=extra.get("developmentaid_publication_status"),
+            source_status=source_status,
         )

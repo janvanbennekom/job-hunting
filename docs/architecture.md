@@ -580,7 +580,12 @@ at processing time, not inside connectors.
   details **sequentially** with a default **3s** pause between detail GETs, bounded
   **HTTP 429** retries (``Retry-After`` when present, else exponential backoff),
   and early stop after sustained throttling. List-level rows are still mapped when
-  detail fails (`PARTIAL` scan, aggregated operator warning).
+  detail fails (`PARTIAL` scan, aggregated operator warning). **Phase 17C-2:**
+  detail JSON sectors, languages, experience, organisation type, contract type,
+  application `url`, and `lastUpdated` are mapped into source-neutral
+  `structured_facts` on `RawOpportunity.extra` (not new opportunity columns);
+  Phase 8 prompt text and content digest include these facts from the latest raw
+  observation; listing vs application URLs are stored on `opportunity_sources`.
 - **World Bank procurement notices** — `WorldBankProcNoticesConnector` via
   documented ``GET search.worldbank.org/api/v2/procnotices`` JSON (public, no
   auth). Stable `id` (e.g. `OP00471368`); detail URL on projects.worldbank.org.

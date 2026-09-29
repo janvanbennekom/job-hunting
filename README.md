@@ -324,7 +324,10 @@ Use `--no-details` to skip per-job detail fetches (list summaries only).
 
 With `fetch_details: true`, detail GETs are **sequential** and throttled (~3s apart)
 with bounded **HTTP 429** retries (see `docs/deployment.md`). List data is kept
-if some details fail (`PARTIAL` scan).
+if some details fail (`PARTIAL` scan). Full detail responses map sectors, languages,
+experience, organisation type, contract type, and external application URLs into
+source-neutral `structured_facts` for assessment and the opportunity detail UI
+(anonymous API only — no DevelopmentAid login).
 
 Optional live smoke test:
 

@@ -36,4 +36,5 @@ def test_primary_link_prefers_original_url() -> None:
     assert primary.external_url == "https://other.com/x"
 
     primary_old = pick_primary_source_link([older], _FakeSources())
-    assert primary_old.external_url == "https://example.com/job/1"
+    assert primary_old.external_url == "https://example.com/list"
+    assert primary_old.application_url == "https://example.com/job/1"

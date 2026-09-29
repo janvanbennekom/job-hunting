@@ -499,17 +499,26 @@ Official consultants RSS blocked by **Cloudflare** from Synology egress; connect
 
 ### 19.5 Anonymous vs authenticated DevelopmentAid (comparison)
 
+**Empirical check (2026-09-29, one public `fullyVisible` job):** logged-in and
+anonymous/incognito detail JSON returned the same useful fields (title, dates,
+locations, languages, sectors, `minimumExperience`, full HTML `description`,
+`url`, organisation metadata). `documents=[]`, `emails=null`, `hasEmails=true`
+with application instructions inside `description`. **No demonstrated benefit**
+from automating username/password login for ordinary public listings.
+Revisit auth only for subscriber-only listings or when `documents[]` / ToR
+attachments require a session.
+
 | Capability | Anonymous (current) | Authenticated (member/partner) | Value to JobHunter |
 |------------|--------------------|--------------------------------|--------------------|
-| Discovery coverage | Broad public search JSON | **TO BE TESTED** (paywalled filters? more rows?) | Medium–high if materially more |
-| Title / deadline / location | VERIFIED list+detail | **TO BE TESTED** | Baseline met anonymously |
-| Description / ToR | HTML `description`; `documents[]` often empty in probe | **TO BE TESTED** (attachments behind login?) | High if docs/ToR unlock |
-| Organisation | List `organization` + detail `employer` | **TO BE TESTED** | Medium |
-| Consultant vs firm | `jobType` string | **TO BE TESTED** | Medium |
-| Sectors / languages | Detail when fetched | **TO BE TESTED** | Medium |
+| Discovery coverage | Broad public search JSON | Not tested beyond one job | Medium–high if materially more |
+| Title / deadline / location | VERIFIED list+detail | **Same on tested job** | Baseline met anonymously |
+| Description / ToR | HTML `description`; `documents[]` often empty | **Same on tested job** | High if docs unlock elsewhere |
+| Organisation | List `organization` + detail `employer` | **Same on tested job** | Medium |
+| Consultant vs firm | `jobType` / `type.name` | **Same on tested job** | Medium |
+| Sectors / languages | Detail when fetched | **Same on tested job** | Medium |
 | Stable ID | `id` | **INFERRED** same | High |
-| Rate limits | 20/detail window + 429 | **TO BE TESTED** | Operational |
-| Assessment sufficiency | ADEQUATE with details (typical) | **TO BE TESTED** if longer ToR | High |
+| Rate limits | 20/detail window + 429 | Not re-tested | Operational |
+| Assessment sufficiency | ADEQUATE with details (typical) | **Same on tested job** | High |
 
 ### 19.6 Implementation options (not approved — do not implement)
 
@@ -535,6 +544,36 @@ Official consultants RSS blocked by **Cloudflare** from Synology egress; connect
 ### 19.9 Manual test checklist (for Jan)
 
 See Phase 17C-1 final report (chat); safe to share: endpoint URLs, methods, status codes, JSON **field names**, rate-limit **header names**, redacted schemas — **not** passwords, cookies, Authorization, or full HAR dumps with secrets.
+
+## 20. Phase 17C-2 — DevelopmentAid metadata utilisation (complete)
+
+**Status:** Complete (2026-09-29). Anonymous connector unchanged; no auth, no migration.
+
+### 20.1 Design
+
+- **Canonical `Opportunity` columns:** unchanged (title, organisation, location,
+  description, dates, `opportunity_type`, `source_status`).
+- **Source-neutral `structured_facts` in `raw_opportunities.extra`:** sectors,
+  languages, minimum experience, organisation type, contract label,
+  application URL, content last updated, salary summary, document metadata
+  (URLs only — no download).
+- **Assessment:** extra `OpportunityEvidenceField` prompt slots + digest includes
+  `structured_facts` from latest raw observation (re-assessment when metadata
+  changes on rescan).
+- **Provenance URLs:** `opportunity_sources.source_url` = DevelopmentAid listing;
+  `original_url` = external application URL when `detail.url` differs.
+- **Sentinel dates:** `9999-12-28` (and year ≥9999) → not stored as
+  `expected_start_date`.
+- **Emails / `hasEmails`:** not persisted; semantics unproven — application
+  contact often in `description`.
+- **Documents:** metadata mapped when present; attachment download deferred.
+
+### 20.2 Historical rescans
+
+New scan → new `raw_opportunities` row → same canonical identity → opportunity
+fields updated when material; structured facts refreshed on latest observation;
+content digest changes when canonical fields or `structured_facts` change →
+assessment reuse invalidated when appropriate. No bulk re-assessment job added.
 
 ---
 

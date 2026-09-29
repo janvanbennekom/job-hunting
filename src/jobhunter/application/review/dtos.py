@@ -52,9 +52,16 @@ class SourceLinkView:
 
     @property
     def external_url(self) -> str | None:
-        if self.original_url:
+        """Primary listing URL on the source site (not external application URL)."""
+        if self.source_url:
+            return self.source_url
+        return self.original_url
+
+    @property
+    def application_url(self) -> str | None:
+        if self.original_url and self.original_url != self.source_url:
             return self.original_url
-        return self.source_url
+        return None
 
 
 @dataclass(frozen=True, slots=True)
@@ -169,6 +176,13 @@ class OpportunityFactsSectionView:
     eligibility_status: EligibilityStatus
     source_status: str | None
     primary_external_url: str | None
+    application_url: str | None
+    organisation_type: str | None
+    contract_type_label: str | None
+    minimum_experience_years: int | None
+    languages: tuple[str, ...]
+    sectors: tuple[str, ...]
+    content_last_updated: str | None
     source_links: list[SourceLinkView]
     observations: list[ProvenanceObservationView]
 

@@ -21,6 +21,9 @@ from jobhunter.application.review.dtos import (
     RankingFactorView,
     RankingSectionView,
 )
+from jobhunter.application.opportunity_processing.structured_facts_loader import (
+    OpportunityStructuredFactsLoader,
+)
 from jobhunter.application.review.opportunity_query import OpportunityReviewQueryService
 from jobhunter.application.review.opportunity_reads import OpportunityPipelineReader
 from jobhunter.application.review.profile_labels import ProfileLabelResolver
@@ -99,6 +102,11 @@ class OpportunityDetailService:
                 )
             )
 
+        structured = OpportunityStructuredFactsLoader(self._session).load_for_opportunity(
+            opp.id
+        )
+        application_url = primary.application_url if primary else None
+
         facts = OpportunityFactsSectionView(
             opportunity_id=opp.id,
             title=opp.title,
@@ -113,6 +121,13 @@ class OpportunityDetailService:
             eligibility_status=opp.eligibility_status,
             source_status=opp.source_status,
             primary_external_url=primary.external_url if primary else None,
+            application_url=application_url,
+            organisation_type=structured.organisation_type,
+            contract_type_label=structured.contract_type_label,
+            minimum_experience_years=structured.minimum_experience_years,
+            languages=structured.languages,
+            sectors=structured.sectors,
+            content_last_updated=structured.content_last_updated,
             source_links=source_views,
             observations=observations,
         )

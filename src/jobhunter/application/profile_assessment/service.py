@@ -21,6 +21,9 @@ from jobhunter.application.profile_assessment.digests import (
 from jobhunter.application.profile_assessment.evidence_loader import (
     ProfessionalEvidenceLoader,
 )
+from jobhunter.application.opportunity_processing.structured_facts_loader import (
+    OpportunityStructuredFactsLoader,
+)
 from jobhunter.application.profile_assessment.opportunity_prompt import (
     build_opportunity_prompt_text,
 )
@@ -90,6 +93,7 @@ class OpportunityProfileAssessmentService:
         self._assignment_capabilities = AssignmentCapabilityRepository(session)
         self._context_builder = ProfileEvidenceContextBuilder()
         self._validator = AssessmentValidationService()
+        self._structured_facts = OpportunityStructuredFactsLoader(session)
 
     def assess_opportunity(
         self,
@@ -134,7 +138,12 @@ class OpportunityProfileAssessmentService:
             )
 
         catalog = self._evidence_loader.load_primary()
-        opportunity_digest = compute_opportunity_content_digest(opportunity)
+        structured_facts = self._structured_facts.load_for_opportunity(
+            opportunity_id
+        )
+        opportunity_digest = compute_opportunity_content_digest(
+            opportunity, structured_facts
+        )
         profile_digest = compute_profile_evidence_digest(
             catalog.profile,
             catalog.services,
@@ -168,7 +177,7 @@ class OpportunityProfileAssessmentService:
             catalog,
             self._assignment_capabilities.list_all(),
         )
-        prompt_text = build_opportunity_prompt_text(opportunity)
+        prompt_text = build_opportunity_prompt_text(opportunity, structured_facts)
         rule_summaries = self._eligibility_summaries(latest_decision)
         themes = [
             theme.to_mapping()

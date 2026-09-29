@@ -13,6 +13,7 @@ from jobhunter.domain.country_experience import CountryExperience
 from jobhunter.domain.enums import OpportunityType
 from jobhunter.domain.language_capability import LanguageCapability
 from jobhunter.domain.opportunity import Opportunity
+from jobhunter.domain.opportunity_structured_facts import OpportunityStructuredFacts
 from jobhunter.domain.professional_profile import ProfessionalProfile
 from jobhunter.domain.professional_service import ProfessionalService
 from jobhunter.domain.skill import Skill
@@ -29,7 +30,10 @@ def _date_iso(value: date | None) -> str | None:
     return value.isoformat()
 
 
-def compute_opportunity_content_digest(opportunity: Opportunity) -> str:
+def compute_opportunity_content_digest(
+    opportunity: Opportunity,
+    structured_facts: OpportunityStructuredFacts | None = None,
+) -> str:
     payload = {
         "title": opportunity.title,
         "organisation": opportunity.organisation,
@@ -41,6 +45,8 @@ def compute_opportunity_content_digest(opportunity: Opportunity) -> str:
         "publication_date": _date_iso(opportunity.publication_date),
         "expected_start_date": _date_iso(opportunity.expected_start_date),
     }
+    if structured_facts is not None and not structured_facts.is_empty():
+        payload["structured_facts"] = structured_facts.to_digest_mapping()
     return _sha256_hex(payload)
 
 

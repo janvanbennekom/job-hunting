@@ -251,7 +251,8 @@ def test_source_link_on_detail(db_session: Session) -> None:
     )
     detail = OpportunityDetailService(db_session).get_detail(opp.id)
     assert detail is not None
-    assert detail.facts.primary_external_url == "https://example.com/job/99"
+    assert detail.facts.primary_external_url == "https://example.com/list"
+    assert detail.facts.application_url == "https://example.com/job/99"
 
 
 def test_list_summary_only_sufficiency(db_session: Session) -> None:

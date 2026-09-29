@@ -5,22 +5,19 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
+from jobhunter.connectors.developmentaid.field_extractors import (
+    build_structured_facts,
+    contract_type_label,
+    deadline_raw,
+    expected_start_raw,
+    location_label,
+    organisation_name,
+    posted_date_raw,
+)
 from jobhunter.connectors.developmentaid.html_text import html_to_plain_text
 from jobhunter.connectors.developmentaid.identity import DEVELOPMENTAID_JOBS_ENTRY_URL
+from jobhunter.domain.opportunity_structured_facts import build_structured_facts_mapping
 from jobhunter.domain.raw_opportunity import RawOpportunity
-
-
-def _organisation_name(item: dict[str, Any], detail: dict[str, Any] | None) -> str | None:
-    if detail:
-        employer = detail.get("employer")
-        if isinstance(employer, str) and employer.strip():
-            return employer.strip()
-    org = item.get("organization")
-    if isinstance(org, dict):
-        name = org.get("name")
-        if isinstance(name, str) and name.strip():
-            return name.strip()
-    return None
 
 
 def _job_view_url(job_id: int | str, slug: str | None) -> str:
@@ -48,19 +45,20 @@ def map_developmentaid_job_to_raw(
         slug = slug.strip() or None
     else:
         slug = None
+    if detail and not slug:
+        detail_slug = detail.get("slug")
+        if isinstance(detail_slug, str) and detail_slug.strip():
+            slug = detail_slug.strip()
 
     source_url = _job_view_url(job_id, slug)
-    organisation = _organisation_name(list_item, detail)
-    location = list_item.get("locationNames")
-    if isinstance(location, str):
-        location = location.strip() or None
-    else:
-        location = None
-
-    deadline = list_item.get("deadline")
-    posted = list_item.get("postedDate")
-    job_type = list_item.get("jobType")
-    experience = list_item.get("experience")
+    organisation = organisation_name(list_item, detail)
+    location = location_label(list_item, detail)
+    deadline = deadline_raw(list_item, detail)
+    posted = posted_date_raw(list_item, detail)
+    expected_start = expected_start_raw(list_item, detail)
+    job_type = contract_type_label(list_item, detail)
+    structured = build_structured_facts(list_item, detail)
+    experience = structured.minimum_experience_years
 
     description_html = None
     if detail:
@@ -80,25 +78,21 @@ def map_developmentaid_job_to_raw(
         ]
         description = "\n".join(part for part in description_parts if part)
 
+    structured_mapping = build_structured_facts_mapping(structured)
     extra: dict[str, Any] = {
-        "developmentaid_job_id": str(job_id),
-        "developmentaid_slug": slug,
-        "developmentaid_job_type": job_type,
-        "developmentaid_experience_years": experience,
-        "developmentaid_posted_date": posted,
-        "developmentaid_fully_visible": list_item.get("fullyVisible"),
-        "developmentaid_publication_status": list_item.get("publicationStatus"),
-        "developmentaid_highlighted": list_item.get("highlighted"),
+        "source_connector": "developmentaid",
+        "source_listing_id": str(job_id),
+        "source_listing_slug": slug,
+        "source_posted_date": posted,
+        "source_expected_start_date": expected_start,
+        "source_publication_status": list_item.get("publicationStatus")
+        or (detail.get("public") if detail else None),
+        "source_fully_visible": list_item.get("fullyVisible")
+        if list_item.get("fullyVisible") is not None
+        else (detail.get("fullyVisible") if detail else None),
     }
-    if detail:
-        extra["developmentaid_sectors"] = detail.get("sectors")
-        extra["developmentaid_languages"] = detail.get("languages")
-        extra["developmentaid_locations"] = detail.get("locations")
-        extra["developmentaid_expected_start"] = detail.get("expectedStartingDate")
-        if detail.get("minimumExperience") is not None:
-            extra["developmentaid_minimum_experience"] = detail.get(
-                "minimumExperience"
-            )
+    if structured_mapping:
+        extra["structured_facts"] = structured_mapping
 
     return RawOpportunity(
         id=f"da-raw-{job_id}-{int(retrieved_at.timestamp())}",
@@ -109,7 +103,7 @@ def map_developmentaid_job_to_raw(
         raw_title=title.strip(),
         raw_organisation=organisation,
         raw_location=location,
-        raw_deadline=str(deadline) if deadline else None,
+        raw_deadline=deadline,
         raw_description=description,
         extra=extra,
     )

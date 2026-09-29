@@ -25,13 +25,22 @@ from jobhunter.application.review.dtos import (
 def render_facts_section(facts: OpportunityFactsSectionView) -> None:
     st.markdown("## Opportunity")
     st.header(facts.title)
-    if facts.primary_external_url:
-        st.link_button("Open source posting", facts.primary_external_url)
+    link_cols = st.columns(2)
+    with link_cols[0]:
+        if facts.primary_external_url:
+            st.link_button("Open source listing", facts.primary_external_url)
+    with link_cols[1]:
+        if facts.application_url:
+            st.link_button("Open application URL", facts.application_url)
     cols = st.columns(2)
     with cols[0]:
         st.write(f"**Organisation:** {facts.organisation or '—'}")
+        if facts.organisation_type:
+            st.write(f"**Organisation type:** {facts.organisation_type}")
         st.write(f"**Location:** {facts.location or '—'}")
         st.write(f"**Type:** {facts.opportunity_type}")
+        if facts.contract_type_label:
+            st.write(f"**Contract / job type:** {facts.contract_type_label}")
         st.write(
             f"**Lifecycle:** {label_lifecycle_status(facts.lifecycle_status.value)}"
         )
@@ -42,6 +51,18 @@ def render_facts_section(facts: OpportunityFactsSectionView) -> None:
         )
         st.write(f"**Deadline:** {facts.deadline or '—'}")
         st.write(f"**Publication:** {facts.publication_date or '—'}")
+        if facts.expected_start_date:
+            st.write(f"**Expected start:** {facts.expected_start_date}")
+        if facts.minimum_experience_years is not None:
+            st.write(
+                f"**Minimum experience:** {facts.minimum_experience_years} year(s)"
+            )
+        if facts.languages:
+            st.write(f"**Languages:** {', '.join(facts.languages)}")
+        if facts.sectors:
+            st.write(f"**Sectors:** {', '.join(facts.sectors)}")
+        if facts.content_last_updated:
+            st.write(f"**Last updated (source):** {facts.content_last_updated}")
         if facts.source_status:
             st.write(f"**Source status:** {facts.source_status}")
     if facts.description:
@@ -55,9 +76,15 @@ def render_facts_section(facts: OpportunityFactsSectionView) -> None:
             )
             if link.external_url:
                 st.link_button(
-                    f"Open {link.source_name}",
+                    f"Listing — {link.source_name}",
                     link.external_url,
                     key=f"link-{link.source_id}",
+                )
+            if link.application_url:
+                st.link_button(
+                    f"Application — {link.source_name}",
+                    link.application_url,
+                    key=f"app-link-{link.source_id}",
                 )
 
 
