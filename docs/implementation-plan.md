@@ -1094,6 +1094,13 @@ UN Careers, TED, Workday/WFP, etc.) per prioritized review after 17B.
 structured fields, dual listing/application URLs. No auth, no Alembic change.
 See `docs/source-expansion-analysis.md` §20.
 
+### Phase 17D — ReliefWeb + TED connectors and candidate review
+
+**Status:** Complete (2026-09-29). Implemented **ReliefWeb Jobs** and **TED EU
+procurement** connectors; documented A/B/C/D classification for remaining
+candidates (UNOPS, UN Careers, ADB, IFAD, WFP, GIZ, Devex). No Alembic change.
+See `docs/source-expansion-analysis.md` §21.
+
 
 # Phase 18 — Production Validation and Tuning
 

@@ -11,6 +11,8 @@ from jobhunter.application.developmentaid_scan import DevelopmentAidScanService
 from jobhunter.application.fao_scan import FaoScanService
 from jobhunter.application.afdb_scan import AfdbScanService
 from jobhunter.application.undp_scan import UndpScanService
+from jobhunter.application.reliefweb_scan import ReliefWebScanService
+from jobhunter.application.ted_scan import TedScanService
 from jobhunter.application.worldbank_scan import WorldBankScanService
 from jobhunter.domain.source_scan_enums import SourceScanStatus
 from jobhunter.infrastructure.automation.config import SourceAutomationConfig
@@ -209,6 +211,86 @@ class WorldBankSourceScanAdapter:
         )
 
 
+class ReliefWebSourceScanAdapter:
+    key = "reliefweb"
+
+    def __init__(self, scan_service_factory=ReliefWebScanService) -> None:
+        self._scan_service_factory = scan_service_factory
+
+    def run(
+        self,
+        session: Session,
+        source_config: SourceAutomationConfig,
+        *,
+        apply: bool,
+        run_profile_assessment: bool,
+    ) -> SourceAdapterResult:
+        service = self._scan_service_factory(session)
+        keyword = source_config.keyword or None
+        report = service.run_scan(
+            keyword=keyword,
+            limit=source_config.limit,
+            apply=apply,
+            run_profile_assessment=run_profile_assessment,
+        )
+        return SourceAdapterResult(
+            source_key=self.key,
+            source_id=report.scan.source_id,
+            source_scan_id=report.scan.id if apply else None,
+            scan_status=report.scan.status,
+            retrieved=report.retrieved,
+            processed=report.processed,
+            failed=report.failed,
+            created_opportunities=report.created_opportunities,
+            processed_opportunity_ids=list(report.processed_opportunity_ids),
+            new_opportunity_ids=list(report.new_opportunity_ids),
+            materially_updated_opportunity_ids=list(
+                report.materially_updated_opportunity_ids
+            ),
+            processing_errors=list(report.processing_errors),
+        )
+
+
+class TedSourceScanAdapter:
+    key = "ted"
+
+    def __init__(self, scan_service_factory=TedScanService) -> None:
+        self._scan_service_factory = scan_service_factory
+
+    def run(
+        self,
+        session: Session,
+        source_config: SourceAutomationConfig,
+        *,
+        apply: bool,
+        run_profile_assessment: bool,
+    ) -> SourceAdapterResult:
+        service = self._scan_service_factory(session)
+        keyword = source_config.keyword or None
+        report = service.run_scan(
+            keyword=keyword,
+            limit=source_config.limit,
+            apply=apply,
+            run_profile_assessment=run_profile_assessment,
+        )
+        return SourceAdapterResult(
+            source_key=self.key,
+            source_id=report.scan.source_id,
+            source_scan_id=report.scan.id if apply else None,
+            scan_status=report.scan.status,
+            retrieved=report.retrieved,
+            processed=report.processed,
+            failed=report.failed,
+            created_opportunities=report.created_opportunities,
+            processed_opportunity_ids=list(report.processed_opportunity_ids),
+            new_opportunity_ids=list(report.new_opportunity_ids),
+            materially_updated_opportunity_ids=list(
+                report.materially_updated_opportunity_ids
+            ),
+            processing_errors=list(report.processing_errors),
+        )
+
+
 class DevelopmentAidSourceScanAdapter:
     key = "developmentaid"
 
@@ -257,6 +339,8 @@ def default_source_adapters() -> dict[str, SourceScanAdapter]:
         WorldBankSourceScanAdapter(),
         UndpSourceScanAdapter(),
         AfdbSourceScanAdapter(),
+        ReliefWebSourceScanAdapter(),
+        TedSourceScanAdapter(),
     ]
     return {adapter.key: adapter for adapter in adapters}
 

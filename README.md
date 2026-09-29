@@ -242,18 +242,18 @@ Operational source limits and keywords are **not** strategy revisions; see
 HIGH-ranking email alerts use `JOBHUNTER_WEB_BASE_URL` for the same detail
 links when configured.
 
-### Source expansion (Phase 17A–17B)
+### Source expansion (Phase 17)
 
 Research: [docs/source-expansion-analysis.md](docs/source-expansion-analysis.md).
 
-**Phase 17B connectors** (automation keys `worldbank`, `undp`, `afdb`) use the same
-scan → Phase 5 → Phase 7 pipeline as FAO and DevelopmentAid. Enable them in
-`config/automation.json` (see `config/automation.example.json`). Recommended first
-production `limit`: **10** per new source, then increase after verifying counts and
-description quality.
+Automation keys: `fao`, `developmentaid`, `worldbank`, `undp`, `afdb`, `reliefweb`, `ted`.
+All use the same scan → Phase 5 → assessment pipeline. See `config/automation.example.json`;
+start new sources at **`limit: 10`**.
 
-Optional live smoke tests: `tests/connectors/test_worldbank_live.py`,
-`test_undp_live.py`, `test_afdb_live.py` (`pytest -m live`).
+- **`reliefweb`** — requires `JOBHUNTER_RELIEFWEB_APPNAME` in `.env` (pre-approved via reliefweb.int/contact).
+- **`ted`** — EU procurement Search API v3 (anonymous); keyword optional in automation JSON.
+
+Optional live smoke tests: `pytest -m live tests/connectors/test_*_live.py` where present.
 
 ### Core operator experience (Phase 16)
 

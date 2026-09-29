@@ -46,6 +46,18 @@
       "keyword": "",
       "limit": 25,
       "fetch_details": true
+    },
+    {
+      "key": "reliefweb",
+      "enabled": false,
+      "keyword": "land administration GIS",
+      "limit": 10
+    },
+    {
+      "key": "ted",
+      "enabled": false,
+      "keyword": "",
+      "limit": 10
     }
   ]
 }

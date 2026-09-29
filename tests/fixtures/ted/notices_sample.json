@@ -1,0 +1,23 @@
+{
+  "notices": [
+    {
+      "publication-number": "123456-2024",
+      "notice-title": { "eng": ["Geospatial information system consultancy services"] },
+      "buyer-name": { "eng": ["Example Regional Authority"] },
+      "buyer-country": { "eng": ["Netherlands"] },
+      "deadline-receipt-request": { "eng": ["2026-11-30T12:00:00+00:00"] },
+      "notice-type": { "eng": ["Services"] },
+      "description-lot": {
+        "eng": [
+          "The contractor shall deliver land administration GIS modules including spatial data integration and quality assurance for a period of twelve months."
+        ]
+      },
+      "links": {
+        "html": {
+          "eng": "https://ted.europa.eu/en/notice/123456-2024/html"
+        }
+      }
+    }
+  ],
+  "totalNoticeCount": 1
+}

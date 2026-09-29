@@ -12,6 +12,8 @@ from jobhunter.connectors.developmentaid.identity import DEVELOPMENTAID_JOBS_SOU
 from jobhunter.connectors.fao.identity import FAO_JOBS_SOURCE_ID
 from jobhunter.connectors.afdb.identity import AFDB_CONSULTANTS_SOURCE_ID
 from jobhunter.connectors.undp.identity import UNDP_JOBS_SOURCE_ID
+from jobhunter.connectors.reliefweb.identity import RELIEFWEB_JOBS_SOURCE_ID
+from jobhunter.connectors.ted.identity import TED_EU_PROCUREMENT_SOURCE_ID
 from jobhunter.connectors.worldbank.identity import WORLDBANK_PROCUREMENT_SOURCE_ID
 
 _ENV_CONFIG_PATH = "JOBHUNTER_AUTOMATION_CONFIG"
@@ -47,7 +49,15 @@ _WEEKDAY_TO_INDEX = {
 }
 
 KNOWN_SOURCE_KEYS = frozenset(
-    {"fao", "developmentaid", "worldbank", "undp", "afdb"}
+    {
+        "fao",
+        "developmentaid",
+        "worldbank",
+        "undp",
+        "afdb",
+        "reliefweb",
+        "ted",
+    }
 )
 
 SOURCE_KEY_TO_JOB_SOURCE_ID = {
@@ -56,6 +66,8 @@ SOURCE_KEY_TO_JOB_SOURCE_ID = {
     "worldbank": WORLDBANK_PROCUREMENT_SOURCE_ID,
     "undp": UNDP_JOBS_SOURCE_ID,
     "afdb": AFDB_CONSULTANTS_SOURCE_ID,
+    "reliefweb": RELIEFWEB_JOBS_SOURCE_ID,
+    "ted": TED_EU_PROCUREMENT_SOURCE_ID,
 }
 
 

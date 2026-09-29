@@ -591,6 +591,14 @@ at processing time, not inside connectors.
   auth). Stable `id` (e.g. `OP00471368`); detail URL on projects.worldbank.org.
   `WorldBankOpportunityNormalizer`. Broad notice retrieval; relevance is decided
   downstream (no semantic profile filters in the connector).
+- **ReliefWeb Jobs** — `ReliefWebJobsConnector` via documented
+  ``POST https://api.reliefweb.int/v2/jobs?appname=…`` (pre-approved appname in
+  ``JOBHUNTER_RELIEFWEB_APPNAME``). Full job ``body`` in API response;
+  `ReliefWebOpportunityNormalizer`. Listing URL on reliefweb.int; optional
+  external application URL in `structured_facts`.
+- **TED EU procurement** — `TedProcurementConnector` via anonymous
+  ``POST https://api.ted.europa.eu/v3/notices/search`` (expert query).
+  `TedOpportunityNormalizer`. Stable id: TED ``publication-number``.
 - **UNDP Jobs** — `UndpJobsConnector` via official all-vacancies RSS
   ``jobs.undp.org/rss_feeds/rss.xml`` (RSS 0.91; Oracle requisition id in
   link). `UndpOpportunityNormalizer`. Feed summaries are partial; deadlines

@@ -236,6 +236,24 @@ sudo docker compose -f docker-compose.prod.yml --profile worker run --rm worker 
   python scripts/run_scheduled_pipeline.py --apply --trigger manual
 ```
 
+### ReliefWeb Jobs (`reliefweb` source)
+
+Requires a **pre-approved API appname** (request via [reliefweb.int/contact](https://reliefweb.int/contact)):
+
+```bash
+# In NAS .env (not automation.json)
+JOBHUNTER_RELIEFWEB_APPNAME=your-approved-appname
+```
+
+Enable in `config/automation.json` after approval (`limit: 10` recommended initially).
+Official quota: **1000 API calls/day**. Each scan uses one POST (up to `limit` jobs, max 100 per call).
+
+### TED EU procurement (`ted` source)
+
+No API key required for search. Uses expert query with optional `keyword` in
+automation JSON; default query biases toward land/GIS/cadastre when keyword is empty.
+Start with `limit: 10` — one POST per scan.
+
 ### DevelopmentAid detail rate limits
 
 With ``fetch_details: true``, each scan performs one search POST plus up to

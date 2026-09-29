@@ -23,3 +23,33 @@ def unique_worldbank_notice_records(
 def unique_developmentaid_job_id() -> int:
     """Stable-length numeric id unlikely to exist in a shared dev database."""
     return 980_000_000 + (uuid.uuid4().int % 19_999_999)
+
+
+def unique_ted_notice_records(
+    notices: list[dict[str, Any]], *, count: int = 2
+) -> list[dict[str, Any]]:
+    if not notices:
+        return []
+    token = uuid.uuid4().hex[:8].upper()
+    isolated: list[dict[str, Any]] = []
+    template = notices[0]
+    for index in range(count):
+        row = copy.deepcopy(template)
+        row["publication-number"] = f"TEST-{token}-{index}"
+        isolated.append(row)
+    return isolated
+
+
+def unique_reliefweb_job_records(
+    jobs: list[dict[str, Any]], *, count: int = 2
+) -> list[dict[str, Any]]:
+    if not jobs:
+        return []
+    token = uuid.uuid4().hex[:8]
+    isolated: list[dict[str, Any]] = []
+    template = jobs[0]
+    for index in range(count):
+        row = copy.deepcopy(template)
+        row["id"] = f"9{token}{index}"[:10]
+        isolated.append(row)
+    return isolated

@@ -1,0 +1,24 @@
+{
+  "totalCount": 1,
+  "data": [
+    {
+      "id": "4012345",
+      "href": "https://api.reliefweb.int/v2/jobs/4012345",
+      "fields": {
+        "title": "Senior GIS and Land Administration Consultant",
+        "body": "<p>Support national land information system implementation.</p><p>PostgreSQL and cadastre experience required.</p>",
+        "url": "https://employer.example.org/apply/4012345",
+        "date": {
+          "created": "2026-09-01T00:00:00+00:00",
+          "closing": "2026-10-20T00:00:00+00:00",
+          "changed": "2026-09-15T12:00:00+00:00"
+        },
+        "source": [{ "name": "World Food Programme", "shortname": "WFP" }],
+        "country": [{ "name": "Kenya", "iso3": "KEN" }],
+        "type": [{ "name": "Consultancy" }],
+        "theme": [{ "name": "Food Security" }],
+        "career_category": [{ "name": "Information Management" }]
+      }
+    }
+  ]
+}

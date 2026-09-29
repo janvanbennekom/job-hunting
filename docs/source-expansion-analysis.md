@@ -577,6 +577,47 @@ assessment reuse invalidated when appropriate. No bulk re-assessment job added.
 
 ---
 
+## 21. Phase 17D — ReliefWeb, TED, and candidate review (2026-09-29)
+
+### 21.1 Candidate classification (A/B/C/D)
+
+| Source | Class | Rationale |
+|--------|-------|-----------|
+| **ReliefWeb Jobs** | **A** (implemented) | Official documented API v2; single call returns full `body`; requires pre-approved `appname` in `.env` (`JOBHUNTER_RELIEFWEB_APPNAME`). |
+| **TED EU** | **A** (implemented) | Official Search API v3; anonymous POST; expert query + keyword from automation. |
+| **UNDP / WB / FAO / DA** | — | Already in production (17B/17C). |
+| **AfDB** | **C/D** | RSS implemented; production **disabled** on NAS (Cloudflare 403). |
+| **UNOPS** | **B** | PUBLIC HTML marketplace; no stable public API (**INFERRED**); defer HTML connector. |
+| **UN Careers / Inspira** | **C** | Detail JSON works when `jobId` known (**VERIFIED** probe); list API undocumented (**UNKNOWN**); mostly staff posts. |
+| **ADB CSRN/CMS** | **C** | Strategically important; public browse at `csrn.adb.org` but no read API (**VERIFIED** docs); HTML/SPA + CMS account for proposals — defer dedicated connector. |
+| **IFAD** | **C/D** | Staff `job.ifad.org` DNS/blocked from some egress (**UNKNOWN**); procurement HTML on `ifad.org` returned 403 from probe — defer. |
+| **WFP direct** | **B/C** | Workday CXS POST undocumented (**INFERRED**); ReliefWeb covers many WFP consultancies — defer direct Workday. |
+| **GIZ** | **D** | Fragmented portals (`jobs.giz.de`, country OKV sites); no single feed (**INFERRED**). |
+| **Devex** | **D/C** | No job **read** API (**VERIFIED**); public site often 403 from datacenter IPs; employer upload API only. Manual DevTools if revisiting. |
+
+### 21.2 Implemented connectors (17D)
+
+| Key | `source_id` | Interface | `source_reference` | Detail | Sufficiency |
+|-----|-------------|-----------|-------------------|--------|-------------|
+| `reliefweb` | `reliefweb-jobs` | `POST api.reliefweb.int/v2/jobs?appname=…` | ReliefWeb job `id` | In list (`body` HTML) | **ADEQUATE** when body present |
+| `ted` | `ted-eu-procurement` | `POST api.ted.europa.eu/v3/notices/search` | `publication-number` | In search response | **ADEQUATE** / **PARTIAL** (firm procurement noise) |
+
+### 21.3 Devex — conclusion
+
+No unattended connector. Documented APIs are employer **job upload** only. Public automated access unreliable; logged-in read endpoints **UNKNOWN** — use Chrome DevTools (Network → XHR/Fetch) comparing logged-in vs incognito on job search/detail; share field names and URL patterns only.
+
+### 21.4 ADB — conclusion
+
+Prioritise a future **HTML/CSRN browse connector** (class B) after a NAS egress probe of `csrn.adb.org` and sample listing/detail HTML stability. Do not automate CMS login or proposal submission.
+
+### 21.5 Operations
+
+- ReliefWeb: 1000 API calls/day quota (official); start `limit: 10`; one POST per scan page.
+- TED: one POST per scan; default expert query includes land/GIS terms when `keyword` empty; start `limit: 10`.
+- ReliefWeb **disabled** in `automation.example.json` until `JOBHUNTER_RELIEFWEB_APPNAME` is set.
+
+---
+
 ## 18. References (public)
 
 - World Bank procnotices: `https://search.worldbank.org/api/v2/procnotices`  
