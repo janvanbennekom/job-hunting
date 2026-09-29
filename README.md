@@ -320,8 +320,13 @@ python scripts/scan_developmentaid_jobs.py --dry-run --limit 5 --keyword "GIS"
 python scripts/scan_developmentaid_jobs.py --apply --limit 8 --keyword "land administration"
 ```
 
-Use `--no-details` to skip per-job detail fetches (list summaries only). Optional
-live smoke test:
+Use `--no-details` to skip per-job detail fetches (list summaries only).
+
+With `fetch_details: true`, detail GETs are **sequential** and throttled (~3s apart)
+with bounded **HTTP 429** retries (see `docs/deployment.md`). List data is kept
+if some details fail (`PARTIAL` scan).
+
+Optional live smoke test:
 
 ```powershell
 pytest -m live tests/connectors/test_developmentaid_live.py

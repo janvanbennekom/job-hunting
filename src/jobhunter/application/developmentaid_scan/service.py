@@ -14,6 +14,10 @@ from jobhunter.application.opportunity_processing import OpportunityProcessingSe
 from jobhunter.application.profile_assessment import OpportunityProfileAssessmentService
 from jobhunter.ai.factory import create_assessment_model
 from jobhunter.connectors.developmentaid.connector import DevelopmentAidJobsConnector
+from jobhunter.connectors.developmentaid.errors import (
+    aggregate_scan_errors,
+    format_error_summary_for_storage,
+)
 from jobhunter.connectors.developmentaid.identity import (
     DEVELOPMENTAID_JOBS_ENTRY_URL,
     DEVELOPMENTAID_JOBS_NAME,
@@ -122,9 +126,11 @@ class DevelopmentAidScanService:
         )
 
         processed = 0
-        failed = len(mapping.errors)
+        failed = 0
         created = 0
-        processing_errors: list[str] = list(mapping.errors)
+        detail_errors: list[str] = list(fetch.detail_errors)
+        mapping_errors: list[str] = list(mapping.mapping_errors)
+        processing_errors: list[str] = list(mapping_errors)
         outcome_ids = SourceScanOutcomeIds()
 
         if apply:
@@ -149,9 +155,13 @@ class DevelopmentAidScanService:
             retrieved=retrieved,
             processed=processed if apply else 0,
             failed=failed,
+            detail_errors=len(detail_errors),
             apply=apply,
         )
-        error_summary = self._build_error_summary(processing_errors)
+        summary, diagnostics = aggregate_scan_errors(
+            detail_errors, processing_errors
+        )
+        error_summary = format_error_summary_for_storage(summary, diagnostics)
 
         scan.completed_at = completed
         scan.status = status
@@ -174,7 +184,7 @@ class DevelopmentAidScanService:
                 outcome_ids.materially_updated_opportunity_ids
             ),
             processing_errors=processing_errors,
-            mapping_errors=mapping.errors,
+            mapping_errors=mapping_errors,
         )
 
     def _assess_profile_if_configured(self, opportunity_id: str) -> None:
@@ -194,26 +204,19 @@ class DevelopmentAidScanService:
         retrieved: int,
         processed: int,
         failed: int,
+        detail_errors: int,
         apply: bool,
     ) -> SourceScanStatus:
         if not apply:
             return SourceScanStatus.SUCCESS
-        if retrieved == 0 and failed == 0:
+        if retrieved == 0 and failed == 0 and detail_errors == 0:
             return SourceScanStatus.SUCCESS
-        if failed == 0 and processed > 0:
+        if failed == 0 and detail_errors == 0 and processed > 0:
             return SourceScanStatus.SUCCESS
-        if processed > 0 and failed > 0:
+        if processed > 0 and (failed > 0 or detail_errors > 0):
             return SourceScanStatus.PARTIAL
         if failed > 0 and processed == 0:
             return SourceScanStatus.FAILED
+        if retrieved > 0 and detail_errors > 0 and processed == 0:
+            return SourceScanStatus.PARTIAL
         return SourceScanStatus.SUCCESS
-
-    @staticmethod
-    def _build_error_summary(errors: list[str]) -> str | None:
-        if not errors:
-            return None
-        head = errors[:5]
-        summary = "; ".join(head)
-        if len(errors) > 5:
-            summary += f"; … and {len(errors) - 5} more"
-        return summary[:4000]

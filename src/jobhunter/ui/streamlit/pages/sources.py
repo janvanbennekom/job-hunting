@@ -5,6 +5,7 @@ from __future__ import annotations
 import streamlit as st
 
 from jobhunter.application.sources.query_service import SourceOperationalQueryService
+from jobhunter.connectors.developmentaid.errors import split_stored_error_summary
 from jobhunter.ui.streamlit.bootstrap import get_session_factory
 from jobhunter.ui.streamlit.sidebar import render_sidebar
 
@@ -44,7 +45,13 @@ st.dataframe(table, use_container_width=True, hide_index=True)
 
 for row in rows:
     if row.last_error_summary:
-        st.warning(f"**{row.display_name}** — {row.last_error_summary}")
+        headline, diagnostic_lines = split_stored_error_summary(
+            row.last_error_summary
+        )
+        st.warning(f"**{row.display_name}** — {headline}")
+        if diagnostic_lines:
+            with st.expander("Scan diagnostic detail", expanded=False):
+                st.code("\n".join(diagnostic_lines))
     if row.records_retrieved is not None:
         st.caption(
             f"{row.display_name}: {row.records_retrieved} retrieved, "

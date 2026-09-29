@@ -236,6 +236,17 @@ sudo docker compose -f docker-compose.prod.yml --profile worker run --rm worker 
   python scripts/run_scheduled_pipeline.py --apply --trigger manual
 ```
 
+### DevelopmentAid detail rate limits
+
+With ``fetch_details: true``, each scan performs one search POST plus up to
+``limit`` sequential detail GETs. DevelopmentAid enforces a low per-window detail
+quota (response headers include ``X-RateLimit-Limit: 20``). JobHunter throttles
+detail requests (~**3 seconds** apart) and retries **HTTP 429** with bounded
+backoff. Expect roughly **1–2 minutes** of detail-fetch time for ``limit: 25``.
+A **PARTIAL** scan with an aggregated 429 warning is normal if throttling still
+occurs; opportunities retain list-level data. Production ``limit: 25`` remains
+appropriate with throttling enabled.
+
 Use small `limit` values in `config/automation.json` for a first live run (e.g.
 `10` for each newly enabled `worldbank`, `undp`, or `afdb` source before raising
 toward `25`). After pulling Phase 17B, **merge** these entries into the NAS

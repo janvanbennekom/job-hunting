@@ -575,6 +575,12 @@ at processing time, not inside connectors.
   frontend JSON API ``POST /api/frontend/job/search`` and
   ``GET /api/frontend/job/{id}`` for full HTML descriptions (no account required
   for search/detail in current use). `DevelopmentAidOpportunityNormalizer`.
+  **Rate limiting:** the public detail API returns ``X-RateLimit-Limit: 20``
+  (observed 2026-09-29). With ``fetch_details: true``, the connector fetches
+  details **sequentially** with a default **3s** pause between detail GETs, bounded
+  **HTTP 429** retries (``Retry-After`` when present, else exponential backoff),
+  and early stop after sustained throttling. List-level rows are still mapped when
+  detail fails (`PARTIAL` scan, aggregated operator warning).
 - **World Bank procurement notices** — `WorldBankProcNoticesConnector` via
   documented ``GET search.worldbank.org/api/v2/procnotices`` JSON (public, no
   auth). Stable `id` (e.g. `OP00471368`); detail URL on projects.worldbank.org.
