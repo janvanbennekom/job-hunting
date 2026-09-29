@@ -16,7 +16,8 @@ from jobhunter.domain.opportunity import Opportunity
 from jobhunter.domain.professional_service import ProfessionalService
 from jobhunter.domain.skill import Skill
 
-_MAX_ASSIGNMENTS = 10
+_MAX_ASSIGNMENTS = 5
+_MAX_SERVICES = 4
 _MAX_CAPABILITIES = 12
 _MAX_SKILLS = 15
 _MAX_COUNTRY_FALLBACK = 8
@@ -65,18 +66,22 @@ def _select_services(
     opportunity_tokens: set[str],
 ) -> tuple[list[ProfessionalService], list[SelectedEvidenceItem]]:
     active = [s for s in services if s.is_active]
-    notes: list[SelectedEvidenceItem] = []
+    scored: list[tuple[int, ProfessionalService]] = []
     for svc in active:
         score = _score_text(opportunity_tokens, svc.name)
         score += _score_text(opportunity_tokens, svc.description)
-        notes.append(
-            SelectedEvidenceItem(
-                entity_type="professional_service",
-                entity_id=svc.id,
-                selection_reason=f"active service (score={score})",
-            )
+        scored.append((score, svc))
+    scored.sort(key=lambda item: (item[0], item[1].name), reverse=True)
+    selected = [svc for _, svc in scored[:_MAX_SERVICES]]
+    notes = [
+        SelectedEvidenceItem(
+            entity_type="professional_service",
+            entity_id=svc.id,
+            selection_reason=f"top service by relevance (score={scored[i][0]})",
         )
-    return active, notes
+        for i, svc in enumerate(selected)
+    ]
+    return selected, notes
 
 
 def _select_assignments(

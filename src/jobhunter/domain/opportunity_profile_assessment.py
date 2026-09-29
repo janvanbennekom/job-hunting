@@ -38,6 +38,9 @@ class OpportunityProfileAssessment:
     validation_warnings: list[str] = field(default_factory=list)
     result: dict[str, Any] | None = None
     provider_error: str | None = None
+    prompt_tokens: int | None = None
+    completion_tokens: int | None = None
+    total_tokens: int | None = None
 
     def __post_init__(self) -> None:
         self.id = require_non_empty(self.id, "id")
@@ -90,6 +93,9 @@ class OpportunityProfileAssessment:
                 "validation_warnings": list(self.validation_warnings),
                 "result": self.result,
                 "provider_error": self.provider_error,
+                "prompt_tokens": self.prompt_tokens,
+                "completion_tokens": self.completion_tokens,
+                "total_tokens": self.total_tokens,
             }
         )
 
@@ -114,4 +120,7 @@ class OpportunityProfileAssessment:
             validation_warnings=[str(w) for w in warnings],
             result=data.get("result"),
             provider_error=data.get("provider_error"),
+            prompt_tokens=data.get("prompt_tokens"),
+            completion_tokens=data.get("completion_tokens"),
+            total_tokens=data.get("total_tokens"),
         )

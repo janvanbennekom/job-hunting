@@ -371,6 +371,9 @@ class OpportunityProfileAssessmentRow(Base):
     validation_warnings: Mapped[list | None] = mapped_column(JSON, nullable=True)
     result: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     provider_error: Mapped[str | None] = mapped_column(Text())
+    prompt_tokens: Mapped[int | None] = mapped_column(nullable=True)
+    completion_tokens: Mapped[int | None] = mapped_column(nullable=True)
+    total_tokens: Mapped[int | None] = mapped_column(nullable=True)
 
 
 class OpportunityRankingRow(Base):

@@ -1,0 +1,59 @@
+{
+  "profile_assessment_schema": "profile_assessment_v3",
+  "population": 92,
+  "optimized_v3": {
+    "total_chars": {
+      "median": 30536,
+      "p90": 37229,
+      "max": 43578
+    },
+    "estimated_input_tokens": {
+      "median": 7633,
+      "p90": 9307,
+      "max": 10894
+    },
+    "opportunity_chars": {
+      "median": 823,
+      "p90": 6841,
+      "max": 12682
+    },
+    "assignments_chars": {
+      "median": 7886,
+      "p90": 8457,
+      "max": 8693
+    },
+    "services_chars": {
+      "median": 1804,
+      "p90": 1901,
+      "max": 1925
+    },
+    "profile_other_chars": {
+      "median": 11689,
+      "p90": 11923,
+      "max": 12127
+    },
+    "assignment_count": {
+      "median": 5,
+      "p90": 5,
+      "max": 5
+    },
+    "service_count": {
+      "median": 4,
+      "p90": 4,
+      "max": 4
+    }
+  },
+  "legacy_v2_baseline": {
+    "total_chars": {
+      "median": 50290,
+      "p90": 63126,
+      "max": null
+    },
+    "estimated_input_tokens": {
+      "median": 12572,
+      "p90": 15781,
+      "max": null
+    },
+    "note": "Captured in phase-17g-1 investigation before 17G-1A."
+  }
+}

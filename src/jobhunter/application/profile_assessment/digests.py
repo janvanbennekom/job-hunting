@@ -7,6 +7,7 @@ import json
 from datetime import date
 
 from jobhunter.domain.assessment_enums import PROFILE_ASSESSMENT_SCHEMA_VERSION
+from jobhunter.domain.evidence_context_pack import EvidenceContextPack
 from jobhunter.domain.assignment import Assignment
 from jobhunter.domain.capability import Capability
 from jobhunter.domain.country_experience import CountryExperience
@@ -72,10 +73,20 @@ def compute_profile_evidence_digest(
     return _sha256_hex(payload)
 
 
+def compute_model_evidence_digest(pack: EvidenceContextPack) -> str:
+    """Hash of evidence actually sent to the model (selection + truncation, no notes)."""
+    from jobhunter.application.profile_assessment.model_payload import (
+        evidence_pack_to_model_mapping,
+    )
+
+    return _sha256_hex(evidence_pack_to_model_mapping(pack))
+
+
 def compute_input_digest(
     *,
     opportunity_content_digest: str,
     profile_evidence_digest: str,
+    model_evidence_digest: str,
     search_strategy_revision_id: str,
     prompt_schema_version: str,
     model_provider: str,
@@ -84,6 +95,7 @@ def compute_input_digest(
     payload = {
         "opportunity_content_digest": opportunity_content_digest,
         "profile_evidence_digest": profile_evidence_digest,
+        "model_evidence_digest": model_evidence_digest,
         "search_strategy_revision_id": search_strategy_revision_id,
         "prompt_schema_version": prompt_schema_version,
         "model_provider": model_provider,

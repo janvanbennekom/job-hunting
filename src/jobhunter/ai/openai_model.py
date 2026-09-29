@@ -40,7 +40,7 @@ class OpenAIAssessmentModel:
 
         client = OpenAI(api_key=self._api_key)
         user_payload = {
-            "assessment_input": request.to_mapping(),
+            "assessment_input": request.to_model_mapping(),
             "required_output_schema": assessment_output_schema(),
             "output_instructions": assessment_output_instructions(),
         }

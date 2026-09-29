@@ -26,6 +26,9 @@ def assessment_to_row(
         validation_warnings=list(entity.validation_warnings),
         result=entity.result,
         provider_error=entity.provider_error,
+        prompt_tokens=entity.prompt_tokens,
+        completion_tokens=entity.completion_tokens,
+        total_tokens=entity.total_tokens,
     )
 
 
@@ -49,4 +52,7 @@ def assessment_to_domain(
         validation_warnings=[str(item) for item in warnings],
         result=row.result,
         provider_error=row.provider_error,
+        prompt_tokens=row.prompt_tokens,
+        completion_tokens=row.completion_tokens,
+        total_tokens=row.total_tokens,
     )

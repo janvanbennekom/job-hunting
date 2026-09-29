@@ -14,6 +14,7 @@ from jobhunter.application.profile_assessment.context_builder import (
 )
 from jobhunter.application.profile_assessment.digests import (
     compute_input_digest,
+    compute_model_evidence_digest,
     compute_opportunity_content_digest,
     compute_profile_evidence_digest,
     default_prompt_schema_version,
@@ -153,9 +154,21 @@ class OpportunityProfileAssessmentService:
             catalog.languages,
             catalog.countries,
         )
+
+        primary_source_id = self._primary_source_id(opportunity_id)
+        sufficiency = infer_source_data_sufficiency(
+            opportunity, primary_source_id=primary_source_id
+        )
+        pack = self._context_builder.build(
+            opportunity,
+            catalog,
+            self._assignment_capabilities.list_all(),
+        )
+        model_evidence_digest = compute_model_evidence_digest(pack)
         input_digest = compute_input_digest(
             opportunity_content_digest=opportunity_digest,
             profile_evidence_digest=profile_digest,
+            model_evidence_digest=model_evidence_digest,
             search_strategy_revision_id=snapshot.revision.id,
             prompt_schema_version=default_prompt_schema_version(),
             model_provider=self._model.provider,
@@ -167,16 +180,6 @@ class OpportunityProfileAssessmentService:
         )
         if existing is not None and not force:
             return ProfileAssessmentOutcome(existing, True, False)
-
-        primary_source_id = self._primary_source_id(opportunity_id)
-        sufficiency = infer_source_data_sufficiency(
-            opportunity, primary_source_id=primary_source_id
-        )
-        pack = self._context_builder.build(
-            opportunity,
-            catalog,
-            self._assignment_capabilities.list_all(),
-        )
         prompt_text = build_opportunity_prompt_text(opportunity, structured_facts)
         rule_summaries = self._eligibility_summaries(latest_decision)
         themes = [
@@ -220,13 +223,18 @@ class OpportunityProfileAssessmentService:
                     prompt_schema_version=default_prompt_schema_version(),
                     model_provider=self._model.provider,
                     model_name=self._model.model_name,
-                    result={"dry_run": True, "request": request.to_mapping()},
+                    result={
+                        "dry_run": True,
+                        "request": request.to_mapping(),
+                        "model_request": request.to_model_mapping(),
+                    },
                 ),
                 False,
                 False,
             )
 
         model_response = self._model.assess(request)
+        usage_fields = self._token_usage_fields(model_response.usage)
         if model_response.error:
             assessment = OpportunityProfileAssessment(
                 opportunity_id=opportunity_id,
@@ -243,6 +251,7 @@ class OpportunityProfileAssessmentService:
                 model_provider=model_response.provider,
                 model_name=model_response.model_name,
                 provider_error=model_response.error,
+                **usage_fields,
             )
             saved = self._assessments.save(assessment)
             return ProfileAssessmentOutcome(saved, False, False)
@@ -270,6 +279,7 @@ class OpportunityProfileAssessmentService:
                 model_provider=model_response.provider,
                 model_name=model_response.model_name,
                 provider_error="model output was not a JSON object",
+                **usage_fields,
             )
             saved = self._assessments.save(assessment)
             return ProfileAssessmentOutcome(saved, False, False)
@@ -294,6 +304,7 @@ class OpportunityProfileAssessmentService:
                 model_name=model_response.model_name,
                 validation_warnings=validation.warnings,
                 provider_error="structured output failed validation",
+                **usage_fields,
             )
             saved = self._assessments.save(assessment)
             return ProfileAssessmentOutcome(saved, False, False)
@@ -319,9 +330,27 @@ class OpportunityProfileAssessmentService:
             model_name=model_response.model_name,
             validation_warnings=validation.warnings,
             result=validation.result.to_mapping(),
+            **usage_fields,
         )
         saved = self._assessments.save(assessment)
         return ProfileAssessmentOutcome(saved, False, False)
+
+    @staticmethod
+    def _token_usage_fields(usage: dict | None) -> dict[str, int | None]:
+        if not usage:
+            return {
+                "prompt_tokens": None,
+                "completion_tokens": None,
+                "total_tokens": None,
+            }
+        prompt = usage.get("prompt_tokens")
+        completion = usage.get("completion_tokens")
+        total = usage.get("total_tokens")
+        return {
+            "prompt_tokens": int(prompt) if prompt is not None else None,
+            "completion_tokens": int(completion) if completion is not None else None,
+            "total_tokens": int(total) if total is not None else None,
+        }
 
     def _resolve_snapshot(self, owner_key: str, revision_id: str | None):
         if revision_id is not None:

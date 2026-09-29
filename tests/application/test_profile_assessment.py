@@ -375,6 +375,7 @@ def test_input_digest_changes_with_model_name() -> None:
     base = compute_input_digest(
         opportunity_content_digest="a" * 64,
         profile_evidence_digest="b" * 64,
+        model_evidence_digest="c" * 64,
         search_strategy_revision_id="rev-1",
         prompt_schema_version="profile_assessment_v1",
         model_provider="fake",
@@ -383,6 +384,7 @@ def test_input_digest_changes_with_model_name() -> None:
     other = compute_input_digest(
         opportunity_content_digest="a" * 64,
         profile_evidence_digest="b" * 64,
+        model_evidence_digest="c" * 64,
         search_strategy_revision_id="rev-1",
         prompt_schema_version="profile_assessment_v1",
         model_provider="fake",
