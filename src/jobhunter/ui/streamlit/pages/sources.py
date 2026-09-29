@@ -33,6 +33,7 @@ table = [
         "Last scan": row.last_scan_finished_at or row.last_scan_started_at or "—",
         "Last status": row.last_scan_status or "—",
         "Opportunities": row.opportunity_link_count,
+        "Processed": row.records_processed if row.records_processed is not None else "—",
         "Limit": row.limit if row.configured else "—",
         "Keyword": row.keyword or "—",
         "Fetch details": "Yes" if row.fetch_details else "No",

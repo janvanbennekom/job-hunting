@@ -1034,6 +1034,13 @@ Phase 15 extends the dashboard for operators:
 | Source configuration | Where/how broadly to scan? | `automation.json` (+ connector code) | No |
 | Automation | When/how to run and notify? | `automation.json`, worker env | No |
 
+Phase 16 adds structured **assessment operator presentation**
+(`application/review/assessment_presentation.py`) with explicit situations
+(no production assessment, fake-only, ineligible gate, failed attempt, sparse
+but valid JSON for `LIST_SUMMARY_ONLY` / `PARTIAL`). Raw persisted JSON
+remains available in a collapsed diagnostic expander. Shared enum labels live
+in `application/display_labels.py`.
+
 **Future connectors:** register metadata in `application/sources/registry.py`,
 add `KNOWN_SOURCE_KEYS` / `SOURCE_KEY_TO_JOB_SOURCE_ID`, and a `sources` entry
 in `automation.json`; the Sources UI lists registered connectors without

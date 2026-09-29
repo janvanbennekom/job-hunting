@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-import json
-
 import streamlit as st
 
+from jobhunter.application.display_labels import (
+    label_pursuit_status,
+    label_review_disposition,
+)
 from jobhunter.application.pursuit import (
     PursuitOperationalUpdate,
     PursuitTrackingService,
@@ -14,6 +16,13 @@ from jobhunter.application.review import HumanReviewService, OpportunityDetailSe
 from jobhunter.domain.pursuit_enums import PursuitStatus
 from jobhunter.domain.review_enums import ReviewDisposition
 from jobhunter.ui.streamlit.bootstrap import allow_fake_results, get_session_factory
+from jobhunter.ui.streamlit.detail_sections import (
+    render_assessment_section,
+    render_eligibility_section,
+    render_facts_section,
+    render_human_review_section,
+    render_ranking_section,
+)
 from jobhunter.ui.streamlit.navigation import resolve_opportunity_id_from_url
 from jobhunter.ui.streamlit.sidebar import render_sidebar
 
@@ -41,110 +50,19 @@ with session_factory() as session:
     )
 
 if detail is None:
-    st.error("Opportunity not found.")
+    st.error("Opportunity not found. Check the link or pick another opportunity.")
     st.stop()
 
-facts = detail.facts
-st.header(facts.title)
+render_facts_section(detail.facts)
+render_eligibility_section(detail.eligibility)
+render_assessment_section(detail.assessment)
+render_ranking_section(detail.ranking)
+render_human_review_section(detail.human_review)
 
-if facts.primary_external_url:
-    st.link_button("Open source posting", facts.primary_external_url)
-
-st.markdown("### Source / opportunity facts")
-st.markdown("*Source fact*")
-st.write(
-    {
-        "organisation": facts.organisation,
-        "location": facts.location,
-        "type": facts.opportunity_type,
-        "lifecycle": facts.lifecycle_status.value,
-        "eligibility (stored)": facts.eligibility_status.value,
-        "deadline": str(facts.deadline or ""),
-        "publication": str(facts.publication_date or ""),
-        "source_status": facts.source_status,
-    }
-)
-if facts.description:
-    st.text_area("Description", facts.description, height=200, disabled=True)
-
-if facts.source_links:
-    st.write("Source links (most recent first)")
-    for link in facts.source_links:
-        url = link.external_url
-        st.write(
-            f"**{link.source_name}** — ref={link.source_reference or '—'} "
-            f"last_seen={link.last_seen_at}"
-        )
-        if url:
-            st.link_button(f"Open ({link.source_id})", url, key=f"link-{link.source_id}")
-
-st.markdown("### Deterministic eligibility")
-st.markdown("*Deterministic eligibility*")
-if detail.eligibility is None:
-    st.write("No eligibility decision for the active search strategy revision.")
-else:
-    elig = detail.eligibility
-    st.write(f"Status: **{elig.status.value}** (decision `{elig.decision_id}`)")
-    st.write(f"Search strategy revision: `{elig.search_strategy_revision_id}`")
-    st.write(f"Evaluated at: {elig.evaluated_at}")
-    for rule in elig.rule_results:
-        st.write(
-            f"- `{rule.rule_code}` ({rule.rule_kind}) → {rule.outcome}: "
-            f"{rule.summary or ''}"
-        )
-        if rule.evidence:
-            st.caption(rule.evidence)
-
-st.markdown("### AI profile assessment")
-st.markdown("*AI inference*")
-assess = detail.assessment
-if not assess.present:
-    st.warning(assess.explanation or "No assessment available.")
-    if assess.provider_error:
-        st.code(assess.provider_error)
-else:
-    if assess.is_fake:
-        st.error("Development/fake assessment — not a production OpenAI result.")
-    st.write(
-        f"Provider **{assess.model_provider}** / {assess.model_name} "
-        f"({assess.status}) at {assess.assessed_at}"
-    )
-    if assess.result:
-        st.write(
-            f"Overall relevance: **{assess.result.get('overall_relevance')}**; "
-            f"Source data: **{assess.result.get('source_data_sufficiency')}**"
-        )
-        prof = assess.result.get("professional_relevance") or {}
-        st.write(prof.get("scope_summary", ""))
-        with st.expander("Full assessment JSON"):
-            st.json(assess.result)
-        if detail.profile_labels:
-            st.caption("Profile labels: " + json.dumps(detail.profile_labels))
-
-st.markdown("### Deterministic ranking")
-st.markdown("*Deterministic ranking*")
-rank = detail.ranking
-if rank.dynamic_rank:
-    st.write(f"Dynamic position: **#{rank.dynamic_rank}**")
-if rank.priority_band:
-    st.write(f"Band: **{rank.priority_band.value}**")
-if rank.status:
-    st.write(f"Status: {rank.status.value}")
-if rank.explanation:
-    st.info(rank.explanation)
-for factor in rank.factors:
-    st.write(f"- {factor.code}: {factor.summary} ({factor.effect})")
-if rank.warnings:
-    st.warning("Warnings: " + ", ".join(rank.warnings))
-if rank.ranking_method_version:
-    st.caption(
-        f"Method {rank.ranking_method_version} · config {rank.ranking_config_hash}"
-    )
-
-st.markdown("### Application / pursuit")
-st.markdown(
-    "*What you are doing after deciding to pursue — separate from review triage "
-    "(SHORTLIST / INVESTIGATE / DISMISS).*"
+st.markdown("## Application / pursuit")
+st.caption(
+    "Workflow after you decide to pursue — separate from review triage "
+    "(SHORTLIST / INVESTIGATE / DISMISS)."
 )
 pursuit = detail.pursuit
 if pursuit is None:
@@ -161,7 +79,9 @@ if pursuit is None:
             st.success("Pursuit tracking started.")
             st.rerun()
 else:
-    st.write(f"**Status:** {pursuit.current_status.value}")
+    st.write(
+        f"**Status:** {label_pursuit_status(pursuit.current_status.value)}"
+    )
     if pursuit.is_terminal:
         st.caption("Terminal pursuit state.")
     st.write(f"Started: {pursuit.started_at}")
@@ -186,7 +106,11 @@ else:
     if not pursuit.is_terminal:
         options = [s.value for s in PursuitStatus if s != pursuit.current_status]
         with st.form("pursuit_status_form"):
-            new_status = st.selectbox("Record status transition", options)
+            new_status = st.selectbox(
+                "Record status transition",
+                options,
+                format_func=label_pursuit_status,
+            )
             status_notes = st.text_area("Transition notes (optional)")
             if st.form_submit_button("Save status"):
                 with session_factory() as session:
@@ -240,29 +164,20 @@ else:
             st.rerun()
 
     if pursuit.history:
-        with st.expander("Pursuit status history"):
+        with st.expander("Pursuit status history", expanded=False):
             for entry in pursuit.history:
                 st.write(
-                    f"{entry.recorded_at}: **{entry.status.value}** — "
+                    f"{entry.recorded_at}: "
+                    f"**{label_pursuit_status(entry.status.value)}** — "
                     f"{entry.notes or ''}"
                 )
 
-st.markdown("### Human review")
-st.markdown("*Review triage — should I consider this?*")
-hr = detail.human_review
-if hr.current_disposition:
-    st.write(
-        f"Current: **{hr.current_disposition.value}** at {hr.current_recorded_at}"
-    )
-    if hr.current_notes:
-        st.write(hr.current_notes)
-else:
-    st.write("Not reviewed yet.")
-
 with st.form("review_form"):
+    st.markdown("## Record review disposition")
     disposition = st.selectbox(
-        "Record disposition",
+        "Disposition",
         [d.value for d in ReviewDisposition],
+        format_func=label_review_disposition,
     )
     notes = st.text_area("Notes (optional)")
     submitted = st.form_submit_button("Save review")
@@ -276,8 +191,3 @@ with st.form("review_form"):
             session.commit()
         st.success("Review recorded.")
         st.rerun()
-
-if hr.history:
-    with st.expander("Review history"):
-        for disp, when, note in hr.history:
-            st.write(f"{when}: **{disp.value}** — {note or ''}")

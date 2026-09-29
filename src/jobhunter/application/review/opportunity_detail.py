@@ -5,8 +5,12 @@ from __future__ import annotations
 from sqlalchemy.orm import Session
 
 from jobhunter.application.review.active_strategy import ActiveSearchStrategyResolver
+from jobhunter.application.review.assessment_presentation import (
+    build_assessment_operator_presentation,
+)
 from jobhunter.application.review.dtos import (
     AssessmentSectionView,
+    AssessmentDisplayState,
     OpportunityQueueFilters,
     EligibilityRuleView,
     EligibilitySectionView,
@@ -114,7 +118,9 @@ class OpportunityDetailService:
         )
 
         eligibility_section = self._build_eligibility(opp.id, revision_id)
-        assessment_section = self._build_assessment(pipeline, allow_fake)
+        assessment_section = self._build_assessment(
+            pipeline, allow_fake, opp.eligibility_status
+        )
         ranking_section = self._build_ranking(
             opp, revision_id, allow_fake, pipeline.display_ranking
         )
@@ -122,6 +128,36 @@ class OpportunityDetailService:
 
         result_for_labels = assessment_section.result
         label_map = self._labels.build_map_for_result(result_for_labels)
+        if assessment_section.operator is not None and assessment_section.present:
+            from jobhunter.application.review.assessment_presentation import (
+                build_assessment_operator_presentation,
+            )
+
+            assessment_section = AssessmentSectionView(
+                present=assessment_section.present,
+                is_fake=assessment_section.is_fake,
+                assessment_id=assessment_section.assessment_id,
+                status=assessment_section.status,
+                assessed_at=assessment_section.assessed_at,
+                model_provider=assessment_section.model_provider,
+                model_name=assessment_section.model_name,
+                prompt_schema_version=assessment_section.prompt_schema_version,
+                validation_warnings=assessment_section.validation_warnings,
+                provider_error=assessment_section.provider_error,
+                result=assessment_section.result,
+                explanation=assessment_section.explanation,
+                display_state=assessment_section.display_state,
+                operator=build_assessment_operator_presentation(
+                    display_state=assessment_section.display_state,
+                    present=True,
+                    is_fake=assessment_section.is_fake,
+                    eligibility_status=opp.eligibility_status,
+                    explanation=assessment_section.explanation,
+                    result=assessment_section.result,
+                    profile_labels=label_map,
+                    status=assessment_section.status,
+                ),
+            )
 
         return OpportunityDetailView(
             facts=facts,
@@ -160,11 +196,17 @@ class OpportunityDetailService:
             ],
         )
 
-    def _build_assessment(self, pipeline, allow_fake: bool) -> AssessmentSectionView:
+    def _build_assessment(
+        self,
+        pipeline,
+        allow_fake: bool,
+        eligibility_status: EligibilityStatus,
+    ) -> AssessmentSectionView:
         assessment = pipeline.display_assessment
+        state = pipeline.assessment_state
         if assessment is None:
             explanation = None
-            if pipeline.assessment_state.value == "FAKE_ONLY":
+            if state is AssessmentDisplayState.FAKE_ONLY:
                 explanation = (
                     "No production assessment is stored. Only development/fake "
                     "assessments exist for this opportunity."
@@ -175,7 +217,23 @@ class OpportunityDetailService:
             ):
                 explanation = "The latest assessment attempt failed."
             else:
-                explanation = "No successful profile assessment for the active strategy revision."
+                explanation = (
+                    "No successful profile assessment for the active strategy revision."
+                )
+            operator = build_assessment_operator_presentation(
+                display_state=state,
+                present=False,
+                is_fake=False,
+                eligibility_status=eligibility_status,
+                explanation=explanation,
+                result=None,
+                profile_labels={},
+                status=(
+                    pipeline.latest_assessment.status.value
+                    if pipeline.latest_assessment
+                    else None
+                ),
+            )
             return AssessmentSectionView(
                 present=False,
                 is_fake=False,
@@ -191,9 +249,25 @@ class OpportunityDetailService:
                 else None,
                 result=None,
                 explanation=explanation,
+                display_state=state,
+                operator=operator,
             )
 
         is_fake = assessment.model_provider == "fake"
+        operator = build_assessment_operator_presentation(
+            display_state=state,
+            present=True,
+            is_fake=is_fake,
+            eligibility_status=eligibility_status,
+            explanation=(
+                "AI-generated inference grounded in opportunity text and selected "
+                "professional profile evidence."
+                + (" (Development/fake model.)" if is_fake and allow_fake else "")
+            ),
+            result=assessment.result,
+            profile_labels={},
+            status=assessment.status.value,
+        )
         return AssessmentSectionView(
             present=True,
             is_fake=is_fake,
@@ -206,11 +280,9 @@ class OpportunityDetailService:
             validation_warnings=list(assessment.validation_warnings),
             provider_error=assessment.provider_error,
             result=assessment.result,
-            explanation=(
-                "AI-generated inference grounded in opportunity text and selected "
-                "professional profile evidence."
-                + (" (Development/fake model.)" if is_fake and allow_fake else "")
-            ),
+            explanation=operator.detail,
+            display_state=state,
+            operator=operator,
         )
 
     def _build_ranking(

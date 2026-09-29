@@ -242,6 +242,14 @@ Operational source limits and keywords are **not** strategy revisions; see
 HIGH-ranking email alerts use `JOBHUNTER_WEB_BASE_URL` for the same detail
 links when configured.
 
+### Core operator experience (Phase 16)
+
+Opportunity detail shows structured eligibility, assessment, and ranking
+sections with human-readable labels. Assessment states are explicit (not
+assessed, fake-only, failed, limited source data, etc.). Full assessment JSON
+is available only as a collapsed diagnostic view when a payload exists.
+Structured strategy editing includes preference criteria and hard constraints.
+
 ### FAO Jobs scan (Phase 6)
 
 Acquire vacancies from [FAO Jobs](https://jobs.fao.org/careersection/fao_external/jobsearch.ftl)

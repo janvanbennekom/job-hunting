@@ -9,6 +9,9 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from jobhunter.application.pursuit.dtos import PursuitCurrentView
+    from jobhunter.application.review.assessment_presentation import (
+        AssessmentOperatorPresentation,
+    )
 
 from jobhunter.domain.enums import EligibilityStatus, LifecycleStatus
 from jobhunter.domain.ranking_enums import PriorityBand, RankingStatus
@@ -138,6 +141,8 @@ class AssessmentSectionView:
     provider_error: str | None
     result: dict[str, Any] | None
     explanation: str | None = None
+    display_state: AssessmentDisplayState = AssessmentDisplayState.NONE
+    operator: AssessmentOperatorPresentation | None = None
 
 
 @dataclass(frozen=True, slots=True)

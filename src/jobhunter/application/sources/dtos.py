@@ -21,5 +21,6 @@ class SourceOperationalRow:
     last_scan_status: str | None
     last_error_summary: str | None
     records_retrieved: int | None
+    records_processed: int | None
     records_failed: int | None
     opportunity_link_count: int

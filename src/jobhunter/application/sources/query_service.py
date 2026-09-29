@@ -69,6 +69,7 @@ class SourceOperationalQueryService:
                     last_scan_status=scan.status.value if scan else None,
                     last_error_summary=scan.error_summary if scan else None,
                     records_retrieved=scan.records_retrieved if scan else None,
+                    records_processed=scan.records_processed if scan else None,
                     records_failed=scan.records_failed if scan else None,
                     opportunity_link_count=link_counts.get(job_source_id, 0),
                 )

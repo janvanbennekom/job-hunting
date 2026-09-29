@@ -13,7 +13,11 @@ from jobhunter.application.strategy_conversation import (
 from jobhunter.application.strategy_conversation.dtos import ProposalOutcome
 from jobhunter.application.strategy_display.labels import label_change_source
 from jobhunter.application.strategy_display.presentation import build_strategy_presentation
+from jobhunter.application.strategy_structured_edit.criterion_mutations import (
+    build_criterion_mutations,
+)
 from jobhunter.application.strategy_structured_edit.service import StructuredStrategyEditService
+from jobhunter.ui.streamlit.strategy_criteria import edit_criterion_value
 from jobhunter.domain.strategy_enums import PreferenceStrength
 from jobhunter.infrastructure.config import get_settings
 from jobhunter.ui.streamlit.bootstrap import get_session_factory
@@ -197,8 +201,8 @@ with tab_overview:
 
 with tab_structured:
     st.write(
-        "Adjust themes and exclusions deterministically. A new revision is created "
-        "only after you review the diff and confirm."
+        "Adjust themes, criteria, and exclusions deterministically. A new revision "
+        "is created only after you review the diff and confirm."
     )
     strength_values = [s.value for s in PreferenceStrength]
     theme_edits: dict[str, dict[str, object]] = {}
@@ -227,6 +231,13 @@ with tab_structured:
                 key=f"theme-active-{key}",
             )
         theme_edits[key] = {"strength": strength, "is_active": is_active}
+
+    st.markdown("#### Preference criteria & hard constraints")
+    edited_criteria: list[dict[str, object]] = []
+    for index, item in enumerate(active.criteria):
+        edited_criteria.append(
+            edit_criterion_value(item, f"crit-{index}")
+        )
 
     st.markdown("#### Exclusions")
     exclusion_edits: dict[str, bool] = {}
@@ -289,6 +300,9 @@ with tab_structured:
                         "is_active": is_active,
                     }
                 )
+        mutations.extend(
+            build_criterion_mutations(active.criteria, edited_criteria)
+        )
         if not mutations:
             st.info("No changes detected compared with the active revision.")
         else:

@@ -264,9 +264,9 @@ docker compose -f docker-compose.prod.yml up -d web edge
 existing opportunities have no pursuit until you **Start pursuing** in the UI.
 Worker containers do not require changes beyond the shared image rebuild.
 
-**Phase 15 (operational UI):** no database migration. Alembic head remains
-`20260928_0014`. Rebuild and restart `web` / `edge` only; worker image can be
-rebuilt for consistency but behaviour is unchanged.
+**Phase 15–16 (operational UI / core hardening):** no database migration.
+Alembic head remains `20260928_0014`. Rebuild and restart `web` / `edge` only;
+worker image can be rebuilt for consistency but behaviour is unchanged.
 
 ```bash
 cd /volume1/docker/job-hunter

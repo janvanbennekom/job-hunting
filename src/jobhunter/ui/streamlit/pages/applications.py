@@ -10,6 +10,7 @@ from jobhunter.application.pursuit import (
     ApplicationQueueFilters,
     ApplicationQueueQueryService,
 )
+from jobhunter.application.display_labels import label_pursuit_status
 from jobhunter.domain.pursuit_enums import PursuitStatus
 from jobhunter.ui.streamlit.bootstrap import get_session_factory
 from jobhunter.ui.streamlit.navigation import navigate_to_opportunity_detail
@@ -43,6 +44,7 @@ else:
 status_filter = st.selectbox(
     "Status filter (optional)",
     ["(any)"] + [s.value for s in PursuitStatus],
+    format_func=lambda v: label_pursuit_status(v) if v != "(any)" else v,
 )
 if status_filter != "(any)":
     filters.status = PursuitStatus(status_filter)
@@ -58,7 +60,10 @@ if not items:
 today = date.today()
 for item in items:
     overdue = item.next_action_overdue
-    label = f"**{item.title}** — {item.current_status.value}"
+    label = (
+        f"**{item.title}** — "
+        f"{label_pursuit_status(item.current_status.value)}"
+    )
     if overdue:
         label += " · overdue next action"
     with st.expander(label, expanded=False):

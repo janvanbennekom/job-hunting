@@ -97,10 +97,13 @@ The planned phases are:
 | 13 | Scheduling and Notifications |
 | 14 | Application Tracking |
 | 15 | Operational UI and Configuration |
-| 16 | CV and Cover-Letter Personalisation |
-| 17 | XLSX Export and Operational Features |
-| 18 | Deployment |
-| 19 | Hardening and Further Evolution |
+| 16 | Core Completion and UI Hardening |
+| 17 | Source Expansion |
+| 18 | Production Validation and Tuning |
+| 19 | CV and Cover-Letter Personalisation (deferred) |
+| 20 | XLSX Export and Operational Features |
+| 21 | Deployment |
+| 22 | Hardening and Further Evolution |
 
 Phases may contain multiple bounded implementation steps.
 
@@ -953,7 +956,7 @@ Support the workflow after the user decides to pursue an opportunity.
 ## Deferred to later phases
 
 - Email/calendar reminders for next actions and deadlines
-- CV/cover-letter/EOI generation (Phase 16)
+- CV/cover-letter/EOI generation (deferred — Phase 19)
 - Automatic external submission
 
 
@@ -1002,7 +1005,59 @@ assessment, ranking, pursuit, notifications, or scheduling semantics.
 - No Alembic migration required when reusing existing strategy schema.
 
 
-# Phase 16 — CV and Cover-Letter Personalisation
+# Phase 16 — Core Completion and UI Hardening
+
+## Objective
+
+Finish operator-facing presentation for the existing pipeline: structured
+assessment/eligibility/ranking views, explicit assessment-state messaging,
+complete structured strategy editing (including criteria), and consistent
+human-readable labels — without changing Phase 7–9 semantics or adding sources.
+
+## Scope
+
+- Investigate why assessment JSON varies (gates, sufficiency, fake-only, sparse
+  valid output, revision mismatch) before changing UI.
+- `AssessmentOperatorPresentation` and structured sections on opportunity detail.
+- Retain collapsed **Full assessment JSON** diagnostic expander when payload exists.
+- Complete structured strategy editor for preference criteria and hard constraints.
+- Centralised `display_labels`; pursuit/review label consistency.
+- Sources page: show processed counts; remain registry-driven for Phase 17.
+
+## Out of scope
+
+- New source connectors (Phase 17).
+- CV/cover-letter generation (deferred Phase 19).
+- PostgreSQL source configuration.
+
+## Verification
+
+- Focused tests for assessment presentation, criterion structured edits, labels.
+- No Alembic migration unless a genuine persistence defect is found.
+
+
+# Phase 17 — Source Expansion
+
+## Objective
+
+Add additional opportunity acquisition connectors (World Bank, UNDP, UNOPS, etc.)
+using the registry-driven source model established in Phases 12 and 15.
+
+## Out of scope for planning detail here
+
+Implementation details belong in the Phase 17 implementation prompt.
+
+
+# Phase 18 — Production Validation and Tuning
+
+## Objective
+
+Exercise JobHunter with substantially more real opportunities and sources;
+tune ranking weights, search strategy, and operational thresholds based on
+observed results.
+
+
+# Phase 19 — CV and Cover-Letter Personalisation (deferred)
 
 ## Objective
 
@@ -1057,7 +1112,7 @@ Generated documents are drafts until accepted by the user.
 No automatic external application submission is included in this phase.
 
 
-# Phase 17 — XLSX Export and Operational Features
+# Phase 20 — XLSX Export and Operational Features
 
 ## Objective
 
@@ -1096,7 +1151,7 @@ Also review requirements for:
 Implement only features demonstrated to be useful.
 
 
-# Phase 18 — Deployment
+# Phase 21 — Deployment
 
 ## Objective
 
@@ -1160,7 +1215,7 @@ Initially:
 CI/CD is optional and should be introduced only when useful.
 
 
-# Phase 19 — Hardening and Further Evolution
+# Phase 22 — Hardening and Further Evolution
 
 ## Objective
 
@@ -1315,14 +1370,15 @@ personalisation, or production deployment.
 
 # 6. Current Implementation Status
 
-Phases 0–15 are complete for the Bootcamp MVP, production operations, pursuit
-tracking, and operator-facing UI/configuration.
+Phases 0–16 are complete for the Bootcamp MVP, production operations, pursuit
+tracking, operator UI/configuration, and core presentation hardening.
 
 The current implementation step is:
 
-    Phase 15 — Operational UI and Configuration
+    Phase 16 — Core Completion and UI Hardening
 
-Phase 16 (CV/cover-letter personalisation) is the next planned phase.
+Phase 17 (source expansion) is the next planned phase. CV/cover-letter
+personalisation remains deferred (Phase 19).
 
 Phase 3 established the professional evidence foundation from the structured
 project spreadsheet, Professional Services document, and CV.
