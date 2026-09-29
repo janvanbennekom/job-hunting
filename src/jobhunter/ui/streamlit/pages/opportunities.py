@@ -2,26 +2,23 @@
 
 from __future__ import annotations
 
-import pandas as pd
 import streamlit as st
 
-from jobhunter.application.display_labels import (
-    label_eligibility_status,
-    label_review_disposition,
-)
+from jobhunter.application.display_labels import label_review_disposition
 from jobhunter.application.review import HumanReviewService, OpportunityReviewQueryService
 from jobhunter.application.review.dtos import OpportunityQueueFilters
 from jobhunter.domain.enums import EligibilityStatus, LifecycleStatus
 from jobhunter.domain.ranking_enums import PriorityBand
 from jobhunter.domain.review_enums import ReviewDisposition
 from jobhunter.ui.streamlit.bootstrap import allow_fake_results, get_session_factory
-from jobhunter.ui.streamlit.navigation import get_query_param, navigate_to_opportunity_detail
+from jobhunter.ui.streamlit.navigation import get_query_param
 from jobhunter.ui.streamlit.opportunities_bulk import (
     clear_opportunity_queue_selection,
     opportunity_queue_editor_key,
     pop_bulk_review_flash,
     set_bulk_review_success_flash,
 )
+from jobhunter.ui.streamlit.opportunities_table import build_opportunity_queue_dataframe
 from jobhunter.ui.streamlit.sidebar import render_sidebar
 
 render_sidebar()
@@ -94,39 +91,14 @@ elif review_filter != "(any)":
 if not items:
     st.info("No opportunities match the current filters.")
 else:
-    id_by_row: list[str] = []
-    rows = []
-    for item in items:
-        id_by_row.append(item.opportunity_id)
-        review_label = (
-            label_review_disposition(item.review_disposition.value)
-            if item.review_disposition
-            else "—"
-        )
-        rank = str(item.dynamic_rank) if item.dynamic_rank else "—"
-        band = item.priority_band.value if item.priority_band else "—"
-        deadline = str(item.deadline) if item.deadline else "—"
-        rows.append(
-            {
-                "Select": False,
-                "Opportunity": item.title,
-                "Organisation": item.organisation or "—",
-                "Deadline": deadline,
-                "Eligibility": label_eligibility_status(
-                    item.eligibility_status.value
-                ),
-                "Rank": f"{rank} ({band})",
-                "Review": review_label,
-            }
-        )
-
-    df = pd.DataFrame(rows)
+    id_by_row, df = build_opportunity_queue_dataframe(items)
     edited = st.data_editor(
         df,
         hide_index=True,
         use_container_width=True,
         column_config={
             "Select": st.column_config.CheckboxColumn("Select", default=False),
+            "View": st.column_config.LinkColumn("View", display_text="View"),
         },
         disabled=[
             "Opportunity",
@@ -209,7 +181,3 @@ else:
                         "notes": bulk_notes.strip() or None,
                     }
                     st.rerun()
-
-    if selected_count == 1:
-        if st.button("Open selected opportunity detail"):
-            navigate_to_opportunity_detail(selected_ids[0])

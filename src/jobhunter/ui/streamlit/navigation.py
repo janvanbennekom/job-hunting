@@ -27,6 +27,11 @@ def navigate_to_opportunities(**filters: str) -> None:
     st.switch_page(OPPORTUNITIES_PAGE)
 
 
+def opportunity_detail_href(opportunity_id: str) -> str:
+    """Relative Streamlit href for Opportunity detail (used in list link columns)."""
+    return f"opportunity_detail?opportunity_id={opportunity_id}"
+
+
 def navigate_to_opportunity_detail(opportunity_id: str) -> None:
     st.session_state["selected_opportunity_id"] = opportunity_id
     st.query_params.from_dict({"opportunity_id": opportunity_id})
