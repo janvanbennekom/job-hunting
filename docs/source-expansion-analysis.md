@@ -613,7 +613,7 @@ Prioritise a future **HTML/CSRN browse connector** (class B) after a NAS egress 
 ### 21.5 Operations
 
 - ReliefWeb: 1000 API calls/day quota (official); start `limit: 10`; one POST per scan page.
-- TED: one POST per scan; default expert query includes land/GIS terms when `keyword` empty; start `limit: 10`.
+- TED: one POST per scan; default LAND-CORE expert query when `keyword` empty; start `limit: 10`.
 - ReliefWeb **disabled** in `automation.example.json` until `JOBHUNTER_RELIEFWEB_APPNAME` is set.
 
 ### 21.6 TED default query correction (production validation, 2026-09-29)
@@ -630,13 +630,9 @@ disjunctive full-text search. The shipped default:
 returned `notices: []` and `totalNoticeCount: 0`. Valid syntax joins **separate**
 predicates: `(FT~"land administration" OR FT~cadastre OR …) AND PD>=…`.
 
-**Fix:** `build_ted_expert_query()` default uses a curated OR of ten concepts (land
-administration, cadastre, cadastral, geospatial, geographic information, spatial data,
-GIS, SDI, digital transformation, property registration). Non-empty `keyword` in
+**Fix (syntax):** separate `FT~` predicates joined by OR. An interim ten-term default
+(§21.7) was later **replaced by LAND-CORE** in Phase 17D-3. Non-empty `keyword` in
 automation JSON still maps to a single `FT~"keyword"` clause.
-
-**Live validation (post-fix, 2026-09-29):** `TedSearchClient.search_notices(keyword=None, limit=5)` returned
-five notices and `totalNoticeCount` in the low thousands (ACTIVE scope, `PD>=20240101`).
 
 **After NAS re-validation**, enable TED with empty keyword and a small limit:
 
@@ -650,6 +646,36 @@ five notices and `totalNoticeCount` in the low thousands (ACTIVE scope, `PD>=202
 ```
 
 Keep `enabled: false` in the repository example until production validation succeeds.
+
+### 21.7 TED acquisition relevance tuning (17D-2 investigation, 2026-09-29)
+
+Post-syntax-fix live validation returned **~2765** ACTIVE notices for the ten-term default, but
+recent-result samples were dominated by **GIS/SDI substring noise** (e.g. Croatian
+*administrativnom* matching `FT~GIS`; French **SDIS** fire services matching `FT~SDI`) and
+broad IT/environmental hits.
+
+**Term-level signal (ACTIVE, `PD>=20240101`, investigation counts):** high-value land/cadastre
+terms (`cadastre` ~400, `cadastral` ~471, `cadastral survey` ~281) vs noisy abbreviations
+(`GIS` ~1297, `SDI` ~752) and overly broad phrases (`surveying` ~8423, `mapping` ~1752).
+Zero-hit phrases in TED full text: `land information system`, `land registry`, `spatial data
+infrastructure`.
+
+**LAND-CORE default (implemented 17D-3):** eight OR predicates — land administration,
+cadastre, cadastral, property registration, land registration, land registry, land
+information system, cadastral survey — (~572 ACTIVE notices in investigation). Removed
+from default: GIS, SDI, geospatial, geographic information, spatial data, digital
+transformation (substring/acronym noise and low precision). Use explicit `keyword` for
+those concepts when needed.
+
+**TED role:** secondary source — EU cadastre/LIS programmes and firm/service procurement;
+weak for direct individual-consultant posts vs FAO, DevelopmentAid, World Bank, UNDP.
+Initial scheduled `limit: 10` when enabled.
+
+**CPV (deferred):** cadastre samples often use **71354300** (cadastral services) and
+**71355000** (surveying). No CPV filter in the connector; possible future ranking/context
+or optional OR expansion only.
+
+Keep `enabled: false` in `automation.example.json` until NAS validation of LAND-CORE.
 
 ---
 

@@ -22,18 +22,16 @@ _DEFAULT_FIELDS = [
     "notice-type",
 ]
 
-# Curated default full-text concepts (OR of separate FT~ predicates; not one FT~ group).
+# LAND-CORE default (OR of separate FT~ predicates; Phase 17D-3).
 _DEFAULT_FT_CONCEPTS: tuple[tuple[str, bool], ...] = (
     ("land administration", True),
     ("cadastre", False),
     ("cadastral", False),
-    ("geospatial", False),
-    ("geographic information", True),
-    ("spatial data", True),
-    ("GIS", False),
-    ("SDI", False),
-    ("digital transformation", True),
     ("property registration", True),
+    ("land registration", True),
+    ("land registry", True),
+    ("land information system", True),
+    ("cadastral survey", True),
 )
 
 

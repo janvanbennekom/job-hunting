@@ -5,6 +5,24 @@ from datetime import date
 
 from jobhunter.connectors.ted.client import build_ted_expert_query
 
+_LAND_CORE_PHRASES = (
+    "land administration",
+    "property registration",
+    "land registration",
+    "land registry",
+    "land information system",
+    "cadastral survey",
+)
+_LAND_CORE_UNQUOTED = ("cadastre", "cadastral")
+_REMOVED_NOISY = (
+    "FT~GIS",
+    "FT~SDI",
+    "FT~geospatial",
+    'FT~"geographic information"',
+    'FT~"spatial data"',
+    'FT~"digital transformation"',
+)
+
 
 def test_build_query_includes_keyword_and_date_filter() -> None:
     q = build_ted_expert_query(keyword="cadastre", publication_since=date(2025, 1, 1))
@@ -14,20 +32,20 @@ def test_build_query_includes_keyword_and_date_filter() -> None:
     assert " OR " not in q.split(" AND ")[0]
 
 
-def test_default_query_uses_separate_ft_predicates_or_joined() -> None:
+def test_default_query_land_core_concepts_present() -> None:
     q = build_ted_expert_query(keyword=None, publication_since=date(2024, 1, 1))
     assert q.startswith("(")
-    assert " OR FT~" in q or " OR FT~\"" in q
-    assert 'FT~"land administration"' in q
-    assert "FT~cadastre" in q
-    assert "FT~cadastral" in q
-    assert "FT~geospatial" in q
-    assert 'FT~"geographic information"' in q
-    assert 'FT~"spatial data"' in q
-    assert "FT~GIS" in q
-    assert "FT~SDI" in q
-    assert 'FT~"digital transformation"' in q
-    assert 'FT~"property registration"' in q
+    assert " OR FT~" in q or ' OR FT~"' in q
+    for phrase in _LAND_CORE_PHRASES:
+        assert f'FT~"{phrase}"' in q
+    for term in _LAND_CORE_UNQUOTED:
+        assert f"FT~{term}" in q
+
+
+def test_default_query_excludes_noisy_concepts() -> None:
+    q = build_ted_expert_query()
+    for fragment in _REMOVED_NOISY:
+        assert fragment not in q
 
 
 def test_default_query_not_malformed_ft_or_inside_single_predicate() -> None:
@@ -35,16 +53,11 @@ def test_default_query_not_malformed_ft_or_inside_single_predicate() -> None:
     assert not re.search(r'FT~\([^)]*\bOR\b', q)
 
 
-def test_default_query_excludes_overly_broad_terms() -> None:
+def test_default_query_excludes_unrelated_broad_terms() -> None:
     q = build_ted_expert_query().lower()
-    for term in (
-        "information system",
-        "registry",
-        "mapping",
-        "surveying",
-        "land information system",
-    ):
-        assert term not in q
+    for term in ("mapping", "surveying"):
+        assert f'ft~"{term}"' not in q
+        assert f"ft~{term}" not in q
 
 
 def test_default_query_publication_date_and_sort() -> None:

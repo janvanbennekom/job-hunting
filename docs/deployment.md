@@ -251,10 +251,10 @@ Official quota: **1000 API calls/day**. Each scan uses one POST (up to `limit` j
 ### TED EU procurement (`ted` source)
 
 No API key required for search. Uses expert query with optional `keyword` in
-automation JSON; when `keyword` is empty the connector applies a curated OR of
-separate `FT~` land/GIS/cadastre concepts (not a single `FT~( … OR … )` group).
+automation JSON; when `keyword` is empty the connector applies the **LAND-CORE** OR of
+separate `FT~` predicates (land/cadastre/registration concepts; not GIS/SDI abbreviations).
 Start with `limit: 10` — one POST per scan. Keep `enabled: false` until a TED-only
-validation on the NAS shows `retrieved > 0` (see §21.6 in `source-expansion-analysis.md`).
+validation on the NAS shows `retrieved > 0` (see §21.6–21.7 in `source-expansion-analysis.md`).
 
 **TED-only validation (worker container, no OpenAI):**
 
@@ -275,13 +275,14 @@ engine = create_engine_from_settings(settings)
 session_factory = create_session_factory(engine)
 with session_scope(session_factory) as session:
     r = TedScanService(session).run_scan(
-        limit=5, apply=True, run_profile_assessment=False
+        limit=10, apply=True, run_profile_assessment=False
     )
-    print('status', r.scan.status, 'retrieved', r.retrieved, 'processed', r.processed)
+    print('status', r.scan.status, 'retrieved', r.retrieved, 'processed', r.processed, 'failed', r.failed)
 "
 ```
 
-Expect `retrieved` and `processed` greater than zero when the default query fix is deployed.
+Expect `retrieved` and `processed` greater than zero with the LAND-CORE default (investigation
+`totalNoticeCount` ~572; catalogue may drift).
 
 ### DevelopmentAid detail rate limits
 

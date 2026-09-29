@@ -1103,8 +1103,9 @@ See `docs/source-expansion-analysis.md` §21.
 
 **TED query correction (same phase, post-validation):** production NAS scan returned
 `retrieved=0` because the default expert query used invalid `FT~(term OR term …)`
-syntax; corrected to OR of separate `FT~` predicates (§21.6). TED remains disabled in
-`automation.example.json` until Synology re-validation.
+syntax; corrected to OR of separate `FT~` predicates (§21.6). **17D-3:** default tuned to
+LAND-CORE eight-term query after relevance investigation (§21.7). TED remains disabled in
+`automation.example.json` until Synology LAND-CORE validation.
 
 
 # Phase 18 — Production Validation and Tuning
