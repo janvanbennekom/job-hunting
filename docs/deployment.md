@@ -251,8 +251,37 @@ Official quota: **1000 API calls/day**. Each scan uses one POST (up to `limit` j
 ### TED EU procurement (`ted` source)
 
 No API key required for search. Uses expert query with optional `keyword` in
-automation JSON; default query biases toward land/GIS/cadastre when keyword is empty.
-Start with `limit: 10` — one POST per scan.
+automation JSON; when `keyword` is empty the connector applies a curated OR of
+separate `FT~` land/GIS/cadastre concepts (not a single `FT~( … OR … )` group).
+Start with `limit: 10` — one POST per scan. Keep `enabled: false` until a TED-only
+validation on the NAS shows `retrieved > 0` (see §21.6 in `source-expansion-analysis.md`).
+
+**TED-only validation (worker container, no OpenAI):**
+
+```bash
+cd /volume1/docker/job-hunter
+sudo docker compose -f docker-compose.prod.yml --profile worker run --rm worker \
+  python -c "
+from jobhunter.application.ted_scan import TedScanService
+from jobhunter.infrastructure.config import get_settings
+from jobhunter.infrastructure.persistence.database import (
+    create_engine_from_settings,
+    create_session_factory,
+    session_scope,
+)
+settings = get_settings()
+settings.require_database_url()
+engine = create_engine_from_settings(settings)
+session_factory = create_session_factory(engine)
+with session_scope(session_factory) as session:
+    r = TedScanService(session).run_scan(
+        limit=5, apply=True, run_profile_assessment=False
+    )
+    print('status', r.scan.status, 'retrieved', r.retrieved, 'processed', r.processed)
+"
+```
+
+Expect `retrieved` and `processed` greater than zero when the default query fix is deployed.
 
 ### DevelopmentAid detail rate limits
 

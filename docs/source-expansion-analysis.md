@@ -616,6 +616,41 @@ Prioritise a future **HTML/CSRN browse connector** (class B) after a NAS egress 
 - TED: one POST per scan; default expert query includes land/GIS terms when `keyword` empty; start `limit: 10`.
 - ReliefWeb **disabled** in `automation.example.json` until `JOBHUNTER_RELIEFWEB_APPNAME` is set.
 
+### 21.6 TED default query correction (production validation, 2026-09-29)
+
+Synology TED-only validation (`TedScanService.run_scan(limit=5, apply=True)`) reported
+`SUCCESS` with **`retrieved=0`** while Phase 17D live probes against the same API returned
+notices for single-term queries (e.g. `FT~"GIS"`).
+
+**Root cause:** TED Search API v3 does not treat OR inside a single `FT~( … )` group as
+disjunctive full-text search. The shipped default:
+
+`FT~("land administration" OR cadastre OR …) AND PD>=…`
+
+returned `notices: []` and `totalNoticeCount: 0`. Valid syntax joins **separate**
+predicates: `(FT~"land administration" OR FT~cadastre OR …) AND PD>=…`.
+
+**Fix:** `build_ted_expert_query()` default uses a curated OR of ten concepts (land
+administration, cadastre, cadastral, geospatial, geographic information, spatial data,
+GIS, SDI, digital transformation, property registration). Non-empty `keyword` in
+automation JSON still maps to a single `FT~"keyword"` clause.
+
+**Live validation (post-fix, 2026-09-29):** `TedSearchClient.search_notices(keyword=None, limit=5)` returned
+five notices and `totalNoticeCount` in the low thousands (ACTIVE scope, `PD>=20240101`).
+
+**After NAS re-validation**, enable TED with empty keyword and a small limit:
+
+```json
+{
+  "key": "ted",
+  "enabled": true,
+  "keyword": "",
+  "limit": 10
+}
+```
+
+Keep `enabled: false` in the repository example until production validation succeeds.
+
 ---
 
 ## 18. References (public)

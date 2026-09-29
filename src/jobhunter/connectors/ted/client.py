@@ -22,6 +22,34 @@ _DEFAULT_FIELDS = [
     "notice-type",
 ]
 
+# Curated default full-text concepts (OR of separate FT~ predicates; not one FT~ group).
+_DEFAULT_FT_CONCEPTS: tuple[tuple[str, bool], ...] = (
+    ("land administration", True),
+    ("cadastre", False),
+    ("cadastral", False),
+    ("geospatial", False),
+    ("geographic information", True),
+    ("spatial data", True),
+    ("GIS", False),
+    ("SDI", False),
+    ("digital transformation", True),
+    ("property registration", True),
+)
+
+
+def _ft_predicate(term: str, *, quoted: bool) -> str:
+    if quoted:
+        escaped = term.replace('"', '\\"')
+        return f'FT~"{escaped}"'
+    return f"FT~{term}"
+
+
+def _default_ft_or_group() -> str:
+    parts = [
+        _ft_predicate(term, quoted=quoted) for term, quoted in _DEFAULT_FT_CONCEPTS
+    ]
+    return "(" + " OR ".join(parts) + ")"
+
 
 @dataclass(slots=True)
 class TedSearchPage:
@@ -109,8 +137,5 @@ def build_ted_expert_query(
         text = keyword.strip().replace('"', '\\"')
         ft = f'FT~"{text}"'
     else:
-        ft = (
-            'FT~("land administration" OR cadastre OR geospatial OR '
-            '"geographic information" OR "land information system" OR GIS)'
-        )
+        ft = _default_ft_or_group()
     return f"{ft} AND {pd_filter} SORT BY publication-date DESC"

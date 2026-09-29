@@ -1101,6 +1101,11 @@ procurement** connectors; documented A/B/C/D classification for remaining
 candidates (UNOPS, UN Careers, ADB, IFAD, WFP, GIZ, Devex). No Alembic change.
 See `docs/source-expansion-analysis.md` §21.
 
+**TED query correction (same phase, post-validation):** production NAS scan returned
+`retrieved=0` because the default expert query used invalid `FT~(term OR term …)`
+syntax; corrected to OR of separate `FT~` predicates (§21.6). TED remains disabled in
+`automation.example.json` until Synology re-validation.
+
 
 # Phase 18 — Production Validation and Tuning
 
