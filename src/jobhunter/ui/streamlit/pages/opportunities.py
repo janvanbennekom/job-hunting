@@ -16,12 +16,22 @@ from jobhunter.domain.ranking_enums import PriorityBand
 from jobhunter.domain.review_enums import ReviewDisposition
 from jobhunter.ui.streamlit.bootstrap import allow_fake_results, get_session_factory
 from jobhunter.ui.streamlit.navigation import get_query_param, navigate_to_opportunity_detail
+from jobhunter.ui.streamlit.opportunities_bulk import (
+    clear_opportunity_queue_selection,
+    opportunity_queue_editor_key,
+    pop_bulk_review_flash,
+    set_bulk_review_success_flash,
+)
 from jobhunter.ui.streamlit.sidebar import render_sidebar
 
 render_sidebar()
 
 st.title("Opportunities")
 st.caption("Default: actionable lifecycle, eligible, production assessment/ranking semantics.")
+
+_bulk_flash = pop_bulk_review_flash(st.session_state)
+if _bulk_flash:
+    st.success(_bulk_flash)
 
 eligibility_qp = get_query_param("eligibility")
 lifecycle_qp = get_query_param("lifecycle")
@@ -126,7 +136,7 @@ else:
             "Rank",
             "Review",
         ],
-        key="opportunity_queue_editor",
+        key=opportunity_queue_editor_key(st.session_state),
     )
 
     selected_ids = [
@@ -151,18 +161,28 @@ else:
         confirm_cols = st.columns(2)
         with confirm_cols[0]:
             if st.button("Confirm bulk review", type="primary"):
-                with session_factory() as session:
-                    HumanReviewService(session).append_reviews_bulk(
-                        pending["opportunity_ids"],
-                        ReviewDisposition(pending["disposition"]),
-                        pending.get("notes"),
+                try:
+                    with session_factory() as session:
+                        HumanReviewService(session).append_reviews_bulk(
+                            pending["opportunity_ids"],
+                            ReviewDisposition(pending["disposition"]),
+                            pending.get("notes"),
+                        )
+                        session.commit()
+                except ValueError as exc:
+                    st.error(str(exc))
+                except Exception:
+                    st.error("Bulk review could not be saved. Your selection is unchanged.")
+                else:
+                    disposition = pending["disposition"]
+                    count = pending["count"]
+                    st.session_state.pop("bulk_review_pending", None)
+                    set_bulk_review_success_flash(
+                        st.session_state,
+                        f"Recorded {disposition} for {count} opportunities.",
                     )
-                    session.commit()
-                st.session_state.pop("bulk_review_pending", None)
-                st.success(
-                    f"Recorded {pending['disposition']} for {pending['count']} opportunities."
-                )
-                st.rerun()
+                    clear_opportunity_queue_selection(st.session_state)
+                    st.rerun()
         with confirm_cols[1]:
             if st.button("Cancel bulk review"):
                 st.session_state.pop("bulk_review_pending", None)
