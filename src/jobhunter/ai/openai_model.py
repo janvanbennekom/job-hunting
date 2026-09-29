@@ -6,11 +6,14 @@ import json
 from typing import Any
 
 from jobhunter.ai.protocol import AssessmentModelResponse
+from jobhunter.application.profile_assessment.output_schema import (
+    assessment_output_instructions,
+    assessment_output_schema,
+)
 from jobhunter.domain.assessment_request import AssessmentRequest
 
 _SYSTEM_PROMPT = """You are an expert assessor for international Geo-ICT and land administration consulting opportunities.
-Return ONLY valid JSON matching the requested schema.
-Use UNKNOWN or INSUFFICIENT_EVIDENCE when evidence is missing.
+Return ONLY a JSON object matching the required output schema (see user message).
 Never invent ToR requirements, qualifications, durations, team structures, or profile evidence.
 Only reference profile entity IDs present in evidence_pack.
 Opportunity excerpts must be exact substrings of the supplied opportunity fields.
@@ -36,7 +39,12 @@ class OpenAIAssessmentModel:
             )
 
         client = OpenAI(api_key=self._api_key)
-        user_content = json.dumps(request.to_mapping(), ensure_ascii=False)
+        user_payload = {
+            "assessment_input": request.to_mapping(),
+            "required_output_schema": assessment_output_schema(),
+            "output_instructions": assessment_output_instructions(),
+        }
+        user_content = json.dumps(user_payload, ensure_ascii=False)
         try:
             completion = client.chat.completions.create(
                 model=self.model_name,
@@ -46,7 +54,7 @@ class OpenAIAssessmentModel:
                         "role": "user",
                         "content": (
                             "Assess this opportunity against the evidence and strategy. "
-                            f"Schema version: {request.schema_version}\n"
+                            f"Input schema version: {request.schema_version}\n"
                             f"{user_content}"
                         ),
                     },

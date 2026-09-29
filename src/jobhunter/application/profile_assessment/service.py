@@ -375,6 +375,8 @@ class OpportunityProfileAssessmentService:
                 "ToR requirements, qualifications, durations, or team structure."
             )
         return (
-            "Assess professional relevance and profile evidence conservatively. "
-            "Use UNKNOWN or INSUFFICIENT_EVIDENCE when appropriate."
+            "Assess professional relevance against the Geo-ICT / land administration / "
+            "LIS-GIS profile in evidence_pack. Use OUT_OF_SCOPE for clearly unrelated "
+            "professional disciplines when the posting describes that discipline. "
+            "Reserve UNKNOWN for genuinely insufficient source text, not for poor fit."
         )

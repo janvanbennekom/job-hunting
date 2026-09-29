@@ -34,6 +34,52 @@ class ValidationOutcome:
 
 
 class AssessmentValidationService:
+    @staticmethod
+    def _opportunity_text_volume(opportunity_fields: dict[str, str]) -> int:
+        parts = (
+            opportunity_fields.get("TITLE") or "",
+            opportunity_fields.get("DESCRIPTION") or "",
+            opportunity_fields.get("EXPERTISE") or "",
+            opportunity_fields.get("SECTORS") or "",
+        )
+        return sum(len(part.strip()) for part in parts)
+
+    def _reject_empty_unknown_relevance(
+        self,
+        raw: dict[str, Any],
+        overall: OverallRelevance,
+        request: AssessmentRequest,
+        opportunity_fields: dict[str, str],
+        warnings: list[str],
+    ) -> ValidationOutcome | None:
+        if overall is not OverallRelevance.UNKNOWN:
+            return None
+        try:
+            sufficiency = SourceDataSufficiency(
+                str(
+                    raw.get(
+                        "source_data_sufficiency",
+                        request.source_data_sufficiency.value,
+                    )
+                )
+            )
+        except ValueError:
+            sufficiency = request.source_data_sufficiency
+        if sufficiency is SourceDataSufficiency.LIST_SUMMARY_ONLY:
+            return None
+        if self._opportunity_text_volume(opportunity_fields) < 200:
+            return None
+        prof_raw = raw.get("professional_relevance") or {}
+        scope = str(prof_raw.get("scope_summary", "")).strip()
+        rationale = str(raw.get("rationale", "")).strip()
+        if scope or rationale:
+            return None
+        warnings.append(
+            "UNKNOWN overall_relevance with adequate opportunity text but empty "
+            "professional_relevance.scope_summary and rationale"
+        )
+        return ValidationOutcome(None, warnings, True)
+
     def validate(
         self,
         raw: dict[str, Any],
@@ -50,6 +96,12 @@ class AssessmentValidationService:
             overall = OverallRelevance(str(raw.get("overall_relevance", "UNKNOWN")))
         except ValueError:
             return ValidationOutcome(None, ["invalid overall_relevance"], True)
+
+        narrative_failure = self._reject_empty_unknown_relevance(
+            raw, overall, request, opportunity_fields, warnings
+        )
+        if narrative_failure:
+            return narrative_failure
 
         try:
             sufficiency = SourceDataSufficiency(
