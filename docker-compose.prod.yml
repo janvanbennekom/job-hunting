@@ -3,7 +3,7 @@
 #
 #   docker compose -f docker-compose.prod.yml build
 #   docker compose -f docker-compose.prod.yml --profile tools run --rm migrate
-#   docker compose -f docker-compose.prod.yml up -d web edge
+#   docker compose -f docker-compose.prod.yml up -d web status edge
 #
 # Worker (Task Scheduler):
 #   docker compose -f docker-compose.prod.yml --profile worker run --rm worker
@@ -64,6 +64,30 @@ services:
     networks:
       - jobhunter_internal
 
+  status:
+    build: .
+    image: jobhunter:local
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      JOBHUNTER_ENV: production
+      JOBHUNTER_STATUS_PORT: "8502"
+    command: ["python", "-m", "jobhunter.ui.public_status.server"]
+    networks:
+      - jobhunter_internal
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-fsS",
+          "http://127.0.0.1:8502/status",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
   worker:
     build: .
     image: jobhunter:local
@@ -91,6 +115,8 @@ services:
       - ./deploy/landing:/srv/landing:ro
     depends_on:
       web:
+        condition: service_healthy
+      status:
         condition: service_healthy
     networks:
       - jobhunter_internal

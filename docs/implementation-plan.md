@@ -1128,6 +1128,19 @@ disabled; production may enable per `deployment.md`.
 
 Suggested next subphase: **17E-2** only after UN Careers egress/API investigation (not RSS from NAS).
 
+### Phase 17F — Operational consolidation (complete)
+
+**Bulk triage:** `/app/opportunities` supports multi-select (checkbox column) and
+confirmed bulk **DISMISS**, **SHORTLIST**, and **INVESTIGATE** via
+`HumanReviewService.append_reviews_bulk` (validate-all-then-append; append-only history).
+
+**Public status:** aggregate-only page at **`/status`** (Caddy → `status` container,
+`DashboardSummaryService` with `allow_fake=False`). Operator UI remains **`/app/*`**
+behind HTTP basic auth. No migration.
+
+**Observation freeze:** After 17F, defer new sources and Phase 19 CV work for a short
+production observation period (triage + dashboard metrics).
+
 
 # Phase 18 — Production Validation and Tuning
 

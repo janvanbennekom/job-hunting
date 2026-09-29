@@ -233,9 +233,10 @@ Operational source limits and keywords are **not** strategy revisions; see
 
 - **Home** — lifecycle, eligibility, and ranking summaries as tables; click a
   count to open **Opportunities** with the matching filter.
-- **Opportunities** / **Applications** — open opportunity detail without
-  entering UUIDs; deep links:
+- **Opportunities** / **Applications** — queue with filters, **bulk human triage**
+  (dismiss/shortlist/investigate selected rows), and opportunity detail deep links:
   `…/app/opportunity_detail?opportunity_id=<uuid>`.
+- **Public status** — aggregate counts only at `/status` (no sign-in; operator UI stays at `/app/`).
 - **Sources** — registry-driven scan status and `automation.json` acquisition
   settings (read-only in UI; edit the file on the deployment host).
 

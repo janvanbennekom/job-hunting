@@ -13,8 +13,9 @@ Streamlit is **not** published on port 8501.
 
 | Component | Role |
 |-----------|------|
-| **edge** (production) | Caddy: `/` static landing, `/app/*` basic auth → Streamlit |
-| **web** | Streamlit dashboard (`/app` base path in production) |
+| **edge** (production) | Caddy: `/` landing, `/status` public aggregates, `/app/*` basic auth → Streamlit |
+| **web** | Streamlit operator dashboard (`/app` base path in production) |
+| **status** | Public aggregate-only HTTP status (`DashboardSummaryService`, port 8502 internal) |
 | **worker** | One-shot `run_scheduled_pipeline.py --apply-if-due` (Task Scheduler) |
 | **migrate** (tools profile) | `python -m alembic upgrade head` — explicit only |
 | **db** (dev only) | Bundled PostgreSQL 16 (`--profile bundled-db`) |
@@ -423,6 +424,20 @@ docker compose -f docker-compose.prod.yml up -d web edge
 # verify: Home drill-down, Sources page, opportunity_detail deep links;
 # Alembic still at 20260928_0014
 ```
+
+**Phase 17F (bulk triage + public status):** no database migration. Rebuild image;
+start **`status`** alongside **`web`** and **`edge`**.
+
+```bash
+cd /volume1/docker/job-hunter
+git pull origin main
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d web status edge
+```
+
+- **Public (no auth):** `https://<your-host>/status` — aggregate counts only.
+- **Operator (basic auth):** `https://<your-host>/app/` — Streamlit UI including bulk triage on Opportunities.
+- **Worker:** unchanged (same image; no compose change required for 17F).
 
 Legacy one-liner (same steps):
 

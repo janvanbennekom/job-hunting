@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
@@ -14,6 +15,13 @@ from jobhunter.infrastructure.persistence.repositories import OpportunityReposit
 from jobhunter.infrastructure.persistence.review_repositories import (
     OpportunityReviewRecordRepository,
 )
+
+
+@dataclass(slots=True)
+class BulkHumanReviewResult:
+    disposition: ReviewDisposition
+    records: list[OpportunityReviewRecord]
+    opportunity_ids: list[str]
 
 
 class HumanReviewService:
@@ -54,6 +62,48 @@ class HumanReviewService:
             ranking_id=ranking.id if ranking else None,
         )
         return self._reviews.save(record)
+
+    def append_reviews_bulk(
+        self,
+        opportunity_ids: list[str],
+        disposition: ReviewDisposition,
+        notes: str | None = None,
+        *,
+        recorded_at: datetime | None = None,
+    ) -> BulkHumanReviewResult:
+        """Validate all IDs, then append one review record per opportunity (atomic batch)."""
+        unique_ids = list(dict.fromkeys(opportunity_ids))
+        if not unique_ids:
+            return BulkHumanReviewResult(
+                disposition=disposition, records=[], opportunity_ids=[]
+            )
+
+        missing = [
+            oid
+            for oid in unique_ids
+            if self._opportunities.get_by_id(oid) is None
+        ]
+        if missing:
+            preview = ", ".join(missing[:5])
+            suffix = f" (and {len(missing) - 5} more)" if len(missing) > 5 else ""
+            raise ValueError(f"Unknown opportunity id(s): {preview}{suffix}")
+
+        timestamp = recorded_at or datetime.now(timezone.utc)
+        records: list[OpportunityReviewRecord] = []
+        for opportunity_id in unique_ids:
+            records.append(
+                self.append_review(
+                    opportunity_id,
+                    disposition,
+                    notes,
+                    recorded_at=timestamp,
+                )
+            )
+        return BulkHumanReviewResult(
+            disposition=disposition,
+            records=records,
+            opportunity_ids=unique_ids,
+        )
 
     def get_latest(self, opportunity_id: str) -> OpportunityReviewRecord | None:
         return self._reviews.get_latest_for_opportunity(opportunity_id)

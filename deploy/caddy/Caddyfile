@@ -4,6 +4,10 @@
 		respond "ok" 200
 	}
 
+	handle /status* {
+		reverse_proxy status:8502
+	}
+
 	handle /app* {
 		basic_auth {
 			{$JOBHUNTER_BASIC_AUTH_USER} {$JOBHUNTER_BASIC_AUTH_HASH}

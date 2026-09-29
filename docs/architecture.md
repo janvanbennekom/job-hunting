@@ -1137,6 +1137,8 @@ PostgreSQL, no merge/`!reset` with the dev compose file):
 Internet → DSM HTTPS reverse proxy (jobhunter.jvbgis.com)
          → edge (Caddy, localhost:8080 only)
               /     → static landing (no database)
+              /status → public aggregate status service (no auth; counts only;
+                        uses `DashboardSummaryService`, same metrics as Home)
               /app  → Caddy HTTP basic auth → Streamlit (internal, baseUrlPath /app)
 ```
 
