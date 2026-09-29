@@ -38,6 +38,9 @@ def test_prompt_includes_structured_metadata() -> None:
     assert "English" in prompt[OpportunityEvidenceField.LANGUAGES.value]
     assert prompt[OpportunityEvidenceField.MINIMUM_EXPERIENCE.value] == "8"
     assert prompt[OpportunityEvidenceField.ORGANISATION_TYPE.value] == "Consulting firm"
+    assert prompt[OpportunityEvidenceField.PUBLICATION_DATE.value] == "2026-09-20"
+    assert prompt[OpportunityEvidenceField.DEADLINE.value] == "2026-10-15"
+    assert prompt[OpportunityEvidenceField.CONTRACT_TYPE.value] == "Contract, 6 months"
 
 
 def test_digest_includes_structured_facts() -> None:

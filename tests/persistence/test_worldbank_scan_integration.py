@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import uuid
 from pathlib import Path
 
 import pytest
@@ -23,6 +24,7 @@ from jobhunter.domain.raw_opportunity import RawOpportunity
 from jobhunter.domain.source_scan_enums import SourceScanStatus
 from jobhunter.infrastructure.persistence.models import OpportunityRow
 from jobhunter.infrastructure.persistence.repositories import JobSourceRepository
+from tests.persistence.isolation_helpers import unique_worldbank_notice_records
 
 pytestmark = pytest.mark.integration
 
@@ -57,18 +59,18 @@ def test_worldbank_job_source_identity(db_session: Session) -> None:
 def test_scan_success_and_idempotency(
     db_session: Session, worldbank_records: list[dict]
 ) -> None:
-    service = WorldBankScanService(
-        db_session, _FixtureWorldBankConnector(worldbank_records)
-    )
+    isolated = unique_worldbank_notice_records(worldbank_records, count=2)
+    service = WorldBankScanService(db_session, _FixtureWorldBankConnector(isolated))
     first = service.run_scan(limit=2, apply=True, run_profile_assessment=False)
     assert first.scan.status is SourceScanStatus.SUCCESS
     assert first.retrieved == 2
     assert first.created_opportunities == 2
+    assert len(first.new_opportunity_ids) == 2
 
     second = service.run_scan(limit=2, apply=True, run_profile_assessment=False)
     assert second.created_opportunities == 0
 
-    notice_id = worldbank_records[0]["id"].lower()
+    notice_id = isolated[0]["id"].lower()
     count = db_session.scalar(
         select(func.count())
         .select_from(OpportunityRow)
@@ -90,7 +92,7 @@ def test_cross_source_same_reference_no_merge(
     WorldBankScanService(db_session, _FixtureWorldBankConnector([])).ensure_job_source()
     FaoScanService(db_session).ensure_job_source()
 
-    shared_ref = worldbank_records[0]["id"]
+    shared_ref = f"OP-TEST-CROSS-{uuid.uuid4().hex[:8].upper()}"
     shared_title = "GIS and Land Administration Consultant"
     wb_raw = RawOpportunity(
         id="wb-cross-1",
@@ -116,4 +118,6 @@ def test_cross_source_same_reference_no_merge(
     fao_proc = OpportunityProcessingService(db_session, FaoOpportunityNormalizer())
     wb_result = wb_proc.process(wb_raw)
     fao_result = fao_proc.process(fao_raw)
+    assert wb_result.created_opportunity is True
+    assert fao_result.created_opportunity is True
     assert wb_result.opportunity.id != fao_result.opportunity.id
