@@ -60,6 +60,9 @@ def build_opportunity_prompt_text(
             _join_labels(facts.languages)
         ),
         OpportunityEvidenceField.SECTORS.value: _truncate(_join_labels(facts.sectors)),
+        OpportunityEvidenceField.EXPERTISE.value: _truncate(
+            _join_labels(facts.expertise)
+        ),
         OpportunityEvidenceField.SALARY_SUMMARY.value: _truncate(
             facts.salary_summary
         ),

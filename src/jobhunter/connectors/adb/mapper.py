@@ -52,14 +52,23 @@ def map_adb_notice_to_raw(
         f"Duration (months): {record.get('duration_months')}"
         if record.get("duration_months")
         else None,
-        f"Expertise: {record.get('expertise')}" if record.get("expertise") else None,
+        _format_expertise_block(record),
         f"Project: {project_url}" if project_url else None,
     ]
     description = "\n".join(part for part in description_parts if part)
 
     consultant_type = _optional_str(record.get("consultant_type"))
+    expertise_lines = _expertise_lines(record)
+    duration_months = record.get("duration_months")
+    duration_label = None
+    if duration_months is not None and str(duration_months).strip():
+        duration_label = f"{str(duration_months).strip()} months"
     structured = OpportunityStructuredFacts(
+        expertise=tuple(expertise_lines),
         contract_type_label=_infer_contract_type(title),
+        consultant_type_label=consultant_type,
+        project_reference=_optional_str(record.get("project_number")),
+        duration_label=duration_label,
         application_url=ADB_CSRN_CMS_APPLICATION_URL,
         content_last_updated=_optional_str(record.get("published")),
     )
@@ -71,6 +80,7 @@ def map_adb_notice_to_raw(
         "adb_project_number": record.get("project_number"),
         "adb_project_url": project_url,
         "adb_expertise": record.get("expertise"),
+        "adb_expertise_lines": expertise_lines,
         "adb_duration_months": record.get("duration_months"),
         "adb_country_code": record.get("country_code"),
         "adb_consultant_type": consultant_type,
@@ -92,6 +102,26 @@ def map_adb_notice_to_raw(
         raw_description=description,
         extra=extra,
     )
+
+
+def _expertise_lines(record: dict[str, Any]) -> list[str]:
+    lines = record.get("expertise_lines")
+    if isinstance(lines, list):
+        return [str(item).strip() for item in lines if str(item).strip()]
+    expertise = record.get("expertise")
+    if isinstance(expertise, str) and expertise.strip():
+        return [expertise.strip()]
+    return []
+
+
+def _format_expertise_block(record: dict[str, Any]) -> str | None:
+    lines = _expertise_lines(record)
+    if not lines:
+        return None
+    if len(lines) == 1:
+        return f"Expertise: {lines[0]}"
+    bullets = "\n".join(f"- {line}" for line in lines)
+    return f"Expertise requirements:\n{bullets}"
 
 
 def _optional_str(value: Any) -> str | None:

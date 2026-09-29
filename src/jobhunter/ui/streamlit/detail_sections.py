@@ -61,6 +61,16 @@ def render_facts_section(facts: OpportunityFactsSectionView) -> None:
             st.write(f"**Languages:** {', '.join(facts.languages)}")
         if facts.sectors:
             st.write(f"**Sectors:** {', '.join(facts.sectors)}")
+        if facts.consultant_type_label:
+            st.write(f"**Consultant type:** {facts.consultant_type_label}")
+        if facts.project_reference:
+            st.write(f"**Project reference:** {facts.project_reference}")
+        if facts.duration_label:
+            st.write(f"**Duration:** {facts.duration_label}")
+        if facts.expertise:
+            st.write("**Expertise:**")
+            for line in facts.expertise:
+                st.write(f"- {line}")
         if facts.content_last_updated:
             st.write(f"**Last updated (source):** {facts.content_last_updated}")
         if facts.source_status:

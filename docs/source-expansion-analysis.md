@@ -720,11 +720,20 @@ migration required for new connectors.
 
 Approx. mix on one listing page: **both** firm QCBS-style packages and **individual specialist** posts; land/GIS hits are sparse in titles but strategically aligned when present.
 
-**Implemented (17E-1, 2026-09-29):** automation key **`adb`** → `source_id` **`adb-csrn`**.
+**Production validation (2026-09-29):** NAS scan `SUCCESS`, `retrieved 10`, `processed 10`,
+`failed 0` with `fetch_details: false`. Safe to enable `adb` in production `automation.json`
+(`limit: 10`).
+
+**Implemented (17E-1 / 17E-1A, 2026-09-29):** automation key **`adb`** → `source_id` **`adb-csrn`**.
 `AdbCsrnConnector` — GET listing + cookie-backed pagination; parse Oracle table rows;
 `source_reference=E-…`; `source_url` listing anchor; `application_url` → `csrn.adb.org`.
 **`fetch_details` not implemented** — anonymous POST to `view_csrn` returns Oracle error
 page; list fields yield Phase 8 **PARTIAL** sufficiency (not ADEQUATE).
+
+**Duplicate listing rows:** one CSRN notice id (`E-…`) is one opportunity; multiple table
+rows are expertise variants merged into `structured_facts.expertise` (sorted, deduplicated)
+before persistence. Without aggregation, identical `raw_opportunity` ids caused later rows
+to be skipped by observation idempotency (first row only).
 
 **NAS egress (2026-09-29):** `https://selfservice.adb.org/OA_HTML/OA.jsp?OAFunc=XXCRS_CSRN_HOME_PAGE`
 → **HTTP/1.1 200 OK** from Synology NAS (production prerequisite satisfied).

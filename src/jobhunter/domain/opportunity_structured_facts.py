@@ -16,9 +16,13 @@ class DocumentReference:
 class OpportunityStructuredFacts:
     sectors: tuple[str, ...] = ()
     languages: tuple[str, ...] = ()
+    expertise: tuple[str, ...] = ()
     minimum_experience_years: int | None = None
     organisation_type: str | None = None
     contract_type_label: str | None = None
+    consultant_type_label: str | None = None
+    project_reference: str | None = None
+    duration_label: str | None = None
     application_url: str | None = None
     content_last_updated: str | None = None
     salary_summary: str | None = None
@@ -28,9 +32,13 @@ class OpportunityStructuredFacts:
         return {
             "sectors": list(self.sectors),
             "languages": list(self.languages),
+            "expertise": list(self.expertise),
             "minimum_experience_years": self.minimum_experience_years,
             "organisation_type": self.organisation_type,
             "contract_type_label": self.contract_type_label,
+            "consultant_type_label": self.consultant_type_label,
+            "project_reference": self.project_reference,
+            "duration_label": self.duration_label,
             "application_url": self.application_url,
             "content_last_updated": self.content_last_updated,
             "salary_summary": self.salary_summary,
@@ -44,9 +52,13 @@ class OpportunityStructuredFacts:
             (
                 self.sectors,
                 self.languages,
+                self.expertise,
                 self.minimum_experience_years is not None,
                 self.organisation_type,
                 self.contract_type_label,
+                self.consultant_type_label,
+                self.project_reference,
+                self.duration_label,
                 self.application_url,
                 self.content_last_updated,
                 self.salary_summary,
@@ -100,9 +112,13 @@ def parse_structured_facts_from_extra(extra: dict[str, Any] | None) -> Opportuni
         return OpportunityStructuredFacts(
             sectors=tuple(nested.get("sectors") or ()),
             languages=tuple(nested.get("languages") or ()),
+            expertise=tuple(nested.get("expertise") or ()),
             minimum_experience_years=min_exp,
             organisation_type=_optional_str(nested.get("organisation_type")),
             contract_type_label=_optional_str(nested.get("contract_type_label")),
+            consultant_type_label=_optional_str(nested.get("consultant_type_label")),
+            project_reference=_optional_str(nested.get("project_reference")),
+            duration_label=_optional_str(nested.get("duration_label")),
             application_url=_optional_str(nested.get("application_url")),
             content_last_updated=_optional_str(nested.get("content_last_updated")),
             salary_summary=_optional_str(nested.get("salary_summary")),
@@ -162,12 +178,20 @@ def build_structured_facts_mapping(facts: OpportunityStructuredFacts) -> dict[st
         payload["sectors"] = list(facts.sectors)
     if facts.languages:
         payload["languages"] = list(facts.languages)
+    if facts.expertise:
+        payload["expertise"] = list(facts.expertise)
     if facts.minimum_experience_years is not None:
         payload["minimum_experience_years"] = facts.minimum_experience_years
     if facts.organisation_type:
         payload["organisation_type"] = facts.organisation_type
     if facts.contract_type_label:
         payload["contract_type_label"] = facts.contract_type_label
+    if facts.consultant_type_label:
+        payload["consultant_type_label"] = facts.consultant_type_label
+    if facts.project_reference:
+        payload["project_reference"] = facts.project_reference
+    if facts.duration_label:
+        payload["duration_label"] = facts.duration_label
     if facts.application_url:
         payload["application_url"] = facts.application_url
     if facts.content_last_updated:

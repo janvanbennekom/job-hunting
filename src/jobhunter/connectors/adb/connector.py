@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
+from jobhunter.connectors.adb.aggregate import aggregate_notice_records
 from jobhunter.connectors.adb.client import AdbCsrnClient
 from jobhunter.connectors.adb.mapper import map_adb_notice_to_raw_for_scan
 from jobhunter.domain.raw_opportunity import RawOpportunity
@@ -44,8 +45,9 @@ class AdbCsrnConnector:
         if listing.parse_error:
             errors.append(listing.parse_error)
 
+        records = aggregate_notice_records(listing.notices)
         return AdbCsrnScanResult(
-            records=listing.notices,
+            records=records,
             errors=errors,
             pages_fetched=listing.pages_fetched,
         )
@@ -62,6 +64,16 @@ class AdbCsrnConnector:
         raw_list: list[RawOpportunity] = []
         errors: list[str] = list(fetch_result.errors)
         for record in fetch_result.records:
+            notice_id = record.get("notice_id")
+            if not isinstance(notice_id, str) or not notice_id.strip():
+                errors.append(f"notice {notice_id!r}: missing notice_id")
+                continue
+            title = record.get("title")
+            if not isinstance(title, str) or not str(title).strip():
+                errors.append(f"notice {notice_id}: missing title")
+
+        records = aggregate_notice_records(fetch_result.records)
+        for record in records:
             notice_id = record.get("notice_id")
             try:
                 raw_list.append(

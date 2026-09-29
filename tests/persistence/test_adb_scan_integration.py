@@ -14,6 +14,7 @@ from jobhunter.application.profile_assessment.source_sufficiency import (
     infer_source_data_sufficiency,
 )
 from jobhunter.infrastructure.persistence.models import OpportunityRow
+from tests.persistence.isolation_helpers import unique_adb_notice_records
 
 pytestmark = pytest.mark.integration
 
@@ -27,7 +28,8 @@ class _FixtureAdbConnector:
         for notice in notices:
             if notice.notice_id not in by_id:
                 by_id[notice.notice_id] = notice
-        self._records = [n.to_record() for n in by_id.values()][:5]
+        base = [n.to_record() for n in by_id.values()][:5]
+        self._records = unique_adb_notice_records(base, count=min(5, len(base)))
         self._delegate = AdbCsrnConnector()
 
     def fetch_notices(self, *, keyword=None, limit=25, fetch_details=False):
@@ -53,17 +55,17 @@ def test_adb_scan_idempotency(db_session: Session) -> None:
     assert first.created_opportunities == 2
     second = service.run_scan(limit=2, apply=True, run_profile_assessment=False)
     assert second.created_opportunities == 0
-    sample_ref = next(
-        r["notice_id"]
-        for r in _FixtureAdbConnector()._records[:2]
+    from jobhunter.infrastructure.persistence.repositories import OpportunityRepository
+
+    opp = OpportunityRepository(db_session).get_by_id(
+        first.processed_opportunity_ids[0]
     )
+    assert opp is not None
+    assert opp.canonical_identity_key is not None
     count = db_session.scalar(
         select(func.count())
         .select_from(OpportunityRow)
-        .where(
-            OpportunityRow.canonical_identity_key
-            == f"sr:{ADB_CSRN_SOURCE_ID}:{sample_ref.lower()}"
-        )
+        .where(OpportunityRow.canonical_identity_key == opp.canonical_identity_key)
     )
     assert count == 1
 

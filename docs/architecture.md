@@ -612,7 +612,9 @@ at processing time, not inside connectors.
   pagination). Stable notice id ``E-…-…`` in `source_reference`. List fields
   only: `fetch_details` is ignored (CSRN notice body uses Oracle popup flow).
   `source_url` = CSRN listing anchor; `structured_facts.application_url` =
-  ``https://csrn.adb.org/``. `AdbCsrnOpportunityNormalizer`.
+  ``https://csrn.adb.org/``. Multiple listing rows with the same notice id are merged
+  in `aggregate_notice_records` (deterministic expertise list, one canonical opportunity
+  per `E-…`). `AdbCsrnOpportunityNormalizer`.
 
 **Scan services (Phase 17B):** explicit per-source services remain
 (`FaoScanService`, `DevelopmentAidScanService`, `WorldBankScanService`,

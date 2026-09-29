@@ -182,6 +182,10 @@ class OpportunityFactsSectionView:
     minimum_experience_years: int | None
     languages: tuple[str, ...]
     sectors: tuple[str, ...]
+    expertise: tuple[str, ...]
+    consultant_type_label: str | None
+    project_reference: str | None
+    duration_label: str | None
     content_last_updated: str | None
     source_links: list[SourceLinkView]
     observations: list[ProvenanceObservationView]

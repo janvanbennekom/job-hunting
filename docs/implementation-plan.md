@@ -1121,6 +1121,11 @@ LAND-CORE eight-term query after relevance investigation (§21.7). TED remains d
 `source_id` `adb-csrn`; `fetch_details` no-op (Oracle popup detail not available via
 simple HTTP). Production: `enabled: false` until NAS validation; `limit: 10`.
 
+**17E-1A (complete):** NAS validation `SUCCESS` (10/10/0). Listing rows that share one
+`E-…` notice id are **aggregated** before mapping (expertise merged into
+`structured_facts.expertise` + description bullets). `automation.example.json` remains
+disabled; production may enable per `deployment.md`.
+
 Suggested next subphase: **17E-2** only after UN Careers egress/API investigation (not RSS from NAS).
 
 

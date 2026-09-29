@@ -285,6 +285,22 @@ other sources in `config/automation.json` if using the full scheduled pipeline i
 
 **NAS egress (2026-09-29):** `GET` CSRN home → **HTTP 200** from Synology.
 
+**Production validation (2026-09-29):** `status SUCCESS retrieved 10 processed 10 failed 0`
+(acquisition + apply, `fetch_details: false`, no OpenAI). ADB may be enabled in production:
+
+```json
+{
+  "key": "adb",
+  "enabled": true,
+  "keyword": "",
+  "limit": 10,
+  "fetch_details": false
+}
+```
+
+`automation.example.json` keeps `adb` **disabled** as a conservative template; enable on the NAS
+after validation as above.
+
 ### TED EU procurement (`ted` source)
 
 No API key required for search. Uses expert query with optional `keyword` in
