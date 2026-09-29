@@ -1107,6 +1107,19 @@ syntax; corrected to OR of separate `FT~` predicates (§21.6). **17D-3:** defaul
 LAND-CORE eight-term query after relevance investigation (§21.7). TED remains disabled in
 `automation.example.json` until Synology LAND-CORE validation.
 
+### Phase 17E — ADB, UNOPS, UN Careers investigation
+
+**Status:** Investigation complete (2026-09-29). No connectors implemented. See
+`docs/source-expansion-analysis.md` §22.
+
+| Source | Class | Recommendation |
+|--------|-------|----------------|
+| ADB CSRN | **B** | Implement after NAS egress probe; HTML listing on `selfservice.adb.org`. |
+| UN Careers | **A** (RSS) | Second priority; official `jobfeed` RSS. |
+| UNOPS Avature | **C** | Defer; overlap with ReliefWeb; undocumented SPA API. |
+
+Suggested subphases: **17E-1 ADB**, **17E-2 UN Careers RSS**; defer UNOPS.
+
 
 # Phase 18 — Production Validation and Tuning
 

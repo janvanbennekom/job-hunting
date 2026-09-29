@@ -679,6 +679,126 @@ Keep `enabled: false` in `automation.example.json` until NAS validation of LAND-
 
 ---
 
+## 22. Phase 17E — ADB CSRN, UNOPS, UN Careers (investigation, 2026-09-29)
+
+Production portfolio at investigation time: **FAO, DevelopmentAid, World Bank, UNDP, TED**
+(validated); **ReliefWeb** implemented pending appname; **AfDB** disabled (Cloudflare 403
+from NAS/datacenter egress).
+
+### 22.1 Connector extension contract (unchanged)
+
+New sources follow the existing pattern: `connectors/<source>/` (`identity`, `client` or
+`connector`, `mapper`, `normalizer`), `application/<source>_scan/service.py`,
+`SourceScanAdapter` in `source_adapters.py`, `KNOWN_SOURCE_KEYS` + `automation.json` entry,
+`source_id` + `source_reference` idempotency, `RawOpportunity` with provenance and optional
+`structured_facts` in `extra`, Phase 8 sufficiency via list vs detail text. No schema
+migration required for new connectors.
+
+### 22.2 ADB — CSRN / CMS
+
+| Item | Finding |
+|------|---------|
+| **Public entry** | `https://csrn.adb.org` → `https://selfservice.adb.org/OA_HTML/OA.jsp?OAFunc=XXCRS_CSRN_HOME_PAGE` (Oracle E-Business **CMS Consulting Opportunities**). |
+| **CSRN vs CMS** | **CSRN** = Consulting Services Recruitment Notice (public notice of consulting need). **CMS** = Consultant Management System (same portal family; registration/proposal workflows are **account-gated**). |
+| **Method / type** | **GET** server-rendered **HTML** (Oracle UIX/ADF); not JSON/RSS. |
+| **Auth** | **Browse/search listing without login** (verified 2026-09-29). Proposal submission and consultant registration require CMS account — **out of scope**. |
+| **Pagination** | **25 per page**, “Next 25”, keyword search, filters (Consultant Type individual/firm, country, sector, etc.). |
+| **Stable ID** | Notice id in title, e.g. **`E-059508-001`**; project links to `adb.org/projects/…` (main site may **403** from some IPs; `selfservice.adb.org` listing worked). |
+| **IC vs firm** | Titles distinguish **National … Specialist** (individual) vs **Firm** / QCBS packages; Consultant Type filter on UI. |
+| **Detail / ToR** | Notice detail via CSRN/OA navigation (HTML); depth **PARTIAL–ADEQUATE** expected from notice + linked project docs — **verify per notice** in implementation. |
+| **WAF** | `www.adb.org` returned **403** from investigation egress; **`selfservice.adb.org` CSRN home returned 200** (~127 KB HTML). **NAS egress probe required** before scheduling. |
+| **Classification** | **B** — stable public HTML suitable for a **conservative** connector (no login, no CMS automation). |
+
+**Relevance samples (investigation labels):**
+
+| Sample | Class |
+|--------|-------|
+| IWRM voluntary **land donation** monitoring (E-055197-001) | **HIGH** |
+| Greater Peshawar **urban transport** master plan consultancy | **MEDIUM** |
+| **National Financial Specialist** (fisheries project) | **MEDIUM** (IC) |
+| Engineering design consultants (multi-sector CS-01) | **LOW–MEDIUM** (firm) |
+
+Approx. mix on one listing page: **both** firm QCBS-style packages and **individual specialist** posts; land/GIS hits are sparse in titles but strategically aligned when present.
+
+**Proposed architecture (not implemented):** `adb-csrn` connector — GET listing pages
+with pagination + optional keyword from automation; parse HTML table/links; map
+`source_reference=E-…`; optional detail GET per notice (`fetch_details`, low `limit`).
+
+### 22.3 UNOPS — Careers Marketplace (Avature)
+
+| Item | Finding |
+|------|---------|
+| **Entry** | `https://jobs.unops.org` → **`https://careers.unops.org`** (Avature **Careers Marketplace**). |
+| **Type** | **SPA** + Avature wizard metadata (`InstantSearchDatasource`, encrypted `listSpecId` / `searchIndexId` in page HTML). |
+| **Auth** | **Search and view postings without login**; apply requires account. |
+| **List** | Home page exposes open positions (title, duty station, seniority, deadline); `/careersmarketplace/SearchJobs` returns **200 HTML**. |
+| **Stable ID** | Avature internal job id in URLs (implementation must extract from listing/detail links — **not** documented public API). |
+| **ICA / consultancy** | Titles include **Specialist**, **Retainer**, **home based**; also many **administration** and **internal** posts — requires filtering. |
+| **Sample** | **Cartographer Specialist** (Tirana/home-based) — **HIGH** for geo; most carousel items — **LOW** for domain. |
+| **WAF / SSL** | Public HTTPS works via **curl**; Python `urllib` on Windows hit **SSL verify** issues (environment-specific). No Cloudflare block observed. |
+| **Classification** | **C** — useful portal but **undocumented Avature XHR**; fragile without official API. |
+
+**Proposed architecture if pursued later:** reverse-engineer Avature search POST from
+documented browser network capture **or** parse stable SSR fragments only — high
+maintenance. **Defer** until ReliefWeb overlap assessed.
+
+### 22.4 UN Careers / Inspira
+
+| Item | Finding |
+|------|---------|
+| **Official list feed** | **`GET https://careers.un.org/jobfeed?language=en`** — **RSS 2.0**, ~**481** items (2026-09-29), generator documented in feed. |
+| **Stable ID** | **`Job ID`** in RSS description + URL `…/jobSearchDescription/{id}?language=en`. |
+| **Detail** | Job pages are **Angular SPA** shell; `/api/job/{id}` paths return SPA HTML, **not** JSON in anonymous GET probes. Prior “detail JSON when jobId known” **not confirmed** as a stable public API in this probe. |
+| **Consultancy signal** | RSS `Level : **CON**` (e.g. GIS Developer, Urban Planning Consultant, Senior Digital Transformation Consultant); majority are **P/G/NO** staff posts. |
+| **Keyword hits in feed** | GIS **26** (many false positives e.g. “log**is**tics”); geospatial **0**; land **1**; cadast **0**; information system **6**; digital transformation **1**; urban planning **1**. |
+| **Classification** | **A** for **RSS acquisition**; **B/C** for full description (SPA / possible Workday backend, no confirmed CXS JSON). |
+
+**Proposed architecture (not implemented):** `un-careers` connector via **official RSS**
+(same pattern as UNDP/AfDB RSS): one GET per scan; `source_reference=job id`; optional
+detail fetch of HTML or future discovered JSON — `fetch_details` default **false** initially.
+
+### 22.5 Comparison matrix
+
+| | **ADB CSRN** | **UNOPS Avature** | **UN Careers RSS** |
+|--|--------------|-------------------|---------------------|
+| Relevance (land/Geo-ICT) | **High** (when notices exist) | Medium | Low–medium |
+| IC relevance | Both IC & firm | ICA/LICA mixed with ops staff | Mostly staff; some **CON** |
+| Interface | HTML (Oracle) | Avature SPA | **RSS** + SPA detail |
+| Auth (read) | No | No | No |
+| Stable ID | **E-…-…** | Avature id | **Job ID** |
+| Description quality | PARTIAL–ADEQUATE | PARTIAL (list); detail TBD | **PARTIAL** in RSS |
+| WAF risk | Low on selfservice; adb.org 403 | Low observed | Low |
+| Complexity | Medium HTML | High | **Low** (RSS) |
+| Overlap with DA/ReliefWeb | Moderate | **High** (ReliefWeb lists UNOPS) | Moderate |
+| Class | **B** | **C** | **A** (feed) |
+
+### 22.6 Recommended implementation order
+
+1. **17E-1 — ADB CSRN (class B)** after **mandatory NAS probe** of `selfservice.adb.org`
+   CSRN listing + one detail page. Initial `limit: 10`; optional `fetch_details` after
+   ToR depth verified.
+2. **17E-2 — UN Careers RSS (class A)** — low-risk official feed; filter CON/title keywords
+   in mapper or automation keyword; `limit: 15–25`; `fetch_details: false` initially.
+3. **Defer UNOPS (class C)** — implement only if ReliefWeb (once enabled) does not cover
+   enough UNOPS ICA/geo roles with adequate descriptions.
+
+**Do not implement:** AfDB until Cloudflare egress fixed; Devex; UNOPS Avature scraping
+without official read API.
+
+### 22.7 ReliefWeb interaction
+
+ReliefWeb aggregates many **UN agency** vacancies (including UNOPS). Direct **UNOPS**
+connector adds marginal value if ReliefWeb is enabled with approved appname. **UN
+Careers RSS** still adds **Secretariat-specific** posts not always mirrored elsewhere.
+**ADB CSRN** has **low overlap** with current sources — highest incremental value.
+
+### 22.8 Portfolio blind spots (future only)
+
+IFAD, WFP (direct Workday), GIZ, MCC, regional banks, **IOM**, **UN-Habitat** specialist
+rosters — not investigated in 17E. TED covers EU firm procurement, not IC recruitment.
+
+---
+
 ## 18. References (public)
 
 - World Bank procnotices: `https://search.worldbank.org/api/v2/procnotices`  
@@ -688,7 +808,9 @@ Keep `enabled: false` in `automation.example.json` until NAS validation of LAND-
 - ReliefWeb API: `https://apidoc.reliefweb.int/`  
 - TED Search API: `https://docs.ted.europa.eu/api/latest/search.html`  
 - AfDB consultants RSS: `https://www.afdb.org/en/about-us/careers/current-vacancies/consultants/rss/`  
-- ADB CSRN: `https://csrn.adb.org`  
+- ADB CSRN: `https://csrn.adb.org` (→ `https://selfservice.adb.org/OA_HTML/OA.jsp?OAFunc=XXCRS_CSRN_HOME_PAGE`)  
+- UN Careers RSS: `https://careers.un.org/jobfeed?language=en`  
+- UNOPS Careers: `https://careers.unops.org/`  
 - DevelopmentAid search API (baseline): `https://www.developmentaid.org/api/frontend/job/search`
 - DevelopmentAid partner API (Zendesk intro): `https://developmentaid.zendesk.com/hc/en-gb/articles/8946444465426-How-To-Use-the-Developmentaid-API`
 - Devex job posting API (employers only): `https://support.devex.com/hc/en-us/articles/360000127713-Job-posting-API-information`
