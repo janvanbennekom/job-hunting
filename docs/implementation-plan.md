@@ -1059,24 +1059,28 @@ Complete (2026-09-29). Awaiting user review before Phase 17B.
 
 ## Objective
 
-Implement the first user-approved subset of Group A connectors from the Phase 17A
-analysis (e.g. World Bank `procnotices`, UNDP feeds, optional ReliefWeb Jobs).
+Implement World Bank `procnotices`, UNDP official RSS, and AfDB consultants RSS
+(approved batch; ReliefWeb deferred).
 
-## Prerequisite
+## Delivered (2026-09-29)
 
-User sign-off on Phase 17A groups and 17B scope.
+- Connectors: `worldbank`, `undp`, `afdb` (automation keys)
+- Job source ids: `worldbank-procurement`, `undp-jobs`, `afdb-consultants`
+- Registry, automation adapters, `config/automation.example.json`
+- Fixture-based tests + optional `@pytest.mark.live` smoke tests
+- No Alembic migration (existing `RawOpportunity` / `SourceScan` model)
 
-## Out of scope until approved
+## Status
 
-Implementation details belong in the Phase 17B implementation prompt.
+Complete (2026-09-29).
 
 
 # Phase 17C — Subsequent connector batch(es)
 
 ## Objective
 
-Add further connectors from Groups A/B (UNOPS, UN Careers, TED, AfDB, Workday/WFP,
-etc.) per prioritized review after 17B.
+Add further connectors from Groups A/B (ReliefWeb after appname approval, UNOPS,
+UN Careers, TED, Workday/WFP, etc.) per prioritized review after 17B.
 
 
 # Phase 18 — Production Validation and Tuning
@@ -1408,7 +1412,8 @@ The current implementation step is:
 
     Phase 16 — Core Completion and UI Hardening
 
-Phase 17A (source discovery) is complete; **Phase 17B** (first connector batch) is
+Phase 17A (source discovery) and **Phase 17B** (World Bank, UNDP, AfDB) are
+complete; **Phase 17C** (next connector batch) is
 next after user review of `docs/source-expansion-analysis.md`. CV/cover-letter
 personalisation remains deferred (Phase 19).
 

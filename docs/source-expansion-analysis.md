@@ -409,15 +409,25 @@ Per connector:
 
 ---
 
-## 17. Proposed Phase 17B scope (NOT APPROVED — do not implement)
+## 17. Phase 17B implementation (complete 2026-09-29)
 
-**Suggested first batch (pending your review):**
+**Approved and implemented:**
 
-1. **World Bank `procnotices` connector** — keyword + notice type filters; `source_reference` = API `id`; map `notice_text` → description.  
-2. **UNDP connector** — RSS or JSON feed parser; detail via link follow if needed.  
-3. **(Optional third)** **ReliefWeb Jobs** — if `appname` approved; filter `job_type=Consultancy`; high coverage for WFP/UN agencies.
+| Key | Job source id | Interface | Stable ID | Detail behaviour |
+|-----|---------------|-----------|-----------|------------------|
+| `worldbank` | `worldbank-procurement` | `search.worldbank.org/api/v2/procnotices` JSON | API `id` | `notice_text` in list payload |
+| `undp` | `undp-jobs` | `jobs.undp.org/rss_feeds/rss.xml` (official RSS 0.91) | Oracle requisition id in link | RSS snippet only (no detail fetch) |
+| `afdb` | `afdb-consultants` | AfDB consultants RSS | `node/{id}` from `guid` | Optional detail page for closing date + body |
 
-Defer AfDB to **17C** if batch size must stay small; AfDB RSS is strong but adds HTML/RSS parser variant.
+**Deferred:** ReliefWeb (appname), UN Careers, UNOPS, TED, etc. → Phase 17C.
+
+**17B vs 17A deltas observed (2026-09-29):**
+
+- World Bank `procnotices` response is a **JSON array** under `procnotices` (not a nested `procnotice` object in current API).
+- UNDP canonical discovery feed is `rss_feeds/rss.xml` (the `cj_rss_feed.cfm` page is an HTML index of feeds).
+- AfDB RSS returns **HTTP 403** without a browser-style `User-Agent`; detail pages expose closing dates in HTML fields.
+
+**Scan services:** per-source services retained (no generic refactor in 17B).
 
 ---
 

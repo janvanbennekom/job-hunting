@@ -242,10 +242,18 @@ Operational source limits and keywords are **not** strategy revisions; see
 HIGH-ranking email alerts use `JOBHUNTER_WEB_BASE_URL` for the same detail
 links when configured.
 
-### Source expansion planning (Phase 17A)
+### Source expansion (Phase 17A–17B)
 
-Connector research and phased implementation groups (no new connectors yet):
-[docs/source-expansion-analysis.md](docs/source-expansion-analysis.md).
+Research: [docs/source-expansion-analysis.md](docs/source-expansion-analysis.md).
+
+**Phase 17B connectors** (automation keys `worldbank`, `undp`, `afdb`) use the same
+scan → Phase 5 → Phase 7 pipeline as FAO and DevelopmentAid. Enable them in
+`config/automation.json` (see `config/automation.example.json`). Recommended first
+production `limit`: **10** per new source, then increase after verifying counts and
+description quality.
+
+Optional live smoke tests: `tests/connectors/test_worldbank_live.py`,
+`test_undp_live.py`, `test_afdb_live.py` (`pytest -m live`).
 
 ### Core operator experience (Phase 16)
 

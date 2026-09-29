@@ -575,6 +575,24 @@ at processing time, not inside connectors.
   frontend JSON API ``POST /api/frontend/job/search`` and
   ``GET /api/frontend/job/{id}`` for full HTML descriptions (no account required
   for search/detail in current use). `DevelopmentAidOpportunityNormalizer`.
+- **World Bank procurement notices** — `WorldBankProcNoticesConnector` via
+  documented ``GET search.worldbank.org/api/v2/procnotices`` JSON (public, no
+  auth). Stable `id` (e.g. `OP00471368`); detail URL on projects.worldbank.org.
+  `WorldBankOpportunityNormalizer`. Broad notice retrieval; relevance is decided
+  downstream (no semantic profile filters in the connector).
+- **UNDP Jobs** — `UndpJobsConnector` via official all-vacancies RSS
+  ``jobs.undp.org/rss_feeds/rss.xml`` (RSS 0.91; Oracle requisition id in
+  link). `UndpOpportunityNormalizer`. Feed summaries are partial; deadlines
+  parsed from feed HTML snippets.
+- **AfDB consultant opportunities** — `AfdbConsultantsConnector` via official
+  consultants RSS (requires descriptive User-Agent). Optional detail-page
+  enrichment for closing dates and longer descriptions. Stable AfDB node id in
+  `guid`. `AfdbOpportunityNormalizer`.
+
+**Scan services (Phase 17B):** explicit per-source services remain
+(`FaoScanService`, `DevelopmentAidScanService`, `WorldBankScanService`,
+`UndpScanService`, `AfdbScanService`) — structural duplication is acceptable;
+behaviour and audit semantics are preserved without a generic refactor.
 
 Additional sources should follow the same pattern: connector + scan service +
 normalizer; no duplicate eligibility, assessment, or ranking pipelines.

@@ -236,6 +236,37 @@ sudo docker compose -f docker-compose.prod.yml --profile worker run --rm worker 
   python scripts/run_scheduled_pipeline.py --apply --trigger manual
 ```
 
+Use small `limit` values in `config/automation.json` for a first live run (e.g.
+`10` for each newly enabled `worldbank`, `undp`, or `afdb` source before raising
+toward `25`). After pulling Phase 17B, **merge** these entries into the NAS
+`config/automation.json` (do not overwrite the whole file):
+
+```json
+{
+  "key": "worldbank",
+  "enabled": true,
+  "keyword": "",
+  "limit": 10
+},
+{
+  "key": "undp",
+  "enabled": true,
+  "keyword": "",
+  "limit": 10
+},
+{
+  "key": "afdb",
+  "enabled": true,
+  "keyword": "",
+  "limit": 10,
+  "fetch_details": true
+}
+```
+
+Phase 17B requires **no Alembic migration** (head remains `20260928_0014`). Rebuild
+the image and restart web/edge as usual; the scheduled worker picks up new sources
+from the updated JSON automatically.
+
 Use small `limit` values in `config/automation.json` for a first live run. Existing
 production assessments are reused when the input digest is unchanged (no extra OpenAI
 call). Prefer `--dry-run` first to validate configuration without persisting.
@@ -267,6 +298,10 @@ Worker containers do not require changes beyond the shared image rebuild.
 **Phase 15–16 (operational UI / core hardening):** no database migration.
 Alembic head remains `20260928_0014`. Rebuild and restart `web` / `edge` only;
 worker image can be rebuilt for consistency but behaviour is unchanged.
+
+**Phase 17B (World Bank, UNDP, AfDB connectors):** no database migration.
+Add the three `sources` entries to NAS `config/automation.json`, rebuild the
+shared image, restart `web` / `edge` if needed; worker uses the same image.
 
 ```bash
 cd /volume1/docker/job-hunter

@@ -27,6 +27,25 @@
       "keyword": "",
       "limit": 25,
       "fetch_details": true
+    },
+    {
+      "key": "worldbank",
+      "enabled": true,
+      "keyword": "",
+      "limit": 25
+    },
+    {
+      "key": "undp",
+      "enabled": true,
+      "keyword": "",
+      "limit": 25
+    },
+    {
+      "key": "afdb",
+      "enabled": true,
+      "keyword": "",
+      "limit": 25,
+      "fetch_details": true
     }
   ]
 }
