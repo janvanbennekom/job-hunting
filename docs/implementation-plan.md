@@ -98,7 +98,9 @@ The planned phases are:
 | 14 | Application Tracking |
 | 15 | Operational UI and Configuration |
 | 16 | Core Completion and UI Hardening |
-| 17 | Source Expansion |
+| 17A | Source Discovery and Connector Planning |
+| 17B | First approved connector batch |
+| 17C | Subsequent connector batch(es) |
 | 18 | Production Validation and Tuning |
 | 19 | CV and Cover-Letter Personalisation (deferred) |
 | 20 | XLSX Export and Operational Features |
@@ -1036,16 +1038,45 @@ human-readable labels — without changing Phase 7–9 semantics or adding sourc
 - No Alembic migration unless a genuine persistence defect is found.
 
 
-# Phase 17 — Source Expansion
+# Phase 17A — Source Discovery and Connector Planning
 
 ## Objective
 
-Add additional opportunity acquisition connectors (World Bank, UNDP, UNOPS, etc.)
-using the registry-driven source model established in Phases 12 and 15.
+Investigate candidate international-development sources (interfaces, auth, data
+quality, identifiers, stability) and produce an implementation plan for connector
+batches — **no connector code**.
 
-## Out of scope for planning detail here
+## Deliverable
 
-Implementation details belong in the Phase 17 implementation prompt.
+- `docs/source-expansion-analysis.md` (matrix, groups A–D, 17B test/config notes)
+
+## Status
+
+Complete (2026-09-29). Awaiting user review before Phase 17B.
+
+
+# Phase 17B — First approved connector batch
+
+## Objective
+
+Implement the first user-approved subset of Group A connectors from the Phase 17A
+analysis (e.g. World Bank `procnotices`, UNDP feeds, optional ReliefWeb Jobs).
+
+## Prerequisite
+
+User sign-off on Phase 17A groups and 17B scope.
+
+## Out of scope until approved
+
+Implementation details belong in the Phase 17B implementation prompt.
+
+
+# Phase 17C — Subsequent connector batch(es)
+
+## Objective
+
+Add further connectors from Groups A/B (UNOPS, UN Careers, TED, AfDB, Workday/WFP,
+etc.) per prioritized review after 17B.
 
 
 # Phase 18 — Production Validation and Tuning
@@ -1377,7 +1408,8 @@ The current implementation step is:
 
     Phase 16 — Core Completion and UI Hardening
 
-Phase 17 (source expansion) is the next planned phase. CV/cover-letter
+Phase 17A (source discovery) is complete; **Phase 17B** (first connector batch) is
+next after user review of `docs/source-expansion-analysis.md`. CV/cover-letter
 personalisation remains deferred (Phase 19).
 
 Phase 3 established the professional evidence foundation from the structured

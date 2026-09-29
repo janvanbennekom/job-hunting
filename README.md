@@ -242,6 +242,11 @@ Operational source limits and keywords are **not** strategy revisions; see
 HIGH-ranking email alerts use `JOBHUNTER_WEB_BASE_URL` for the same detail
 links when configured.
 
+### Source expansion planning (Phase 17A)
+
+Connector research and phased implementation groups (no new connectors yet):
+[docs/source-expansion-analysis.md](docs/source-expansion-analysis.md).
+
 ### Core operator experience (Phase 16)
 
 Opportunity detail shows structured eligibility, assessment, and ranking
