@@ -1,0 +1,31 @@
+{
+  "generated_by": "scripts/summarize_reassessment_population.py",
+  "schema_head": "profile_assessment_v4",
+  "population": {
+    "total_opportunities": 105,
+    "actionable_eligible": 86,
+    "needs_paid_assessment": 86,
+    "would_reuse_current_digest": 0,
+    "excluded_non_actionable_lifecycle": 10,
+    "excluded_ineligible": 9,
+    "latest_success_schema": {
+      "profile_assessment_v1": 63,
+      "none": 37,
+      "profile_assessment_v3": 5
+    }
+  },
+  "token_forecast_base_86_calls": {
+    "prompt_tokens": 775892,
+    "completion_tokens": 144308,
+    "total_tokens": 947118,
+    "prompt_low": 734784,
+    "prompt_high": 876082,
+    "total_low": 868944,
+    "total_high": 1008178
+  },
+  "pilot_reference": {
+    "mean_prompt": 9341,
+    "median_prompt": 9022,
+    "five_call_total": 55068
+  }
+}

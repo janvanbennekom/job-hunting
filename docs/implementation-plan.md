@@ -1141,6 +1141,20 @@ behind HTTP basic auth. No migration.
 **Observation freeze:** After 17F, defer new sources and Phase 19 CV work for a short
 production observation period (triage + dashboard metrics).
 
+### Phase 17G — Assessment relevance and cost (in progress)
+
+| Subphase | Status | Notes |
+|----------|--------|--------|
+| **17G-0** | Investigation | Decision-quality audit artifacts (optional docs) |
+| **17G-1** | Complete | Relevance prompt/validation; `profile_assessment_v2` |
+| **17G-1A** | Complete (`fef5242`) | Payload optimisation; token columns; `profile_assessment_v3` |
+| **17G-1B** | Complete (`497682e`) | Pilot tooling; five live v3 assessments |
+| **17G-1C** | Complete | Pilot calibration; `profile_assessment_v4` semantics; reassessment planner (`scripts/run_profile_reassessment.py`, dry-run default) |
+| **17G-2** | Not started | Relevance gate / default queue filtering (acceptance criteria in `docs/analysis/phase-17g-1c-pilot-calibration.md`) |
+
+Production reassessment: run `scripts/summarize_reassessment_population.py`, then
+`scripts/run_profile_reassessment.py` (dry-run) before any `--apply` batch.
+
 
 # Phase 18 — Production Validation and Tuning
 

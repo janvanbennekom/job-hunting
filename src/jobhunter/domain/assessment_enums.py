@@ -61,4 +61,4 @@ class OpportunityEvidenceField(StrEnum):
     CONTENT_LAST_UPDATED = "CONTENT_LAST_UPDATED"
 
 
-PROFILE_ASSESSMENT_SCHEMA_VERSION = "profile_assessment_v3"
+PROFILE_ASSESSMENT_SCHEMA_VERSION = "profile_assessment_v4"

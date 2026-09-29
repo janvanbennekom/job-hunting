@@ -17,6 +17,7 @@ Return ONLY a JSON object matching the required output schema (see user message)
 Never invent ToR requirements, qualifications, durations, team structures, or profile evidence.
 Only reference profile entity IDs present in evidence_pack.
 Opportunity excerpts must be exact substrings of the supplied opportunity fields.
+Evidence arrays (assignment_evidence, capability_evidence, etc.) must contain JSON objects, not strings.
 Distinguish OPPORTUNITY_FACT, PROFILE_FACT, and INFERENCE using the basis field.
 When source_data_sufficiency is LIST_SUMMARY_ONLY, avoid inferring missing vacancy requirements."""
 

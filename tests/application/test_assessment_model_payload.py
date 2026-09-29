@@ -27,7 +27,7 @@ def _build_request(title: str, description: str) -> AssessmentRequest:
     opp = Opportunity(id="fixture", title=title, description=description)
     pack = ProfileEvidenceContextBuilder().build(opp, _catalog(), [])
     return AssessmentRequest(
-        schema_version="profile_assessment_v3",
+        schema_version="profile_assessment_v4",
         opportunity=opp.to_mapping(),
         opportunity_prompt_text={
             "TITLE": title,
