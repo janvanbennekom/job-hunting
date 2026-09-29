@@ -607,10 +607,16 @@ at processing time, not inside connectors.
   consultants RSS (requires descriptive User-Agent). Optional detail-page
   enrichment for closing dates and longer descriptions. Stable AfDB node id in
   `guid`. `AfdbOpportunityNormalizer`.
+- **ADB CSRN consulting opportunities** — `AdbCsrnConnector` via public Oracle
+  HTML on ``selfservice.adb.org`` (CSRN home listing; cookie session for
+  pagination). Stable notice id ``E-…-…`` in `source_reference`. List fields
+  only: `fetch_details` is ignored (CSRN notice body uses Oracle popup flow).
+  `source_url` = CSRN listing anchor; `structured_facts.application_url` =
+  ``https://csrn.adb.org/``. `AdbCsrnOpportunityNormalizer`.
 
 **Scan services (Phase 17B):** explicit per-source services remain
 (`FaoScanService`, `DevelopmentAidScanService`, `WorldBankScanService`,
-`UndpScanService`, `AfdbScanService`) — structural duplication is acceptable;
+`UndpScanService`, `AfdbScanService`, `AdbScanService`) — structural duplication is acceptable;
 behaviour and audit semantics are preserved without a generic refactor.
 
 Additional sources should follow the same pattern: connector + scan service +

@@ -10,6 +10,7 @@ from typing import Any, Mapping
 
 from jobhunter.connectors.developmentaid.identity import DEVELOPMENTAID_JOBS_SOURCE_ID
 from jobhunter.connectors.fao.identity import FAO_JOBS_SOURCE_ID
+from jobhunter.connectors.adb.identity import ADB_CSRN_SOURCE_ID
 from jobhunter.connectors.afdb.identity import AFDB_CONSULTANTS_SOURCE_ID
 from jobhunter.connectors.undp.identity import UNDP_JOBS_SOURCE_ID
 from jobhunter.connectors.reliefweb.identity import RELIEFWEB_JOBS_SOURCE_ID
@@ -55,6 +56,7 @@ KNOWN_SOURCE_KEYS = frozenset(
         "worldbank",
         "undp",
         "afdb",
+        "adb",
         "reliefweb",
         "ted",
     }
@@ -66,6 +68,7 @@ SOURCE_KEY_TO_JOB_SOURCE_ID = {
     "worldbank": WORLDBANK_PROCUREMENT_SOURCE_ID,
     "undp": UNDP_JOBS_SOURCE_ID,
     "afdb": AFDB_CONSULTANTS_SOURCE_ID,
+    "adb": ADB_CSRN_SOURCE_ID,
     "reliefweb": RELIEFWEB_JOBS_SOURCE_ID,
     "ted": TED_EU_PROCUREMENT_SOURCE_ID,
 }

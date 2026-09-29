@@ -248,6 +248,43 @@ JOBHUNTER_RELIEFWEB_APPNAME=your-approved-appname
 Enable in `config/automation.json` after approval (`limit: 10` recommended initially).
 Official quota: **1000 API calls/day**. Each scan uses one POST (up to `limit` jobs, max 100 per call).
 
+### ADB CSRN (`adb` source)
+
+Public Oracle HTML listing on `selfservice.adb.org` (no login). Distinct automation
+key from **`afdb`** (African Development Bank RSS). Keep **`enabled: false`** until
+NAS validation; recommended `limit: 10`, `fetch_details: false` (detail notices use
+Oracle popup navigation — not implemented).
+
+**ADB-only validation (worker container, acquisition + apply, no OpenAI):**
+
+```bash
+cd /volume1/docker/job-hunter
+sudo docker compose -f docker-compose.prod.yml --profile worker run --rm worker \
+  python -c "
+from jobhunter.application.adb_scan import AdbScanService
+from jobhunter.infrastructure.config import get_settings
+from jobhunter.infrastructure.persistence.database import (
+    create_engine_from_settings,
+    create_session_factory,
+    session_scope,
+)
+settings = get_settings()
+settings.require_database_url()
+engine = create_engine_from_settings(settings)
+session_factory = create_session_factory(engine)
+with session_scope(session_factory) as session:
+    r = AdbScanService(session).run_scan(
+        limit=10, apply=True, fetch_details=False, run_profile_assessment=False
+    )
+    print('status', r.scan.status, 'retrieved', r.retrieved, 'processed', r.processed, 'failed', r.failed)
+"
+```
+
+Expect `status SUCCESS`, `retrieved` and `processed` up to 10, `failed` 0. Disable
+other sources in `config/automation.json` if using the full scheduled pipeline instead.
+
+**NAS egress (2026-09-29):** `GET` CSRN home → **HTTP 200** from Synology.
+
 ### TED EU procurement (`ted` source)
 
 No API key required for search. Uses expert query with optional `keyword` in

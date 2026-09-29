@@ -1109,16 +1109,19 @@ LAND-CORE eight-term query after relevance investigation (§21.7). TED remains d
 
 ### Phase 17E — ADB, UNOPS, UN Careers investigation
 
-**Status:** Investigation complete (2026-09-29). No connectors implemented. See
-`docs/source-expansion-analysis.md` §22.
+**Status:** Investigation complete (2026-09-29). See `docs/source-expansion-analysis.md` §22.
 
 | Source | Class | Recommendation |
 |--------|-------|----------------|
-| ADB CSRN | **B** | Implement after NAS egress probe; HTML listing on `selfservice.adb.org`. |
-| UN Careers | **A** (RSS) | Second priority; official `jobfeed` RSS. |
+| ADB CSRN | **B** | **17E-1 implemented** — NAS egress OK; list-only connector (`adb` key). |
+| UN Careers | **A** (RSS) | **Deferred** — NAS `jobfeed` returns **403 CloudFront**; revisit official interface. |
 | UNOPS Avature | **C** | Defer; overlap with ReliefWeb; undocumented SPA API. |
 
-Suggested subphases: **17E-1 ADB**, **17E-2 UN Careers RSS**; defer UNOPS.
+**17E-1 (complete):** `AdbCsrnConnector`, `AdbScanService`, automation key `adb` →
+`source_id` `adb-csrn`; `fetch_details` no-op (Oracle popup detail not available via
+simple HTTP). Production: `enabled: false` until NAS validation; `limit: 10`.
+
+Suggested next subphase: **17E-2** only after UN Careers egress/API investigation (not RSS from NAS).
 
 
 # Phase 18 — Production Validation and Tuning

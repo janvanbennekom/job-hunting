@@ -246,12 +246,13 @@ links when configured.
 
 Research: [docs/source-expansion-analysis.md](docs/source-expansion-analysis.md).
 
-Automation keys: `fao`, `developmentaid`, `worldbank`, `undp`, `afdb`, `reliefweb`, `ted`.
+Automation keys: `fao`, `developmentaid`, `worldbank`, `undp`, `afdb`, `adb`, `reliefweb`, `ted`.
 All use the same scan → Phase 5 → assessment pipeline. See `config/automation.example.json`;
 start new sources at **`limit: 10`**.
 
 - **`reliefweb`** — requires `JOBHUNTER_RELIEFWEB_APPNAME` in `.env` (pre-approved via reliefweb.int/contact).
 - **`ted`** — EU procurement Search API v3 (anonymous); keyword optional in automation JSON.
+- **`adb`** — ADB CSRN public listing on `selfservice.adb.org` (distinct from `afdb` RSS). List-only; start disabled with `limit: 10`.
 
 Optional live smoke tests: `pytest -m live tests/connectors/test_*_live.py` where present.
 

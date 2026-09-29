@@ -48,6 +48,13 @@
       "fetch_details": true
     },
     {
+      "key": "adb",
+      "enabled": false,
+      "keyword": "",
+      "limit": 10,
+      "fetch_details": false
+    },
+    {
       "key": "reliefweb",
       "enabled": false,
       "keyword": "land administration GIS",

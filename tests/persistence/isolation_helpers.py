@@ -40,6 +40,24 @@ def unique_ted_notice_records(
     return isolated
 
 
+def unique_adb_notice_records(
+    records: list[dict[str, Any]], *, count: int = 2
+) -> list[dict[str, Any]]:
+    """Return copies with synthetic E- notice ids for integration tests."""
+    token = uuid.uuid4().hex[:6].upper()
+    isolated: list[dict[str, Any]] = []
+    for index, record in enumerate(records[:count]):
+        row = copy.deepcopy(record)
+        notice_id = f"E-9{token}{index:03d}"
+        row["notice_id"] = notice_id
+        title = row.get("title") or "Test notice"
+        if "E-" in title:
+            title = title.rsplit("(", 1)[0].rstrip() + f" ({notice_id})"
+        row["title"] = title
+        isolated.append(row)
+    return isolated
+
+
 def unique_reliefweb_job_records(
     jobs: list[dict[str, Any]], *, count: int = 2
 ) -> list[dict[str, Any]]:

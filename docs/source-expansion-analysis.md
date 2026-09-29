@@ -720,9 +720,14 @@ migration required for new connectors.
 
 Approx. mix on one listing page: **both** firm QCBS-style packages and **individual specialist** posts; land/GIS hits are sparse in titles but strategically aligned when present.
 
-**Proposed architecture (not implemented):** `adb-csrn` connector — GET listing pages
-with pagination + optional keyword from automation; parse HTML table/links; map
-`source_reference=E-…`; optional detail GET per notice (`fetch_details`, low `limit`).
+**Implemented (17E-1, 2026-09-29):** automation key **`adb`** → `source_id` **`adb-csrn`**.
+`AdbCsrnConnector` — GET listing + cookie-backed pagination; parse Oracle table rows;
+`source_reference=E-…`; `source_url` listing anchor; `application_url` → `csrn.adb.org`.
+**`fetch_details` not implemented** — anonymous POST to `view_csrn` returns Oracle error
+page; list fields yield Phase 8 **PARTIAL** sufficiency (not ADEQUATE).
+
+**NAS egress (2026-09-29):** `https://selfservice.adb.org/OA_HTML/OA.jsp?OAFunc=XXCRS_CSRN_HOME_PAGE`
+→ **HTTP/1.1 200 OK** from Synology NAS (production prerequisite satisfied).
 
 ### 22.3 UNOPS — Careers Marketplace (Avature)
 
@@ -743,6 +748,11 @@ documented browser network capture **or** parse stable SSR fragments only — hi
 maintenance. **Defer** until ReliefWeb overlap assessed.
 
 ### 22.4 UN Careers / Inspira
+
+**NAS egress (2026-09-29):** `GET https://careers.un.org/jobfeed?language=en` from Synology
+→ **HTTP/1.1 403 Forbidden** (`Server: CloudFront`, `X-Cache: Error from cloudfront`).
+**17E-2 UN Careers RSS is deferred** until an official feed or API works from production
+egress (do not implement RSS connector based on dev-only 200 responses).
 
 | Item | Finding |
 |------|---------|
@@ -774,11 +784,9 @@ detail fetch of HTML or future discovered JSON — `fetch_details` default **fal
 
 ### 22.6 Recommended implementation order
 
-1. **17E-1 — ADB CSRN (class B)** after **mandatory NAS probe** of `selfservice.adb.org`
-   CSRN listing + one detail page. Initial `limit: 10`; optional `fetch_details` after
-   ToR depth verified.
-2. **17E-2 — UN Careers RSS (class A)** — low-risk official feed; filter CON/title keywords
-   in mapper or automation keyword; `limit: 15–25`; `fetch_details: false` initially.
+1. **17E-1 — ADB CSRN (class B)** — **done** (list-only; NAS 200 validated).
+2. **17E-2 — UN Careers** — **deferred** (NAS RSS 403); investigate alternative official
+   read interface from production egress before implementation.
 3. **Defer UNOPS (class C)** — implement only if ReliefWeb (once enabled) does not cover
    enough UNOPS ICA/geo roles with adequate descriptions.
 

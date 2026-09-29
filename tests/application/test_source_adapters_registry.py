@@ -11,6 +11,7 @@ def test_default_adapters_include_phase_17b_sources() -> None:
         "worldbank",
         "undp",
         "afdb",
+        "adb",
         "reliefweb",
         "ted",
     }
