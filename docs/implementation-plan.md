@@ -1150,7 +1150,9 @@ production observation period (triage + dashboard metrics).
 | **17G-1A** | Complete (`fef5242`) | Payload optimisation; token columns; `profile_assessment_v3` |
 | **17G-1B** | Complete (`497682e`) | Pilot tooling; five live v3 assessments |
 | **17G-1C** | Complete | Pilot calibration; `profile_assessment_v4` semantics; reassessment planner (`scripts/run_profile_reassessment.py`, dry-run default) |
-| **17G-2** | Not started | Relevance gate / default queue filtering (acceptance criteria in `docs/analysis/phase-17g-1c-pilot-calibration.md`) |
+| **17G-2A** | Complete | Post-reassessment audit (`scripts/analyze_v4_decision_quality.py`, `docs/analysis/phase-17g-2a-decision-quality-audit.json`) |
+| **17G-2B** | Not started | Default queue excludes OUT_OF_SCOPE only; audit view; see 17G-2A report |
+| **17G-2** | (split) | Former umbrella — gate = **17G-2B** |
 
 Production reassessment: run `scripts/summarize_reassessment_population.py`, then
 `scripts/run_profile_reassessment.py` (dry-run) before any `--apply` batch.
