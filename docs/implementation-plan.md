@@ -1082,6 +1082,11 @@ Complete (2026-09-29).
 Add further connectors from Groups A/B (ReliefWeb after appname approval, UNOPS,
 UN Careers, TED, Workday/WFP, etc.) per prioritized review after 17B.
 
+### Phase 17C-1 — Authenticated DevelopmentAid & Devex (investigation)
+
+**Status:** Complete (2026-09-29). Findings in `docs/source-expansion-analysis.md`
+§19. No connector or credential implementation.
+
 
 # Phase 18 — Production Validation and Tuning
 

@@ -429,6 +429,113 @@ Per connector:
 
 **Scan services:** per-source services retained (no generic refactor in 17B).
 
+**Production validation (2026-09-29):** FAO, DevelopmentAid (429 fix), World Bank, UNDP
+succeeded at configured limits; AfDB **disabled on NAS** after Cloudflare 403 on
+official consultants RSS from worker network (see §19.3).
+
+---
+
+## 19. Phase 17C-1 — Authenticated DevelopmentAid & Devex (investigation only)
+
+**Date:** 2026-09-29  
+**Status:** Investigation complete — **no authenticated connector implementation**.
+
+### 19.1 DevelopmentAid — current anonymous connector (VERIFIED in repo + live probe)
+
+| Item | Value |
+|------|--------|
+| Search | `POST https://www.developmentaid.org/api/frontend/job/search` |
+| Detail | `GET https://www.developmentaid.org/api/frontend/job/{id}` |
+| Auth | **None** (no cookies, bearer, or API key) |
+| Headers | `User-Agent`, `Content-Type: application/json`, `Accept: application/json` on POST; GET detail: `User-Agent`, `Accept` |
+| Timeout | 60s |
+| Pagination | `pageNumber`, `pageSize` (≤25 per page), stops at `limit` or `total` |
+| `source_reference` | Numeric job `id` (string) |
+| List fields used | `id`, `title`, `slug`, `organization`, `locationNames`, `deadline`, `postedDate`, `jobType`, `experience`, `fullyVisible`, `publicationStatus`, … |
+| Detail fields used | `description` (HTML→text), `employer`, `sectors`, `languages`, `locations`, `expectedStartingDate`, `minimumExperience` |
+| Detail fields **present in API but not mapped** (VERIFIED live keys) | `documents`, `emails`, `salary`, `lastUpdated`, `application`, `page_*` meta |
+| Rate limit | Detail GET: `X-RateLimit-Limit: 20` (observed 2026-09-29); **429** `Too Many Attempts` |
+| Throttle | **3.0s** between sequential detail GETs (`DevelopmentAidHttpPolicy`) |
+| 429 retry | Up to **3** retries; `Retry-After` if present else exponential **2/4/8s** (cap 60s) |
+| Circuit | After **2** consecutive detail failures after retries, stop remaining detail fetches; list rows retained |
+| Phase 8 sufficiency | Generic length/heuristic (not DA-specific); with `fetch_details=true` and full HTML description typically **ADEQUATE**; list-only → **PARTIAL** / short text |
+
+This is **not** DevelopmentAid’s official **partner external API** (see §19.2).
+
+### 19.2 DevelopmentAid — authentication & official APIs
+
+| Finding | Status |
+|---------|--------|
+| Web login UI | SPA at `/login` (INFERRED: browser session after credential POST; not inspected with user account) |
+| Same `/api/frontend/...` when logged in | **UNKNOWN / REQUIRES AUTHENTICATED TEST** (likely same routes with session cookie — common SPA pattern) |
+| **Official partner “external API”** | **VERIFIED** (public Zendesk/marketing): API key auth; CRUD on jobs/tenders/grants for **partner organisations**; paid/partnership onboarding (`partnership@developmentaid.org`); docs linked from [How To Use the Developmentaid API?](https://developmentaid.zendesk.com/hc/en-gb/articles/8946444465426-How-To-Use-the-Developmentaid-API) — oriented to **publish + partner retrieval**, not the anonymous frontend paths |
+| Individual paid member login vs partner API | **UNKNOWN** whether personal subscription grants partner API keys or only UI features |
+| Repository prior API-key work | **None found** in codebase/docs (only `api/frontend` connector) |
+
+**Suitability classes**
+
+- **A** Anonymous `/api/frontend/*` — **technically accessible**; production-validated with throttling.
+- **B** Partner external API with API key — **accessible after contract**; **supported for automation** for partners; scope must be confirmed (read jobs/tenders vs post-only).
+- **C** Browser session for member UI — **INFERRED** legitimate for human use; **automation suitability UNKNOWN** until ToS + DevTools review.
+- **D** Scraping HTML / bypassing limits — **not recommended**.
+
+### 19.3 AfDB reminder (17B production)
+
+Official consultants RSS blocked by **Cloudflare** from Synology egress; connector remains in registry; **disable `afdb` in production** until a non-CF official interface is confirmed from the **worker network**.
+
+### 19.4 Devex — investigation summary
+
+| Item | Finding | Status |
+|------|---------|--------|
+| Job search URL | `https://www.devex.com/jobs/search` (and related Career Hub) | **403** from probe IP (likely bot/WAF — same class as AfDB on NAS) |
+| Public robots.txt | Not retrieved (403 on probe) | **UNKNOWN** |
+| Official **job search/read API** for subscribers | **Not found** in Devex support docs | **VERIFIED** for absence of *search* API |
+| Official **job posting API** | `POST` XML to `https://www.devex.com/api/public_secure/job_uploads/job_upload.xml` with org key/password — **employers post jobs**, not discover them | [Job posting API information](https://support.devex.com/hc/en-us/articles/360000127713-Job-posting-API-information) |
+| Third-party APIs (Parse, Apify, Spider) | Scraping/wrapper services | **Not official** — treat as **D** |
+| Logged-in SPA JSON endpoints | Not observed without user session | **REQUIRES AUTHENTICATED TEST** |
+| Pipeline fit | Same `RawOpportunity` + scan service pattern **if** a stable JSON/feed and lawful access exist | **Blocked pending access model** |
+
+**Devex value (INFERRED):** High overlap with DevelopmentAid, ReliefWeb, and agency boards for development jobs/consultancies; **unique** postings likely exist but volume/overlap unquantified without authenticated sampling.
+
+### 19.5 Anonymous vs authenticated DevelopmentAid (comparison)
+
+| Capability | Anonymous (current) | Authenticated (member/partner) | Value to JobHunter |
+|------------|--------------------|--------------------------------|--------------------|
+| Discovery coverage | Broad public search JSON | **TO BE TESTED** (paywalled filters? more rows?) | Medium–high if materially more |
+| Title / deadline / location | VERIFIED list+detail | **TO BE TESTED** | Baseline met anonymously |
+| Description / ToR | HTML `description`; `documents[]` often empty in probe | **TO BE TESTED** (attachments behind login?) | High if docs/ToR unlock |
+| Organisation | List `organization` + detail `employer` | **TO BE TESTED** | Medium |
+| Consultant vs firm | `jobType` string | **TO BE TESTED** | Medium |
+| Sectors / languages | Detail when fetched | **TO BE TESTED** | Medium |
+| Stable ID | `id` | **INFERRED** same | High |
+| Rate limits | 20/detail window + 429 | **TO BE TESTED** | Operational |
+| Assessment sufficiency | ADEQUATE with details (typical) | **TO BE TESTED** if longer ToR | High |
+
+### 19.6 Implementation options (not approved — do not implement)
+
+**DevelopmentAid:** DA-A anonymous only (current); DA-B anonymous list + auth detail enrichment; DA-C full auth discovery+detail; DA-D **partner official API** if read access is contractually available.
+
+**Devex:** DX-A public only (currently **blocked** on many egress IPs); DX-B public+auth detail; DX-C auth discovery+detail; DX-D official feed (only **job upload** API documented — wrong direction for acquisition).
+
+### 19.7 Proposed secrets architecture (design only)
+
+- Store **only** in `.env` / Synology secrets: e.g. `JOBHUNTER_DEVELOPMENTAID_API_KEY` (partner API) or session-related secrets **if** a supported mechanism is chosen — **not** username/password in DB/Git/logs.
+- Prefer **API key header** for partner API over scraping session cookies.
+- Session cookies: short-lived, in-memory per scan only; never in `SourceScan.error_summary`, emails, or Streamlit.
+- Tests: fixtures + mocked HTTP; live auth tests behind optional marker and env.
+
+### 19.8 Phase 17C roadmap (after 17C-1)
+
+1. **ReliefWeb** (appname) — still highest-leverage meta-source.  
+2. **DevelopmentAid** — user DevTools session compare anonymous vs logged-in; then decide DA-B vs DA-D.  
+3. **Devex** — only after DevTools proves stable JSON + terms allow unattended use.  
+4. **AfDB** — re-test RSS from NAS container; no Cloudflare bypass.  
+5. UNOPS, TED, etc. — unchanged from §17.
+
+### 19.9 Manual test checklist (for Jan)
+
+See Phase 17C-1 final report (chat); safe to share: endpoint URLs, methods, status codes, JSON **field names**, rate-limit **header names**, redacted schemas — **not** passwords, cookies, Authorization, or full HAR dumps with secrets.
+
 ---
 
 ## 18. References (public)
@@ -442,3 +549,5 @@ Per connector:
 - AfDB consultants RSS: `https://www.afdb.org/en/about-us/careers/current-vacancies/consultants/rss/`  
 - ADB CSRN: `https://csrn.adb.org`  
 - DevelopmentAid search API (baseline): `https://www.developmentaid.org/api/frontend/job/search`
+- DevelopmentAid partner API (Zendesk intro): `https://developmentaid.zendesk.com/hc/en-gb/articles/8946444465426-How-To-Use-the-Developmentaid-API`
+- Devex job posting API (employers only): `https://support.devex.com/hc/en-us/articles/360000127713-Job-posting-API-information`
