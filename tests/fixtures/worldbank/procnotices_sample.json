@@ -1,0 +1,58 @@
+{
+  "total": "420687",
+  "os": 0,
+  "rows": 3,
+  "procnotices": [
+    {
+      "id": "OP00471453",
+      "notice_type": "Contract Award",
+      "noticedate": "27-Sep-2026",
+      "notice_lang_name": "French",
+      "notice_status": "Published",
+      "project_ctry_name": "Niger",
+      "project_id": "P509601",
+      "project_name": "Niger Food Security and Emergency Access to Essential  Services Project",
+      "bid_reference_no": "NE-CCA-494276-GO-RFB",
+      "bid_description": "Achats de pour la C\u00e9r\u00e9ales p\u00e9riode soudure 2026 - B",
+      "procurement_group": "GO",
+      "procurement_method_code": "RFB",
+      "procurement_method_name": "Request for Bids",
+      "submission_date": "2026-09-27T00:00:00Z",
+      "notice_text": "<div class='row col-sm-12'><h4>Contract Award</h4><p><b>Project:</b>P509601-Niger Food Security and Emergency Access to Essential Services Project<br/><b>Loan/Credit/TF Info:</b>-<br/><b>Bid/Contract Reference No:</b>NE-CCA-494276-GO-RFB<br/><b>Procurement Method:</b>RFB-Appel d'offres<br/><b>Scope of Contract:</b><span class='desc-word-wrap'>Fourniture de 45 000 tonnes de crales (Mil, mas et sorgho) : lot 51 : 500 tonnes de Sorgho  Tra</span><br/><b>Notice Version No:</b>0</p><br/></div><div cl..."
+    },
+    {
+      "id": "OP00471473",
+      "notice_type": "Contract Award",
+      "noticedate": "27-Sep-2026",
+      "notice_lang_name": "French",
+      "notice_status": "Published",
+      "project_ctry_name": "Niger",
+      "project_id": "P509601",
+      "project_name": "Niger Food Security and Emergency Access to Essential  Services Project",
+      "bid_reference_no": "NE-CCA-494276-GO-RFB",
+      "bid_description": "Achats de pour la C\u00e9r\u00e9ales p\u00e9riode soudure 2026 - B",
+      "procurement_group": "GO",
+      "procurement_method_code": "RFB",
+      "procurement_method_name": "Request for Bids",
+      "submission_date": "2026-09-27T00:00:00Z",
+      "notice_text": "<div class='row col-sm-12'><h4>Contract Award</h4><p><b>Project:</b>P509601-Niger Food Security and Emergency Access to Essential Services Project<br/><b>Loan/Credit/TF Info:</b>-<br/><b>Bid/Contract Reference No:</b>NE-CCA-494276-GO-RFB<br/><b>Procurement Method:</b>RFB-Appel d'offres<br/><b>Scope of Contract:</b><span class='desc-word-wrap'>Fourniture de 45 000 tonnes de crales (Mil, mas et sorgho), lot 64 : 500 tonnes de Mas  Kantch</span><br/><b>Notice Version No:</b>0</p><br/></div><div cla..."
+    },
+    {
+      "id": "OP00471483",
+      "notice_type": "Contract Award",
+      "noticedate": "27-Sep-2026",
+      "notice_lang_name": "French",
+      "notice_status": "Published",
+      "project_ctry_name": "Burkina Faso",
+      "project_id": "P178598",
+      "project_name": "Burkina Faso Livestock Resilience and Competitiveness  Project",
+      "bid_reference_no": "BF-PRECEL-471071-GO-RFQ",
+      "bid_description": "Acquisition de 5\u00a0000 g\u00e9niteurs initiaux de poisson de souche performante et d'aliments g\u00e9niteurs au profit de la DRGRH",
+      "procurement_group": "GO",
+      "procurement_method_code": "RFQ",
+      "procurement_method_name": "Request for Quotations",
+      "submission_date": "2026-09-27T00:00:00Z",
+      "notice_text": "<div class='row col-sm-12'><h4>Contract Award</h4><p><b>Project:</b>P178598-Burkina Faso Livestock Resilience and Competitiveness Project<br/><b>Loan/Credit/TF Info:</b>IDA-73080<br/><b>Bid/Contract Reference No:</b>BF-PRECEL-471071-GO-RFQ<br/><b>Procurement Method:</b>RFQ-Demande de prix<br/><b>Scope of Contract:</b><span class='desc-word-wrap'>Acquisition de 5000 gniteurs initiaux de poisson de souche performante et daliments gniteurs au profit de la DGRH</span><br/><b>Notice Version No:</b>0<..."
+    }
+  ]
+}
