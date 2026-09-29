@@ -27,6 +27,15 @@ class OpportunityRankingRepository:
             return None
         return mappers.ranking_to_domain(row)
 
+    def list_for_revision(self, revision_id: str) -> list[OpportunityRanking]:
+        stmt = (
+            select(OpportunityRankingRow)
+            .where(OpportunityRankingRow.search_strategy_revision_id == revision_id)
+            .order_by(OpportunityRankingRow.ranked_at.desc())
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.ranking_to_domain(row) for row in rows]
+
     def list_for_opportunity(self, opportunity_id: str) -> list[OpportunityRanking]:
         stmt = (
             select(OpportunityRankingRow)

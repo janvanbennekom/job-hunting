@@ -8,16 +8,23 @@ from sqlalchemy.orm import Session
 
 from jobhunter.application.review.active_strategy import ActiveSearchStrategyResolver
 from jobhunter.application.review.dtos import (
-    AssessmentDisplayState,
     DashboardSummaryView,
     OpportunityQueueFilters,
     ScanSummaryView,
 )
 from jobhunter.application.review.lifecycle import is_actionable_lifecycle
 from jobhunter.application.review.opportunity_query import OpportunityReviewQueryService
-from jobhunter.application.review.opportunity_reads import OpportunityPipelineReader
+from jobhunter.application.review.dashboard_metrics import (
+    compute_production_dashboard_counts,
+)
 from jobhunter.domain.enums import EligibilityStatus
-from jobhunter.domain.ranking_enums import PriorityBand, RankingStatus
+from jobhunter.domain.ranking_enums import PriorityBand
+from jobhunter.infrastructure.persistence.assessment_repositories import (
+    OpportunityProfileAssessmentRepository,
+)
+from jobhunter.infrastructure.persistence.ranking_repositories import (
+    OpportunityRankingRepository,
+)
 from jobhunter.infrastructure.persistence.repositories import (
     JobSourceRepository,
     OpportunityRepository,
@@ -34,7 +41,8 @@ class DashboardSummaryService:
         self._sources = JobSourceRepository(session)
         self._scans = SourceScanRepository(session)
         self._strategy = ActiveSearchStrategyResolver(session)
-        self._pipeline = OpportunityPipelineReader(session)
+        self._assessments = OpportunityProfileAssessmentRepository(session)
+        self._rankings = OpportunityRankingRepository(session)
         self._queue = OpportunityReviewQueryService(session)
 
     def build_summary(
@@ -42,6 +50,8 @@ class DashboardSummaryService:
         *,
         source_id: str | None = None,
         allow_fake: bool = False,
+        include_queue_preview: bool = True,
+        include_latest_scan: bool = True,
     ) -> DashboardSummaryView:
         resolved_source = source_id or self.DEFAULT_SOURCE_ID
         ctx = self._strategy.resolve()
@@ -58,54 +68,43 @@ class DashboardSummaryService:
             and opp.eligibility_status is EligibilityStatus.ELIGIBLE
         )
 
-        production_assessed = 0
-        production_ranked = 0
-        by_band: Counter[str] = Counter()
-
-        for opp in opportunities:
-            pipeline = self._pipeline.load(
-                opp, revision_id, allow_fake=allow_fake
+        revision_assessments = self._assessments.list_for_revision(revision_id)
+        revision_rankings = self._rankings.list_for_revision(revision_id)
+        production_assessed, production_ranked, by_band = (
+            compute_production_dashboard_counts(
+                revision_assessments,
+                revision_rankings,
+                allow_fake=allow_fake,
             )
-            if allow_fake:
-                if pipeline.assessment_state in (
-                    AssessmentDisplayState.PRODUCTION,
-                    AssessmentDisplayState.FAKE_DEV,
-                ):
-                    production_assessed += 1
-            elif pipeline.assessment_state is AssessmentDisplayState.PRODUCTION:
-                production_assessed += 1
-
-            ranking = pipeline.display_ranking
-            if ranking and ranking.status is RankingStatus.RANKED:
-                if allow_fake or pipeline.assessment_state is AssessmentDisplayState.PRODUCTION:
-                    production_ranked += 1
-                    if ranking.priority_band:
-                        by_band[ranking.priority_band.value] += 1
-
-        latest_scan_entity = self._scans.get_latest_for_source(resolved_source)
-        job_source = self._sources.get_by_id(resolved_source)
-        scan_view = None
-        if latest_scan_entity:
-            scan_view = ScanSummaryView(
-                source_id=resolved_source,
-                source_name=job_source.name if job_source else resolved_source,
-                scan_id=latest_scan_entity.id,
-                status=latest_scan_entity.status.value,
-                started_at=latest_scan_entity.started_at,
-                completed_at=latest_scan_entity.completed_at,
-                records_retrieved=latest_scan_entity.records_retrieved,
-                records_processed=latest_scan_entity.records_processed,
-                records_failed=latest_scan_entity.records_failed,
-                error_summary=latest_scan_entity.error_summary,
-            )
-
-        preview_filters = OpportunityQueueFilters(
-            allow_fake=allow_fake,
-            include_ineligible=False,
-            include_non_actionable_lifecycle=False,
-            ranking_band=PriorityBand.HIGH,
         )
-        high_preview = self._queue.list_queue(preview_filters)
+
+        scan_view = None
+        if include_latest_scan:
+            latest_scan_entity = self._scans.get_latest_for_source(resolved_source)
+            job_source = self._sources.get_by_id(resolved_source)
+            if latest_scan_entity:
+                scan_view = ScanSummaryView(
+                    source_id=resolved_source,
+                    source_name=job_source.name if job_source else resolved_source,
+                    scan_id=latest_scan_entity.id,
+                    status=latest_scan_entity.status.value,
+                    started_at=latest_scan_entity.started_at,
+                    completed_at=latest_scan_entity.completed_at,
+                    records_retrieved=latest_scan_entity.records_retrieved,
+                    records_processed=latest_scan_entity.records_processed,
+                    records_failed=latest_scan_entity.records_failed,
+                    error_summary=latest_scan_entity.error_summary,
+                )
+
+        high_preview = []
+        if include_queue_preview:
+            preview_filters = OpportunityQueueFilters(
+                allow_fake=allow_fake,
+                include_ineligible=False,
+                include_non_actionable_lifecycle=False,
+                ranking_band=PriorityBand.HIGH,
+            )
+            high_preview = self._queue.list_queue(preview_filters)
 
         return DashboardSummaryView(
             total_opportunities=len(opportunities),

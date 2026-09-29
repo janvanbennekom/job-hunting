@@ -438,6 +438,43 @@ docker compose -f docker-compose.prod.yml up -d web status edge
 - **Public (no auth):** `https://<your-host>/status` — aggregate counts only.
 - **Operator (basic auth):** `https://<your-host>/app/` — Streamlit UI including bulk triage on Opportunities.
 - **Worker:** unchanged (same image; no compose change required for 17F).
+- **Status container health:** Docker probes `http://127.0.0.1:8502/health` (process liveness only; no dashboard query).
+
+**Phase 17F-1 (status timeout fix):** no database migration. Rebuild and restart `status` (and `edge` if Caddy image unchanged, optional).
+
+```bash
+cd /volume1/docker/job-hunter
+git pull origin main
+docker compose -f docker-compose.prod.yml build status
+docker compose -f docker-compose.prod.yml up -d status edge
+```
+
+**Post-deploy validation (Synology, no credentials in commands):**
+
+```bash
+cd /volume1/docker/job-hunter
+
+# 1) Container health
+docker compose -f docker-compose.prod.yml ps status
+
+# 2) Liveness inside status container
+docker compose -f docker-compose.prod.yml exec status curl -fsS http://127.0.0.1:8502/health
+
+# 3) Public dashboard inside status container (may take a few seconds first time)
+docker compose -f docker-compose.prod.yml exec status curl -fsS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8502/status
+
+# 4) Timing /status from inside status container
+docker compose -f docker-compose.prod.yml exec status curl -fsS -o /dev/null -w 'time_total=%{time_total}s\n' http://127.0.0.1:8502/status
+
+# 5) Recent status logs
+docker compose -f docker-compose.prod.yml logs --tail=80 status
+
+# 6) Public HTTPS dashboard (replace host)
+curl -fsS -o /dev/null -w '%{http_code} time=%{time_total}s\n' https://jobhunter.jvbgis.com/status
+
+# 7) /app/ still requires authentication (expect 401 without credentials)
+curl -sS -o /dev/null -w '%{http_code}\n' https://jobhunter.jvbgis.com/app/
+```
 
 Legacy one-liner (same steps):
 

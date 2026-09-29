@@ -81,7 +81,7 @@ services:
           "CMD",
           "curl",
           "-fsS",
-          "http://127.0.0.1:8502/status",
+          "http://127.0.0.1:8502/health",
         ]
       interval: 30s
       timeout: 5s

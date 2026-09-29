@@ -32,6 +32,20 @@ class OpportunityProfileAssessmentRepository:
             return None
         return mappers.assessment_to_domain(row)
 
+    def list_for_revision(
+        self, revision_id: str
+    ) -> list[OpportunityProfileAssessment]:
+        stmt = (
+            select(OpportunityProfileAssessmentRow)
+            .where(
+                OpportunityProfileAssessmentRow.search_strategy_revision_id
+                == revision_id
+            )
+            .order_by(OpportunityProfileAssessmentRow.assessed_at)
+        )
+        rows = self._session.scalars(stmt).all()
+        return [mappers.assessment_to_domain(row) for row in rows]
+
     def list_for_opportunity(
         self, opportunity_id: str
     ) -> list[OpportunityProfileAssessment]:
