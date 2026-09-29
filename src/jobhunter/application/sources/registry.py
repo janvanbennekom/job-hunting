@@ -26,6 +26,7 @@ _REGISTRY: tuple[SourceConnectorMeta, ...] = (
         "worldbank", "World Bank", "World Bank Procurement Notices"
     ),
     SourceConnectorMeta("undp", "UNDP", "UNDP Jobs"),
+    SourceConnectorMeta("afdb", "AfDB", "AfDB Consultant Opportunities"),
 )
 
 
