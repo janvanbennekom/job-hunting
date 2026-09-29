@@ -10,6 +10,7 @@ from typing import Any, Mapping
 
 from jobhunter.connectors.developmentaid.identity import DEVELOPMENTAID_JOBS_SOURCE_ID
 from jobhunter.connectors.fao.identity import FAO_JOBS_SOURCE_ID
+from jobhunter.connectors.undp.identity import UNDP_JOBS_SOURCE_ID
 from jobhunter.connectors.worldbank.identity import WORLDBANK_PROCUREMENT_SOURCE_ID
 
 _ENV_CONFIG_PATH = "JOBHUNTER_AUTOMATION_CONFIG"
@@ -44,12 +45,13 @@ _WEEKDAY_TO_INDEX = {
     "sunday": 6,
 }
 
-KNOWN_SOURCE_KEYS = frozenset({"fao", "developmentaid", "worldbank"})
+KNOWN_SOURCE_KEYS = frozenset({"fao", "developmentaid", "worldbank", "undp"})
 
 SOURCE_KEY_TO_JOB_SOURCE_ID = {
     "fao": FAO_JOBS_SOURCE_ID,
     "developmentaid": DEVELOPMENTAID_JOBS_SOURCE_ID,
     "worldbank": WORLDBANK_PROCUREMENT_SOURCE_ID,
+    "undp": UNDP_JOBS_SOURCE_ID,
 }
 
 
