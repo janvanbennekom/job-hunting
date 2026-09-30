@@ -1046,6 +1046,20 @@ queue, detail, human review). Read paths do not persist rankings or
 assessments. Human review uses append-only `OpportunityReviewRecord` rows,
 separate from eligibility, assessment, and ranking outputs.
 
+Phase **17G-2B** adds **relevance queue presentation** on the Opportunities
+page. Professional relevance comes from the latest successful production
+profile assessment `overall_relevance` (`STRONG_FIT`, `MODERATE_FIT`,
+`WEAK_FIT`, `OUT_OF_SCOPE`, or unresolved values). Ranking band/score and
+human review disposition are **independent** dimensions: `OUT_OF_SCOPE` is not
+`LOW` band; `WEAK_FIT` is not `LOW` band; `DISMISS` is not `OUT_OF_SCOPE`.
+Policy lives in `application/review/relevance_queue.py` and
+`OpportunityReviewQueryService` filters — not in Streamlit business logic.
+Default operator view is **Primary** (strong + moderate). **Weak fit** and
+**Out of scope** are separate views; opportunities without a usable current
+assessment appear under **Needs review** (tab shown only when count &gt; 0).
+**Hide dismissed** filters display only (default on for Primary and Weak fit,
+off for Out of scope). LOW ranking is never used as a relevance gate.
+
 Phase 11 adds conversational search strategy management via
 `jobhunter.application.strategy_conversation` and a Streamlit strategy page.
 Natural-language instructions are interpreted through a `StrategyChangeModel`

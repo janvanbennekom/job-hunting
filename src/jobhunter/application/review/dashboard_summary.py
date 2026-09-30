@@ -19,6 +19,7 @@ from jobhunter.application.review.dashboard_metrics import (
 )
 from jobhunter.domain.enums import EligibilityStatus
 from jobhunter.domain.ranking_enums import PriorityBand
+from jobhunter.domain.relevance_queue_enums import RelevanceQueueView
 from jobhunter.infrastructure.persistence.assessment_repositories import (
     OpportunityProfileAssessmentRepository,
 )
@@ -52,6 +53,7 @@ class DashboardSummaryService:
         allow_fake: bool = False,
         include_queue_preview: bool = True,
         include_latest_scan: bool = True,
+        include_relevance_counts: bool = True,
     ) -> DashboardSummaryView:
         resolved_source = source_id or self.DEFAULT_SOURCE_ID
         ctx = self._strategy.resolve()
@@ -106,6 +108,16 @@ class DashboardSummaryService:
             )
             high_preview = self._queue.list_queue(preview_filters)
 
+        relevance_counts: dict[str, int] = {}
+        if include_relevance_counts:
+            relevance_counts = self._queue.count_relevance_segments(
+                OpportunityQueueFilters(
+                    allow_fake=allow_fake,
+                    include_ineligible=False,
+                    include_non_actionable_lifecycle=False,
+                )
+            )
+
         return DashboardSummaryView(
             total_opportunities=len(opportunities),
             by_lifecycle=dict(by_lifecycle),
@@ -116,4 +128,15 @@ class DashboardSummaryService:
             by_ranking_band=dict(by_band),
             latest_scan=scan_view,
             high_priority_preview=high_preview[:5],
+            by_relevance_queue={
+                RelevanceQueueView.PRIMARY.value: relevance_counts.get(
+                    RelevanceQueueView.PRIMARY.value, 0
+                ),
+                RelevanceQueueView.WEAK.value: relevance_counts.get(
+                    RelevanceQueueView.WEAK.value, 0
+                ),
+                RelevanceQueueView.OUT_OF_SCOPE.value: relevance_counts.get(
+                    RelevanceQueueView.OUT_OF_SCOPE.value, 0
+                ),
+            },
         )

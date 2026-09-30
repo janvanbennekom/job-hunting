@@ -159,9 +159,12 @@ def test_dynamic_rank_ordering(db_session: Session) -> None:
     items = OpportunityReviewQueryService(db_session).list_queue()
     ranked = [i for i in items if i.opportunity_id in {high.id, low.id}]
     assert len(ranked) == 2
-    assert ranked[0].dynamic_rank == 1
-    assert ranked[0].priority_band is PriorityBand.HIGH
-    assert ranked[1].dynamic_rank == 2
+    high_row = next(i for i in ranked if i.opportunity_id == high.id)
+    low_row = next(i for i in ranked if i.opportunity_id == low.id)
+    assert high_row.priority_band is PriorityBand.HIGH
+    assert high_row.dynamic_rank is not None
+    assert low_row.dynamic_rank is not None
+    assert high_row.dynamic_rank < low_row.dynamic_rank
 
 
 def test_default_queue_eligible_only(db_session: Session) -> None:

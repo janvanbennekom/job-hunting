@@ -7,6 +7,7 @@ import streamlit as st
 from jobhunter.application.review import DashboardSummaryService
 from jobhunter.domain.enums import EligibilityStatus, LifecycleStatus
 from jobhunter.domain.ranking_enums import PriorityBand
+from jobhunter.domain.relevance_queue_enums import RelevanceQueueView
 from jobhunter.ui.streamlit.bootstrap import allow_fake_results, get_session_factory
 from jobhunter.ui.streamlit.navigation import navigate_to_opportunity_detail, navigate_to_opportunities
 from jobhunter.ui.streamlit.sidebar import render_sidebar
@@ -102,6 +103,35 @@ else:
             "ranking_band",
         )
 
+    if summary.by_relevance_queue:
+        st.subheader("Relevance queues (actionable, eligible)")
+        st.caption(
+            "Counts use current production assessment overall_relevance. "
+            "Ranking band is independent (LOW is not a relevance gate)."
+        )
+        rel_labels = {
+            RelevanceQueueView.PRIMARY.value: "Primary (strong + moderate)",
+            RelevanceQueueView.WEAK.value: "Weak fit",
+            RelevanceQueueView.OUT_OF_SCOPE.value: "Out of scope",
+        }
+        rel_rows = [
+            {
+                "Queue": rel_labels.get(key, key),
+                "Opportunities": count,
+            }
+            for key, count in summary.by_relevance_queue.items()
+        ]
+        st.dataframe(rel_rows, use_container_width=True, hide_index=True)
+        rel_cols = st.columns(3)
+        for index, (key, count) in enumerate(summary.by_relevance_queue.items()):
+            with rel_cols[index % len(rel_cols)]:
+                if st.button(
+                    f"{rel_labels.get(key, key)} ({count})",
+                    key=f"relevance-{key}",
+                    use_container_width=True,
+                ):
+                    navigate_to_opportunities(relevance_queue=key)
+
     st.subheader("Latest source scan")
     scan = summary.latest_scan
     if scan is None or scan.scan_id is None:
@@ -115,6 +145,10 @@ else:
             st.warning(scan.error_summary)
 
     st.subheader("High-priority preview (HIGH band)")
+    st.caption(
+        "Preview is filtered by ranking band only, not by relevance queue. "
+        "Use Opportunities → Primary for relevance-aware triage."
+    )
     if not summary.high_priority_preview:
         st.write(
             "No HIGH-band opportunities in the current production view. "

@@ -7,6 +7,8 @@ from typing import Sequence
 import pandas as pd
 
 from jobhunter.application.display_labels import (
+    compact_label_overall_relevance,
+    compact_label_source_data_sufficiency,
     label_eligibility_status,
     label_review_disposition,
 )
@@ -40,6 +42,13 @@ def build_opportunity_queue_dataframe(
                     item.eligibility_status.value
                 ),
                 "Rank": f"{rank} ({band})",
+                "Relevance": compact_label_overall_relevance(
+                    item.overall_relevance,
+                    assessment_state=item.assessment_state.value,
+                ),
+                "Sufficiency": compact_label_source_data_sufficiency(
+                    item.source_data_sufficiency
+                ),
                 "Review": review_label,
                 "View": opportunity_detail_href(item.opportunity_id),
             }

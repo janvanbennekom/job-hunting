@@ -9,6 +9,7 @@ from jobhunter.application.review import HumanReviewService, OpportunityReviewQu
 from jobhunter.application.review.dtos import OpportunityQueueFilters
 from jobhunter.domain.enums import EligibilityStatus, LifecycleStatus
 from jobhunter.domain.ranking_enums import PriorityBand
+from jobhunter.domain.relevance_queue_enums import RelevanceQueueView
 from jobhunter.domain.review_enums import ReviewDisposition
 from jobhunter.ui.streamlit.bootstrap import allow_fake_results, get_session_factory
 from jobhunter.ui.streamlit.navigation import get_query_param
@@ -21,10 +22,37 @@ from jobhunter.ui.streamlit.opportunities_bulk import (
 from jobhunter.ui.streamlit.opportunities_table import build_opportunity_queue_dataframe
 from jobhunter.ui.streamlit.sidebar import render_sidebar
 
+_RELEVANCE_QP = "relevance_queue"
+_RELEVANCE_LABELS = {
+    RelevanceQueueView.PRIMARY: "Primary",
+    RelevanceQueueView.WEAK: "Weak fit",
+    RelevanceQueueView.OUT_OF_SCOPE: "Out of scope",
+    RelevanceQueueView.NEEDS_REVIEW: "Needs review",
+}
+
+
+def _parse_relevance_view(raw: str | None) -> RelevanceQueueView:
+    if not raw:
+        return RelevanceQueueView.PRIMARY
+    try:
+        return RelevanceQueueView(raw.strip().lower())
+    except ValueError:
+        return RelevanceQueueView.PRIMARY
+
+
+def _default_hide_dismissed(view: RelevanceQueueView) -> bool:
+    if view is RelevanceQueueView.OUT_OF_SCOPE:
+        return False
+    return True
+
+
 render_sidebar()
 
 st.title("Opportunities")
-st.caption("Default: actionable lifecycle, eligible, production assessment/ranking semantics.")
+st.caption(
+    "Default: Primary relevance (strong + moderate fit), actionable lifecycle, "
+    "eligible, production assessment/ranking semantics."
+)
 
 _bulk_flash = pop_bulk_review_flash(st.session_state)
 if _bulk_flash:
@@ -33,6 +61,7 @@ if _bulk_flash:
 eligibility_qp = get_query_param("eligibility")
 lifecycle_qp = get_query_param("lifecycle")
 band_qp = get_query_param("ranking_band")
+relevance_qp = get_query_param(_RELEVANCE_QP)
 
 include_ineligible = st.checkbox(
     "Include ineligible / audit view",
@@ -65,7 +94,7 @@ with col3:
 location_filter = st.text_input("Location contains", "")
 source_filter = st.text_input("Source id (optional)", "")
 
-filters = OpportunityQueueFilters(
+base_filters = OpportunityQueueFilters(
     allow_fake=allow_fake_results(),
     include_ineligible=include_ineligible,
     include_non_actionable_lifecycle=include_non_actionable,
@@ -79,6 +108,61 @@ filters = OpportunityQueueFilters(
 )
 
 session_factory = get_session_factory()
+with session_factory() as session:
+    query = OpportunityReviewQueryService(session)
+    segment_counts = query.count_relevance_segments(base_filters)
+
+relevance_view = _parse_relevance_view(relevance_qp)
+needs_count = segment_counts.get(RelevanceQueueView.NEEDS_REVIEW.value, 0)
+
+segment_options: list[RelevanceQueueView] = [
+    RelevanceQueueView.PRIMARY,
+    RelevanceQueueView.WEAK,
+    RelevanceQueueView.OUT_OF_SCOPE,
+]
+if needs_count > 0:
+    segment_options.append(RelevanceQueueView.NEEDS_REVIEW)
+
+if relevance_view not in segment_options:
+    relevance_view = RelevanceQueueView.PRIMARY
+
+def _segment_label(view: RelevanceQueueView) -> str:
+    count = segment_counts.get(view.value, 0)
+    return f"{_RELEVANCE_LABELS[view]} ({count})"
+
+
+picked_view = st.radio(
+    "Relevance queue",
+    options=segment_options,
+    format_func=_segment_label,
+    index=segment_options.index(relevance_view),
+    horizontal=True,
+)
+if picked_view != relevance_view:
+    st.query_params[_RELEVANCE_QP] = picked_view.value
+    st.rerun()
+
+hide_default = _default_hide_dismissed(relevance_view)
+hide_dismissed = st.checkbox(
+    "Hide dismissed",
+    value=hide_default,
+    help="Hides opportunities whose latest human review is Dismiss. "
+    "Review history is unchanged.",
+)
+
+filters = OpportunityQueueFilters(
+    allow_fake=base_filters.allow_fake,
+    include_ineligible=base_filters.include_ineligible,
+    include_non_actionable_lifecycle=base_filters.include_non_actionable_lifecycle,
+    ranking_band=base_filters.ranking_band,
+    lifecycle=base_filters.lifecycle,
+    eligibility=base_filters.eligibility,
+    source_id=base_filters.source_id,
+    location_contains=base_filters.location_contains,
+    relevance_queue=relevance_view,
+    hide_dismissed=hide_dismissed,
+)
+
 with session_factory() as session:
     items = OpportunityReviewQueryService(session).list_queue(filters)
 
@@ -106,6 +190,8 @@ else:
             "Deadline",
             "Eligibility",
             "Rank",
+            "Relevance",
+            "Sufficiency",
             "Review",
         ],
         key=opportunity_queue_editor_key(st.session_state),

@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 from jobhunter.domain.enums import EligibilityStatus, LifecycleStatus
 from jobhunter.domain.ranking_enums import PriorityBand, RankingStatus
+from jobhunter.domain.relevance_queue_enums import RelevanceQueueView
 from jobhunter.domain.review_enums import ReviewDisposition
 
 
@@ -38,6 +39,8 @@ class OpportunityQueueFilters:
     assessment_state: AssessmentDisplayState | None = None
     location_contains: str | None = None
     review_disposition: ReviewDisposition | None = None
+    relevance_queue: RelevanceQueueView | None = None
+    hide_dismissed: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -235,3 +238,4 @@ class DashboardSummaryView:
     by_ranking_band: dict[str, int]
     latest_scan: ScanSummaryView | None
     high_priority_preview: list[OpportunityQueueItem]
+    by_relevance_queue: dict[str, int] = field(default_factory=dict)

@@ -104,6 +104,7 @@ def test_status_invokes_dashboard_with_public_flags() -> None:
                     allow_fake=False,
                     include_queue_preview=False,
                     include_latest_scan=False,
+                    include_relevance_counts=False,
                 )
     assert status[0].startswith("200")
     assert b"Lifecycle" in body
@@ -127,6 +128,7 @@ def test_build_summary_public_flags_skip_queue_and_scan(db_session: Session) -> 
                 allow_fake=False,
                 include_queue_preview=False,
                 include_latest_scan=False,
+                include_relevance_counts=False,
             )
             list_queue.assert_not_called()
             latest_scan.assert_not_called()

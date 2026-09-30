@@ -440,6 +440,20 @@ docker compose -f docker-compose.prod.yml up -d web status edge
 - **Worker:** unchanged (same image; no compose change required for 17F).
 - **Status container health:** Docker probes `http://127.0.0.1:8502/health` (process liveness only; no dashboard query).
 
+**Phase 17G-2B (relevance-aware Opportunities queues):** no database migration.
+Presentation/query policy only (Primary / Weak fit / Out of scope / Needs review).
+Rebuild and restart `web` / `edge`; `status` unchanged (public aggregates still
+exclude per-opportunity relevance drill-down).
+
+```bash
+cd /volume1/docker/job-hunter
+git pull origin main
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d web edge
+# Alembic head unchanged (20260929_0015)
+# Verify: /app/opportunities default Primary; Weak fit / Out of scope tabs; Hide dismissed
+```
+
 **Phase 17F-1 (status timeout fix):** no database migration. Rebuild and restart `status` (and `edge` if Caddy image unchanged, optional).
 
 ```bash

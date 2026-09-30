@@ -97,6 +97,50 @@ _ASSESSMENT_STATUS = {
 }
 
 
+def compact_label_overall_relevance(
+    value: str | None,
+    *,
+    assessment_state: str | None = None,
+) -> str:
+    """Short relevance label for queue table columns."""
+    from jobhunter.application.review.dtos import AssessmentDisplayState
+
+    if assessment_state in (
+        AssessmentDisplayState.NONE.value,
+        AssessmentDisplayState.FAILED.value,
+    ):
+        return "Needs review"
+    if not value:
+        return "Needs review"
+    try:
+        rel = OverallRelevance(value)
+    except ValueError:
+        return "Needs review"
+    if rel is OverallRelevance.STRONG_FIT:
+        return "Strong"
+    if rel is OverallRelevance.MODERATE_FIT:
+        return "Moderate"
+    if rel is OverallRelevance.WEAK_FIT:
+        return "Weak"
+    if rel is OverallRelevance.OUT_OF_SCOPE:
+        return "Out of scope"
+    if rel in (OverallRelevance.UNKNOWN, OverallRelevance.INSUFFICIENT_EVIDENCE):
+        return "Needs review"
+    return label_overall_relevance(value)
+
+
+def compact_label_source_data_sufficiency(value: str | None) -> str:
+    if not value:
+        return "—"
+    try:
+        level = SourceDataSufficiency(value)
+    except ValueError:
+        return value.replace("_", " ").title()
+    if level is SourceDataSufficiency.LIST_SUMMARY_ONLY:
+        return "LIST SUMMARY"
+    return level.value
+
+
 def label_overall_relevance(value: str | None) -> str:
     if not value:
         return "—"

@@ -5,6 +5,12 @@ from __future__ import annotations
 from dataclasses import replace
 
 from jobhunter.application.ranking.ordering import RankedOpportunityView, sort_ranked_views
+from jobhunter.application.review.relevance_queue import (
+    apply_hide_dismissed,
+    count_segments,
+    matches_relevance_queue,
+    sort_queue_for_view,
+)
 from jobhunter.application.review.active_strategy import ActiveSearchStrategyResolver
 from jobhunter.application.review.dtos import (
     AssessmentDisplayState,
@@ -18,6 +24,7 @@ from jobhunter.application.review.opportunity_reads import (
 )
 from jobhunter.application.review.source_links import pick_primary_source_link
 from jobhunter.domain.enums import EligibilityStatus, LifecycleStatus
+from jobhunter.domain.opportunity import Opportunity
 from jobhunter.domain.ranking_enums import RankingStatus
 from jobhunter.infrastructure.persistence.eligibility_repositories import (
     EligibilityDecisionRepository,
@@ -72,7 +79,24 @@ class OpportunityReviewQueryService:
             if self._matches_filters(opp, item, resolved_filters):
                 items.append(item)
 
-        return self._order_queue(items, revision_id, resolved_filters.allow_fake)
+        items = apply_hide_dismissed(items, resolved_filters.hide_dismissed)
+        items = self._order_queue(
+            items, revision_id, resolved_filters.allow_fake, resolved_filters.relevance_queue
+        )
+        return sort_queue_for_view(items, resolved_filters.relevance_queue)
+
+    def count_relevance_segments(
+        self, filters: OpportunityQueueFilters | None = None
+    ) -> dict[str, int]:
+        """Counts per relevance segment for the same base filters (no segment/hide)."""
+        base = filters or OpportunityQueueFilters()
+        segment_filters = replace(
+            base,
+            relevance_queue=None,
+            hide_dismissed=False,
+        )
+        items = self.list_queue(segment_filters)
+        return count_segments(items)
 
     def _build_item(
         self,
@@ -165,6 +189,8 @@ class OpportunityReviewQueryService:
         if filters.ranking_band is not None:
             if item.priority_band is not filters.ranking_band:
                 return False
+        if not matches_relevance_queue(item, filters.relevance_queue):
+            return False
         return True
 
     def _order_queue(
@@ -172,6 +198,7 @@ class OpportunityReviewQueryService:
         items: list[OpportunityQueueItem],
         revision_id: str,
         allow_fake: bool,
+        relevance_queue,
     ) -> list[OpportunityQueueItem]:
         ranked_views: list[RankedOpportunityView] = []
         for item in items:

@@ -44,6 +44,7 @@ def _build_status_html() -> str:
             allow_fake=False,
             include_queue_preview=False,
             include_latest_scan=False,
+            include_relevance_counts=False,
         )
     return render_public_status_html(summary)
 

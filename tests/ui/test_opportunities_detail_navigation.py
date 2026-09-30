@@ -55,6 +55,8 @@ def test_every_row_has_view_link_targeting_opportunity_id() -> None:
         "Deadline",
         "Eligibility",
         "Rank",
+        "Relevance",
+        "Sufficiency",
         "Review",
         "View",
     ]
