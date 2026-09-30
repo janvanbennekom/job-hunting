@@ -83,6 +83,9 @@ class OpportunityDetailService:
 
         ctx = self._strategy.resolve()
         revision_id = ctx.revision_id
+        queue_filters = OpportunityQueueFilters(allow_fake=allow_fake)
+        snapshot = self._queue.build_snapshot(queue_filters)
+        dynamic_rank = snapshot.dynamic_rank_for(opp.id, allow_fake=allow_fake)
         pipeline = self._pipeline.load(opp, revision_id, allow_fake=allow_fake)
 
         links = self._opp_sources.list_for_opportunity(opp.id)
@@ -141,7 +144,11 @@ class OpportunityDetailService:
             pipeline, allow_fake, opp.eligibility_status
         )
         ranking_section = self._build_ranking(
-            opp, revision_id, allow_fake, pipeline.display_ranking
+            opp,
+            revision_id,
+            allow_fake,
+            pipeline.display_ranking,
+            dynamic_rank=dynamic_rank,
         )
         human_section = self._build_human_review(opp.id)
 
@@ -305,15 +312,14 @@ class OpportunityDetailService:
         )
 
     def _build_ranking(
-        self, opp, revision_id: str, allow_fake: bool, ranking
+        self,
+        opp,
+        revision_id: str,
+        allow_fake: bool,
+        ranking,
+        *,
+        dynamic_rank: int | None,
     ) -> RankingSectionView:
-        dynamic_rank = None
-        for item in self._queue.list_queue(
-            OpportunityQueueFilters(allow_fake=allow_fake)
-        ):
-            if item.opportunity_id == opp.id:
-                dynamic_rank = item.dynamic_rank
-                break
 
         if ranking is None:
             return RankingSectionView(

@@ -39,6 +39,25 @@ class EligibilityDecisionRepository:
         rows = self._session.scalars(stmt).all()
         return [mappers.eligibility_decision_to_domain(row) for row in rows]
 
+    def map_latest_for_revision(
+        self, revision_id: str
+    ) -> dict[str, EligibilityDecision]:
+        stmt = (
+            select(EligibilityDecisionRow)
+            .where(EligibilityDecisionRow.search_strategy_revision_id == revision_id)
+            .order_by(
+                EligibilityDecisionRow.opportunity_id,
+                EligibilityDecisionRow.evaluated_at.desc(),
+            )
+        )
+        rows = self._session.scalars(stmt).all()
+        result: dict[str, EligibilityDecision] = {}
+        for row in rows:
+            if row.opportunity_id in result:
+                continue
+            result[row.opportunity_id] = mappers.eligibility_decision_to_domain(row)
+        return result
+
     def get_latest_for_opportunity_and_revision(
         self, opportunity_id: str, revision_id: str
     ) -> EligibilityDecision | None:

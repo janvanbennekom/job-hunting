@@ -108,9 +108,11 @@ base_filters = OpportunityQueueFilters(
 )
 
 session_factory = get_session_factory()
+
 with session_factory() as session:
-    query = OpportunityReviewQueryService(session)
-    segment_counts = query.count_relevance_segments(base_filters)
+    segment_counts = OpportunityReviewQueryService(session).count_relevance_segments(
+        base_filters
+    )
 
 relevance_view = _parse_relevance_view(relevance_qp)
 needs_count = segment_counts.get(RelevanceQueueView.NEEDS_REVIEW.value, 0)

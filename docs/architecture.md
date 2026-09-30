@@ -1060,6 +1060,15 @@ assessment appear under **Needs review** (tab shown only when count &gt; 0).
 **Hide dismissed** filters display only (default on for Primary and Weak fit,
 off for Out of scope). LOW ranking is never used as a relevance gate.
 
+Phase **17H-1** replaces per-opportunity `OpportunityPipelineReader.load()` in
+queue paths with **`OpportunityPipelineBulkIndex`** (revision-wide assessment and
+ranking SELECTs) and **`OpportunityQueueSnapshot`** for segment counts, filtered
+lists, and dynamic rank. SQL for Home/Opportunities list paths is **O(1)** in
+opportunity count (tens of statements, not thousands). Opportunity Detail still
+loads one opportunity’s facts/observations per request but obtains
+`dynamic_rank` from an in-memory snapshot pass, not a second full queue traversal
+with N+1 SQL.
+
 Phase 11 adds conversational search strategy management via
 `jobhunter.application.strategy_conversation` and a Streamlit strategy page.
 Natural-language instructions are interpreted through a `StrategyChangeModel`

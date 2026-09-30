@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 from jobhunter.application.review.dtos import SourceLinkView
+from jobhunter.domain.job_source import JobSource
 from jobhunter.domain.opportunity_source import OpportunitySource
 from jobhunter.infrastructure.persistence.repositories import JobSourceRepository
 
 
 def pick_primary_source_link(
     links: list[OpportunitySource],
-    sources: JobSourceRepository,
+    sources: JobSourceRepository | dict[str, JobSource],
 ) -> SourceLinkView | None:
     if not links:
         return None
@@ -21,7 +22,10 @@ def pick_primary_source_link(
             link.id,
         ),
     )
-    job_source = sources.get_by_id(primary.source_id)
+    if isinstance(sources, dict):
+        job_source = sources.get(primary.source_id)
+    else:
+        job_source = sources.get_by_id(primary.source_id)
     name = job_source.name if job_source else primary.source_id
     return SourceLinkView(
         source_id=primary.source_id,

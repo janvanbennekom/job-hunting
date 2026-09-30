@@ -36,6 +36,11 @@ class JobSourceRepository:
             return None
         return mappers.job_source_to_domain(row)
 
+    def map_all_by_id(self) -> dict[str, JobSource]:
+        stmt = select(JobSourceRow)
+        rows = self._session.scalars(stmt).all()
+        return {row.id: mappers.job_source_to_domain(row) for row in rows}
+
 
 class RawOpportunityRepository:
     def __init__(self, session: Session) -> None:
@@ -119,3 +124,16 @@ class OpportunitySourceRepository:
         )
         rows = self._session.scalars(stmt).all()
         return [mappers.opportunity_source_to_domain(row) for row in rows]
+
+    def map_all_grouped_by_opportunity(
+        self,
+    ) -> dict[str, list[OpportunitySource]]:
+        stmt = select(OpportunitySourceRow).order_by(
+            OpportunitySourceRow.opportunity_id, OpportunitySourceRow.id
+        )
+        rows = self._session.scalars(stmt).all()
+        grouped: dict[str, list[OpportunitySource]] = {}
+        for row in rows:
+            entity = mappers.opportunity_source_to_domain(row)
+            grouped.setdefault(entity.opportunity_id, []).append(entity)
+        return grouped

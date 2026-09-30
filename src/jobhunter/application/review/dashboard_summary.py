@@ -98,25 +98,28 @@ class DashboardSummaryService:
                     error_summary=latest_scan_entity.error_summary,
                 )
 
+        base_queue_filters = OpportunityQueueFilters(
+            allow_fake=allow_fake,
+            include_ineligible=False,
+            include_non_actionable_lifecycle=False,
+        )
+        snapshot = None
+        if include_queue_preview or include_relevance_counts:
+            snapshot = self._queue.build_snapshot(base_queue_filters)
+
         high_preview = []
-        if include_queue_preview:
+        if include_queue_preview and snapshot is not None:
             preview_filters = OpportunityQueueFilters(
                 allow_fake=allow_fake,
                 include_ineligible=False,
                 include_non_actionable_lifecycle=False,
                 ranking_band=PriorityBand.HIGH,
             )
-            high_preview = self._queue.list_queue(preview_filters)
+            high_preview = snapshot.list_queue(preview_filters)
 
         relevance_counts: dict[str, int] = {}
-        if include_relevance_counts:
-            relevance_counts = self._queue.count_relevance_segments(
-                OpportunityQueueFilters(
-                    allow_fake=allow_fake,
-                    include_ineligible=False,
-                    include_non_actionable_lifecycle=False,
-                )
-            )
+        if include_relevance_counts and snapshot is not None:
+            relevance_counts = snapshot.segment_counts(base_queue_filters)
 
         return DashboardSummaryView(
             total_opportunities=len(opportunities),
