@@ -1,0 +1,48 @@
+{
+  "configured_model_env": "gpt-5.4-mini",
+  "production_assessment_models": [
+    [
+      "gpt-5.4-mini",
+      91
+    ]
+  ],
+  "openai_assessments_on_2026_09_29": 40,
+  "opportunities_analyzed": 92,
+  "max_output_tokens_configured": null,
+  "notes": [
+    "OpenAI call sets no max_tokens; provider/model default applies.",
+    "usage dict is returned but NOT persisted on OpportunityProfileAssessment.",
+    "Token estimates use chars/4 heuristic unless tiktoken available."
+  ],
+  "system_prompt_chars": 600,
+  "output_schema_chars": 1142,
+  "output_instructions_chars": 1438,
+  "median_chars": {
+    "evidence_pack": 40306,
+    "opportunity_prompt_text": 823,
+    "opportunity_object_duplicate": 786,
+    "strategy_and_meta": 4855,
+    "full_user_payload_v2": 49587,
+    "system_plus_user_message": 50290,
+    "description_field_only_median": 291
+  },
+  "median_estimated_input_tokens": 12572,
+  "assumed_output_tokens_per_call": 400,
+  "median_estimated_total_tokens_per_call": 12972,
+  "service_count": {
+    "min": 9,
+    "max": 9,
+    "unique": 1
+  },
+  "assignment_count": {
+    "min": 10,
+    "max": 10
+  },
+  "reassess_total_tokens_estimate": {
+    "10": 129720,
+    "65": 843180,
+    "86": 1115592,
+    "91": 1180452
+  },
+  "p90_chars_system_plus_user": 63126
+}

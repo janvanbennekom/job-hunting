@@ -1,0 +1,659 @@
+{
+  "revision_id": "5d329baf-d79d-5cd1-ad52-751b373bf0ab",
+  "total_opportunities": 105,
+  "default_queue_count": 86,
+  "by_eligibility": {
+    "REVIEW_REQUIRED": 6,
+    "INELIGIBLE": 13,
+    "ELIGIBLE": 86
+  },
+  "by_ranking_band_ranked_only": {
+    "REVIEW": 4,
+    "LOW": 60
+  },
+  "by_assessment_overall_relevance": {
+    "UNKNOWN": 65,
+    "NONE": 40
+  },
+  "production_assessment_overall_relevance": {
+    "UNKNOWN": 65
+  },
+  "unranked_count": 16,
+  "excluded_ranking_count": 0,
+  "investigate_disposition_count": 0,
+  "by_review_disposition": {
+    "UNREVIEWED": 47,
+    "DISMISS": 58
+  },
+  "band_x_disposition_ranked": {
+    "REVIEW|UNREVIEWED": 4,
+    "LOW|DISMISS": 50,
+    "LOW|UNREVIEWED": 10
+  },
+  "required_cells": {
+    "LOW|DISMISS": 50,
+    "LOW|SHORTLIST": 0,
+    "LOW|UNREVIEWED": 10,
+    "MEDIUM|DISMISS": 0,
+    "HIGH|DISMISS": 0,
+    "MEDIUM|SHORTLIST": 0,
+    "HIGH|SHORTLIST": 0
+  },
+  "low_dismiss_samples": [
+    {
+      "id": "a7ecd6dd-7002-4a0a-885c-d0458d4867ea",
+      "title": "Administration Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "86d86b03-9fb8-4a0a-9653-4aca45344bbb",
+      "title": "Agrifood Systems Specialist (SC 7)",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "2e985d19-a98d-4a51-a7b0-5cab8f61fd1a",
+      "title": "Analista en Desarrollo Productivo Sostenible (Abierto a candidatos internos y externos) - Mexico, Mexico",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "undp-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "a0e6454f-2eb1-4eaf-83c9-e23d7bc41d43",
+      "title": "Asistente de Enlace Interinstitucional y Seguimiento - Mexico",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "undp-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "b4b70262-e06e-4bcb-b6ef-8b3939d27f01",
+      "title": "Asociado(a) en Control Financiero y Fiscalizaci\u00f3n de Proyectos de Cooperaci\u00f3n - Mexico",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "undp-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "b7e0051a-7623-4c20-8eaa-08c0e3b7cd1f",
+      "title": "Atoll Food Systems Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "b558e70d-04d6-40c8-9f16-0fc480bf8957",
+      "title": "Call for Experts | Research, Data Analysis, Community Engagement & Strategic Communications - Sierra Leone (WASH Sector)",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "732c5aa1-830c-41d9-b87f-781e76778ce7",
+      "title": "Chef.fe d'\u00e9quipe (expert\u00b7e cl\u00e9)",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "6db6c5cc-a4d5-4a81-a050-5b64d42beb1f",
+      "title": "Civil Engineer",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "c92ffcb9-183f-4502-a1ba-91df64eb73f7",
+      "title": "Client Support Associate",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "812353ac-2dd3-4712-acfc-9236f64812f2",
+      "title": "Climate Change Specialist (Anticipatory Action)",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "95d815d4-80de-4810-98d2-729991098bfd",
+      "title": "Climate Resilience and Environmental Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "d70aa64e-3319-452a-8c3c-0410b769596c",
+      "title": "Climate Resilient Agronomist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "dc79182f-1342-4d16-bb51-3a5ffd09abf7",
+      "title": "Driver",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "d73a0041-4ad8-4df6-9e28-ee24969fa208",
+      "title": "Endline Evaluation of the Strategic Partnership Agreement II Programme and Syria & Lebanon Top Ups",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "b2e42152-cd5c-478c-8eda-f834a6f6738c",
+      "title": "Expert\u00b7e Facilitation du benchmarking et peer-to-peer learning",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "33729cad-40af-494a-92a5-2717ac4ab958",
+      "title": "Expert\u00b7e\u00b7s \"Ancrage\"",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "183fa443-b5a3-4ab6-8083-4d4d2879295c",
+      "title": "Expert\u00b7e\u00b7s \"Outputs 1, 2 et 3\"",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "bb171b55-88c2-4692-974b-f43699d62c53",
+      "title": "Expert\u00b7e\u00b7s \"Pilotage\"",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "21d4413f-7fb5-4de2-8358-175060d10d43",
+      "title": "Expert\u00b7e\u00b7s \"Solutions num\u00e9riques\"",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "bb01bac8-c04f-4c98-b911-9fd6e5ad7ba1",
+      "title": "Expert\u00b7e\u00b7s \"Suivi-\u00e9valuation et GAR \"",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "3f8640e2-a537-49e7-acdd-bbe283f72864",
+      "title": "Expert\u00b7e\u00b7s \"Th\u00e8mes transversaux\" (fragilit\u00e9, conflits, coh\u00e9sion sociale, genre, inclusion, environnement, climat)",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "b581d08e-f80f-4e40-9469-bb37a22c8ec5",
+      "title": "Gender and Social Inclusion Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "85b34d27-d9c7-4db9-8ccb-0c026c0e7198",
+      "title": "Health, Safety, Social and Environmental / Safeguard Officer (HSSE Officer)",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "2c1cdf9a-3c18-4503-bda6-ddb15822181b",
+      "title": "Human Resources Assistant",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    }
+  ],
+  "medium_high_dismiss_samples": [],
+  "low_unreviewed_diagnostic": {
+    "insufficient_source_data": 10
+  },
+  "shortlist_positive_controls": [],
+  "proposed_gate_estimate": {
+    "NEEDS_EVIDENCE_OR_REVIEW": 86
+  },
+  "geo_relevant_title_candidates": [
+    {
+      "id": "a7ecd6dd-7002-4a0a-885c-d0458d4867ea",
+      "title": "Administration Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "86d86b03-9fb8-4a0a-9653-4aca45344bbb",
+      "title": "Agrifood Systems Specialist (SC 7)",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "a83f6fab-253e-4d1b-9565-152c6f81d326",
+      "title": "Analista de Ci\u00eancia de Dados (1 vaga) (Home Based) - [Open to internal and external applicants] - Brasilia, Brazil",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "undp-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "2e985d19-a98d-4a51-a7b0-5cab8f61fd1a",
+      "title": "Analista en Desarrollo Productivo Sostenible (Abierto a candidatos internos y externos) - Mexico, Mexico",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "undp-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "b7e0051a-7623-4c20-8eaa-08c0e3b7cd1f",
+      "title": "Atoll Food Systems Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "812353ac-2dd3-4712-acfc-9236f64812f2",
+      "title": "Climate Change Specialist (Anticipatory Action)",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "95d815d4-80de-4810-98d2-729991098bfd",
+      "title": "Climate Resilience and Environmental Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "fa46fcee-d75c-446f-8f1c-67208bb1a7ca",
+      "title": "Data and Information Systems Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "ed965eb2-861e-4aea-b406-e70ab763def6",
+      "title": "Data Protection Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "ed7361aa-75b7-46f1-a3a4-6067ce21ef6e",
+      "title": "Especialista en Alianzas Institucionales para Proyectos de Cooperaci\u00f3n - Mexico",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "undp-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "965f1ed2-1d9e-44f6-aaf0-fcc5cc328d75",
+      "title": "Especialista en Modernizaci\u00f3n Digital de Plataformas de Cooperaci\u00f3n Internacional - Mexico",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "undp-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "b581d08e-f80f-4e40-9469-bb37a22c8ec5",
+      "title": "Gender and Social Inclusion Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "755a6e99-d985-4a58-ad0a-7530df670323",
+      "title": "Innovation and Digital Agriculture Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "e35eaef7-d16a-4a1a-b85b-9390e7e638ad",
+      "title": "Institutional Development and Governance Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "6f987cdc-cb1a-4cc7-81ce-90f958b69d08",
+      "title": "IT and Digitalisation Officer",
+      "band": null,
+      "overall_relevance": null,
+      "eligibility": "ELIGIBLE",
+      "score": null,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": null
+    },
+    {
+      "id": "569f7fb6-38e1-498f-98e7-e4755cfb7b51",
+      "title": "Local Project Management Specialist \u2013 Pandemic Preparedness",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "c9e66545-b9f6-4395-b26a-02a4f6d97081",
+      "title": "MEAL Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "3974c580-d7b4-4093-973a-a81d016d05f3",
+      "title": "Monitoring Evaluation Accountability Learning (MEAL) Specialist",
+      "band": null,
+      "overall_relevance": null,
+      "eligibility": "ELIGIBLE",
+      "score": null,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": null
+    },
+    {
+      "id": "114ebe2c-5038-4888-ad46-ef2435274fdb",
+      "title": "Monitoring, Evaluation and Learning Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "8993ed85-147e-4049-851e-5bb33bb21b61",
+      "title": "National Project Personnel - Human Resources Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "f0fd5efd-de0a-41e9-ac78-7fdcef6aeab0",
+      "title": "Poland \u2013 Lamps and light fittings \u2013 Modernizacja infrastruktury o\u015bwietleniowej w Gminie Liszki",
+      "band": null,
+      "overall_relevance": null,
+      "eligibility": "ELIGIBLE",
+      "score": null,
+      "scope_summary": null,
+      "source": "ted-eu-procurement",
+      "sufficiency": null
+    },
+    {
+      "id": "bbe1aa69-8d34-4010-8e3b-9ff0d5c5cf7a",
+      "title": "Project Engineering Specialist [Open to internal and external applicants] - Quetta, Pakistan",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "undp-jobs",
+      "sufficiency": "PARTIAL"
+    },
+    {
+      "id": "5d53995d-a26c-4a2c-9b52-1c6dfbe1629a",
+      "title": "R\u00e9alisation du Plan d'action de r\u00e9installation (PAR) pour le projet de liaison ferroviaire entre le Port Autonome de Lom",
+      "band": null,
+      "overall_relevance": null,
+      "eligibility": "INELIGIBLE",
+      "score": null,
+      "scope_summary": null,
+      "source": "worldbank-procurement",
+      "sufficiency": null
+    },
+    {
+      "id": "7d7fa2a5-4200-4f4f-a4ec-6a4d9a99e9a0",
+      "title": "Research and Data Analysis Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 50,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "ADEQUATE"
+    },
+    {
+      "id": "49aceb4d-e7d5-45d7-bdf9-d9a050c43a19",
+      "title": "Romania \u2013 Cadastral surveying services \u2013 Acord-cadru de servicii cadastrale privind \u00eentocmirea documenta\u021biei cadastrale ",
+      "band": null,
+      "overall_relevance": null,
+      "eligibility": "ELIGIBLE",
+      "score": null,
+      "scope_summary": null,
+      "source": "ted-eu-procurement",
+      "sufficiency": null
+    },
+    {
+      "id": "7be140f5-e7a7-42ea-bb70-ca95bf6a0395",
+      "title": "Romania \u2013 Cadastral surveying services \u2013 Servicii de \u00eenregistrare sistematic\u0103 \u00een Sistemul Integrat de Cadastru \u0219i Carte ",
+      "band": null,
+      "overall_relevance": null,
+      "eligibility": "ELIGIBLE",
+      "score": null,
+      "scope_summary": null,
+      "source": "ted-eu-procurement",
+      "sufficiency": null
+    },
+    {
+      "id": "84883841-f942-48d4-b3d4-7ea39487f8b9",
+      "title": "Romania \u2013 Cadastral surveying services \u2013 Servicii de \u00eenregistrare sistematic\u0103 \u00een Sistemul Integrat de Cadastru \u0219i Carte ",
+      "band": null,
+      "overall_relevance": null,
+      "eligibility": "ELIGIBLE",
+      "score": null,
+      "scope_summary": null,
+      "source": "ted-eu-procurement",
+      "sufficiency": null
+    },
+    {
+      "id": "bfe84e3d-5063-4096-bd0d-7b396759ad55",
+      "title": "Romania \u2013 Cadastral surveying services \u2013 Servicii de \u00eenregistrare sistematic\u0103 \u00een Sistemul Integrat de Cadastru \u0219i Carte ",
+      "band": null,
+      "overall_relevance": null,
+      "eligibility": "ELIGIBLE",
+      "score": null,
+      "scope_summary": null,
+      "source": "ted-eu-procurement",
+      "sufficiency": null
+    },
+    {
+      "id": "332b4c02-fdd8-4a94-9ff8-84703a613269",
+      "title": "Senior Policy Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 25,
+      "scope_summary": null,
+      "source": "fao-external-jobs",
+      "sufficiency": "LIST_SUMMARY_ONLY"
+    },
+    {
+      "id": "4864a031-8ba1-49dc-94cd-a09e59faa890",
+      "title": "Strategic Communication Specialist",
+      "band": "LOW",
+      "overall_relevance": "UNKNOWN",
+      "eligibility": "ELIGIBLE",
+      "score": 40,
+      "scope_summary": null,
+      "source": "developmentaid-jobs",
+      "sufficiency": "PARTIAL"
+    }
+  ]
+}
