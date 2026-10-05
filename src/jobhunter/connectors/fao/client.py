@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from jobhunter.connectors.fao.identity import FAO_JOBS_ENTRY_URL
+from jobhunter.connectors.http_timeout import opener_open_with_timeouts
 
 
 @dataclass(slots=True)
@@ -101,7 +102,9 @@ class FaoJobsClient:
         request = urllib.request.Request(
             url, headers={"User-Agent": self._user_agent}
         )
-        with self._opener.open(request, timeout=self._timeout) as response:
+        with opener_open_with_timeouts(
+            self._opener, request, read_seconds=self._timeout
+        ) as response:
             return response.read().decode("utf-8", "replace")
 
     def _post_json(self, url: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -118,7 +121,9 @@ class FaoJobsClient:
             },
         )
         try:
-            with self._opener.open(request, timeout=self._timeout) as response:
+            with opener_open_with_timeouts(
+                self._opener, request, read_seconds=self._timeout
+            ) as response:
                 return json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", "replace")[:500]

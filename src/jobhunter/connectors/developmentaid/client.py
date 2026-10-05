@@ -10,6 +10,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from jobhunter.connectors.http_timeout import urlopen_with_timeouts
 from jobhunter.connectors.developmentaid.http_policy import (
     DevelopmentAidHttpPolicy,
     rate_limit_wait_seconds,
@@ -128,7 +129,9 @@ class DevelopmentAidJobsClient:
             attempts += 1
             request = self._build_request(method, url, payload)
             try:
-                with urllib.request.urlopen(request, timeout=self._timeout) as response:
+                with urlopen_with_timeouts(
+                    request, read_seconds=self._timeout
+                ) as response:
                     parsed = json.loads(response.read().decode("utf-8"))
             except urllib.error.HTTPError as exc:
                 body = exc.read().decode("utf-8", "replace")[:500]

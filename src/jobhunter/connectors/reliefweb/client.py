@@ -6,6 +6,8 @@ import json
 import urllib.error
 import urllib.parse
 import urllib.request
+
+from jobhunter.connectors.http_timeout import urlopen_with_timeouts
 from dataclasses import dataclass
 from typing import Any
 
@@ -89,7 +91,9 @@ class ReliefWebJobsClient:
             },
         )
         try:
-            with urllib.request.urlopen(request, timeout=self._timeout) as response:
+            with urlopen_with_timeouts(
+                request, read_seconds=self._timeout
+            ) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", "replace")[:500]

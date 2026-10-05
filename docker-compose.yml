@@ -56,6 +56,8 @@ services:
     command: ["python", "scripts/run_scheduled_pipeline.py", "--apply-if-due"]
     profiles:
       - worker
+    healthcheck:
+      disable: true
 
 volumes:
   jobhunter_pgdata:

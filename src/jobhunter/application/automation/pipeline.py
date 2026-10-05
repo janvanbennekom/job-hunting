@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import socket
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from time import perf_counter
+
 from sqlalchemy.orm import Session
 
 from jobhunter.application.automation.assessment_batch import (
@@ -22,6 +25,14 @@ from jobhunter.application.automation.notification_observability import (
 )
 from jobhunter.application.automation.high_ranking_alerts import (
     HighRankingAlertService,
+)
+from jobhunter.application.automation.pipeline_progress import (
+    phase_completed,
+    phase_starting,
+    pipeline_completed,
+    source_completed,
+    source_failed,
+    source_starting,
 )
 from jobhunter.application.automation.source_adapters import (
     SourceAdapterResult,
@@ -97,18 +108,27 @@ class ScheduledPipelineOrchestrator:
             run_entity = AutomationRun(
                 started_at=started,
                 trigger_type=trigger_type,
+                status=AutomationRunStatus.RUNNING,
                 config_snapshot=self._config.sanitized_snapshot(),
             )
             run_entity = self._runs.save(run_entity)
+            self._session.commit()
 
         all_processed: list[str] = []
         all_new: list[str] = []
         all_updated: list[str] = []
 
         for source_cfg in self._config.enabled_sources():
+            source_started = perf_counter()
             try:
                 adapter = get_adapter(source_cfg.key, self._adapters)
             except KeyError as exc:
+                duration = perf_counter() - source_started
+                source_failed(
+                    source_cfg.key,
+                    duration_seconds=duration,
+                    error=str(exc),
+                )
                 result = SourceAdapterResult(
                     source_key=source_cfg.key,
                     source_id="",
@@ -117,8 +137,11 @@ class ScheduledPipelineOrchestrator:
                     error_message=str(exc),
                 )
                 source_results.append(result)
+                if apply:
+                    self._session.commit()
                 continue
 
+            source_starting(source_cfg.key)
             try:
                 result = adapter.run(
                     self._session,
@@ -126,7 +149,14 @@ class ScheduledPipelineOrchestrator:
                     apply=apply,
                     run_profile_assessment=run_profile_in_scan and not assess_in_pipeline,
                 )
-            except Exception as exc:  # noqa: BLE001
+            except (TimeoutError, socket.timeout) as exc:
+                duration = perf_counter() - source_started
+                source_failed(
+                    source_cfg.key,
+                    duration_seconds=duration,
+                    error=str(exc),
+                    kind="TIMEOUT",
+                )
                 result = SourceAdapterResult(
                     source_key=source_cfg.key,
                     source_id="",
@@ -134,7 +164,38 @@ class ScheduledPipelineOrchestrator:
                     scan_status=SourceScanStatus.FAILED,
                     error_message=str(exc),
                 )
+            except Exception as exc:  # noqa: BLE001
+                duration = perf_counter() - source_started
+                source_failed(
+                    source_cfg.key,
+                    duration_seconds=duration,
+                    error=str(exc),
+                )
+                result = SourceAdapterResult(
+                    source_key=source_cfg.key,
+                    source_id="",
+                    source_scan_id=None,
+                    scan_status=SourceScanStatus.FAILED,
+                    error_message=str(exc),
+                )
+            else:
+                duration = perf_counter() - source_started
+                if result.error_message:
+                    source_failed(
+                        source_cfg.key,
+                        duration_seconds=duration,
+                        error=result.error_message,
+                    )
+                else:
+                    source_completed(
+                        source_cfg.key,
+                        duration_seconds=duration,
+                        retrieved=result.retrieved,
+                        processed=result.processed,
+                    )
             source_results.append(result)
+            if apply:
+                self._session.commit()
             if result.error_message:
                 continue
             all_processed.extend(result.processed_opportunity_ids)
@@ -143,6 +204,7 @@ class ScheduledPipelineOrchestrator:
 
         assessment_result: AssessmentBatchResult | None = None
         if apply and assess_in_pipeline and all_processed:
+            phase_starting("assessment batch")
             try:
                 assessment_result = run_production_assessment_batch(
                     self._session,
@@ -156,6 +218,20 @@ class ScheduledPipelineOrchestrator:
                 assessment_result = AssessmentBatchResult(
                     skipped=True, skip_reason=str(exc)
                 )
+            if assessment_result is not None:
+                if assessment_result.skipped:
+                    phase_completed(
+                        "assessment batch",
+                        skipped=assessment_result.skip_reason or "true",
+                    )
+                else:
+                    phase_completed(
+                        "assessment batch",
+                        assessed=assessment_result.assessed,
+                        reused=assessment_result.reused,
+                    )
+            if apply:
+                self._session.commit()
         elif not apply and assess_in_pipeline:
             warnings.append(
                 "production_assessment_enabled: would run after scans (dry-run)"
@@ -166,6 +242,7 @@ class ScheduledPipelineOrchestrator:
         ranking_unranked = 0
         ranking_outcomes: list[RankingOutcome] = []
         if apply and self._config.pipeline.ranking_enabled and all_processed:
+            phase_starting("ranking")
             ranking_service = OpportunityRankingService(self._session)
             unique_ids = _unique_preserve_order(all_processed)
             ranking_attempted = len(unique_ids)
@@ -183,6 +260,14 @@ class ScheduledPipelineOrchestrator:
                 except Exception as exc:  # noqa: BLE001
                     warnings.append(f"ranking {opp_id}: {exc}")
                     ranking_unranked += 1
+            phase_completed(
+                "ranking",
+                attempted=ranking_attempted,
+                ranked=ranking_ranked,
+                unranked=ranking_unranked,
+            )
+            if apply:
+                self._session.commit()
         elif not apply and self._config.pipeline.ranking_enabled:
             warnings.append("ranking_enabled: would rank processed opportunities (dry-run)")
 
@@ -194,6 +279,7 @@ class ScheduledPipelineOrchestrator:
             and ranking_outcomes
             and self._notification_sender is not None
         ):
+            phase_starting("high-ranking notifications")
             alert_service = HighRankingAlertService(self._session, self._settings)
             alert_result = alert_service.process_ranking_outcomes(
                 ranking_outcomes,
@@ -203,6 +289,13 @@ class ScheduledPipelineOrchestrator:
             high_alerts_failed = alert_result.failed
             for err in alert_result.errors:
                 warnings.append(f"high_ranking_alert: {err}")
+            phase_completed(
+                "high-ranking notifications",
+                sent=high_alerts_sent,
+                failed=high_alerts_failed,
+            )
+            if apply:
+                self._session.commit()
 
         if apply and run_entity is not None:
             run_entity = self._finalize_run(
@@ -228,16 +321,21 @@ class ScheduledPipelineOrchestrator:
                 updated_ids=_unique_preserve_order(all_updated),
                 warnings=warnings,
             )
+            phase_starting("run summary notification")
             deliver_automation_summary(
                 self._notification_sender,
                 notification_summary,
                 apply=apply,
                 notifications_enabled=self._config.notifications.enabled,
             )
+            phase_completed("run summary notification")
+            if apply:
+                self._session.commit()
         elif apply:
             report_summary_skipped_notifications_disabled()
 
         exit_code = _compute_exit_code(source_results, run_entity)
+        pipeline_completed(exit_code=exit_code, run_id=run_entity.id if run_entity else None)
         return PipelineRunResult(
             dry_run=not apply,
             automation_run=run_entity,

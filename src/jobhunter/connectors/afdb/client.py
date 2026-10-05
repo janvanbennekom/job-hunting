@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import urllib.error
 import urllib.request
+
+from jobhunter.connectors.http_timeout import urlopen_with_timeouts
 from dataclasses import dataclass
 from typing import Any
 
@@ -45,7 +47,9 @@ class AfdbConsultantsClient:
             },
         )
         try:
-            with urllib.request.urlopen(request, timeout=self._timeout) as response:
+            with urlopen_with_timeouts(
+                request, read_seconds=self._timeout
+            ) as response:
                 payload = response.read()
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", "replace")[:500]
@@ -60,7 +64,9 @@ class AfdbConsultantsClient:
             headers={"User-Agent": self._user_agent, "Accept": "text/html, */*"},
         )
         try:
-            with urllib.request.urlopen(request, timeout=self._timeout) as response:
+            with urlopen_with_timeouts(
+                request, read_seconds=self._timeout
+            ) as response:
                 html = response.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", "replace")[:500]

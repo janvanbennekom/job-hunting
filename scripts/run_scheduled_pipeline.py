@@ -128,6 +128,10 @@ def main(argv: list[str] | None = None) -> int:
         report_notification_sender(sender, needs_sender=needs_sender)
         from jobhunter.application.automation.worker_lock import WorkerAutomationLock
 
+        from jobhunter.application.automation.pipeline_progress import (
+            pipeline_starting,
+        )
+
         with session_scope(session_factory) as session:
             lock = WorkerAutomationLock(session)
             if not lock.try_acquire():
@@ -136,6 +140,7 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 return 0
             try:
+                pipeline_starting(apply=True, trigger=trigger.value)
                 orchestrator = ScheduledPipelineOrchestrator(
                     session,
                     config,

@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from http.cookiejar import CookieJar
 
 from jobhunter.connectors.adb.identity import ADB_CSRN_LISTING_URL
+from jobhunter.connectors.http_timeout import opener_open_with_timeouts
 from jobhunter.connectors.adb.parse import (
     AdbCsrnParseError,
     extract_next_page_tokens,
@@ -121,7 +122,9 @@ class AdbCsrnClient:
             headers={"User-Agent": self._user_agent, "Accept": "text/html"},
         )
         try:
-            with self._opener.open(request, timeout=self._timeout) as response:
+            with opener_open_with_timeouts(
+                self._opener, request, read_seconds=self._timeout
+            ) as response:
                 return response.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", "replace")[:400]
@@ -156,7 +159,9 @@ class AdbCsrnClient:
             },
         )
         try:
-            with self._opener.open(request, timeout=self._timeout) as response:
+            with opener_open_with_timeouts(
+                self._opener, request, read_seconds=self._timeout
+            ) as response:
                 return response.read().decode("utf-8", "replace")
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", "replace")[:400]

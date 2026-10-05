@@ -195,7 +195,11 @@ cd /volume1/docker/job-hunter && /usr/local/bin/docker compose -f docker-compose
 
 The worker container runs `python scripts/run_scheduled_pipeline.py --apply-if-due`,
 exits when not due (no scans, no OpenAI), and uses a PostgreSQL advisory lock when
-a run is due.
+a run is due. The worker service sets **`healthcheck: disable: true`** so it does
+not inherit the Streamlit image healthcheck on port 8501.
+
+Stdout during a due run includes per-source progress lines (`Source fao: starting`, …).
+Read-only timeout/order report: `python scripts/diagnose_automation_sources.py`.
 
 **Logs:** Task Scheduler history in DSM; container stdout:
 
